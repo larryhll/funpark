@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <mapping class="com.myeden.entity.Student" />
+        <mapping class="com.myeden.entity.MemberDO"/>
+        <mapping class="com.myeden.entity.CategoryDO"/>
+        <mapping class="com.myeden.entity.DownLogDO"/>
+        <mapping class="com.myeden.entity.LayoutDO"/>
+        <mapping class="com.myeden.entity.ProductDO"/>
+        <mapping class="com.myeden.entity.SystemDO"/>
+        <mapping class="com.myeden.entity.VideoDO"/>
+
+    </session-factory>
+
+
+
+</hibernate-configuration>
