@@ -15,5 +15,6 @@ public interface ProductDao {
 
     public ProductDO findProductById(int id);
 
-    public List<ProductDO> getAllProducts(Object[] objects);
+    public List<ProductDO> getAllProducts(String proCategory, int proType, int proPublish, int proRecommd);
+
 }

@@ -21,9 +21,10 @@ public class LayoutDaoImpl extends CommonDao implements LayoutDao {
     @Transactional
     @Override
     public void save(LayoutDO layoutDO) {
-        template.saveOrUpdate(layoutDO);
+        template.save(layoutDO);
     }
 
+    @Transactional
     @Override
     public void update(LayoutDO layoutDO) {
         template.update(layoutDO);

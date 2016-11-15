@@ -17,6 +17,9 @@ public class MemberDaoImpl extends CommonDao implements MemberDao {
 
     private static final String FIND_MEMBER_BY_MOBILE="SELECT * FROM MEMBER WHERE MEMBER_MOBILE=:arg1 AND MEMBER_PWD=:arg2 AND MEMBER_DELETED=0";
 
+    private static final String FIND_MEMBER_BY_MOBILE_ALL="SELECT * FROM MEMBER WHERE MEMBER_DELETED=0";
+
+
     @Transactional
     @Override
     public void save(MemberDO memberDO) {
@@ -44,6 +47,15 @@ public class MemberDaoImpl extends CommonDao implements MemberDao {
         }
 
         return null;
+    }
+
+    @Transactional
+    @Override
+    public List<MemberDO> getAllMembs() {
+
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_MEMBER_BY_MOBILE_ALL).addEntity(MemberDO.class);
+        return sqlQuery.list();
+
     }
 
 

@@ -34,6 +34,20 @@ public class CategoryService extends BaseService{
         return null;
     }
 
+    @POST
+    @Path("/update")
+    public Response update(String request) {
+        try {
+            CategoryDO categoryDO = OBJECT_MAPPER.readValue(request, CategoryDO.class);
+            // categoryDO = categoryDao.findCategoryByID(categoryDO.getId());
+            categoryDao.update(categoryDO);
+            Response.ok().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @GET
     @Path("/list/levelone")
     public Response findAllCatesByLevel() {

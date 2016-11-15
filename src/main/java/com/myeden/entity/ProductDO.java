@@ -108,6 +108,17 @@ public class ProductDO{
     @Column(name="PRODUCT_RECOMMEND")
     private int productRecommend;
 
+    @Column(name = "PRODUCT_CATEGORY")
+    private String productCategory;
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
     public int getPublishState() {
         return publishState;
     }

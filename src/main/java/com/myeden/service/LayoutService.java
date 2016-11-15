@@ -1,8 +1,10 @@
 package com.myeden.service;
 
 import com.myeden.dao.intf.LayoutDao;
+import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.LayoutDO;
 import com.myeden.entity.PostionEntity;
+import com.myeden.entity.ProductDO;
 import com.myeden.entity.RequestPosiEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,9 @@ public class LayoutService extends BaseService {
     @Autowired
     private LayoutDao layoutDao;
 
+    @Autowired
+    private ProductDao productDao;
+
 
     @POST
     @Path("/save")
@@ -54,20 +59,23 @@ public class LayoutService extends BaseService {
     public Response updateLayouts(String request) {
 
         try {
+            System.out.println("request: " + request);
             RequestPosiEntity entity = OBJECT_MAPPER.readValue(request, RequestPosiEntity.class);
             List<PostionEntity> entityList=entity.getEntities();
             if (null != entityList && entityList.size() > 0) {
                 for (PostionEntity entity1 : entityList) {
-                    LayoutDO layoutDO = layoutDao.findByPosition(entity1.getLayoutPosition());
+                    LayoutDO layoutDO = layoutDao.findByPosition(Integer.valueOf(entity1.getLayoutPosition()));
                     if (null != layoutDO) {
-                        layoutDO.setLayoutValue(entity1.getLayoutValue());
+                        ProductDO productDO=productDao.findProductById(Integer.valueOf(entity1.getLayoutValue()));
+                        layoutDO.setLayoutValue(Integer.valueOf(entity1.getLayoutValue()));
+                        layoutDO.setLayoutProdUrl(productDO.getProductPlayAddr());
                         layoutDao.update(layoutDO);
 
                     }
                 }
             }
             return  Response.ok().build();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

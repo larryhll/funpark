@@ -5,22 +5,23 @@ package com.myeden.entity;
  */
 public class PostionEntity {
 
-    private int layoutPosition;
-    private int layoutValue;
+    private String layoutPosition;
+    private String layoutValue;
 
-    public int getLayoutPosition() {
+    public String getLayoutPosition() {
         return layoutPosition;
     }
 
-    public void setLayoutPosition(int layoutPosition) {
+    public void setLayoutPosition(String layoutPosition) {
         this.layoutPosition = layoutPosition;
     }
 
-    public int getLayoutValue() {
+    public String getLayoutValue() {
         return layoutValue;
     }
 
-    public void setLayoutValue(int layoutValue) {
+    public void setLayoutValue(String layoutValue) {
         this.layoutValue = layoutValue;
     }
+
 }

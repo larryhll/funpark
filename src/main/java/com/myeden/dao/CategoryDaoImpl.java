@@ -36,6 +36,7 @@ public class CategoryDaoImpl extends CommonDao implements CategoryDao {
 
         List<CategoryDO> categoryDOs=null;
         SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_CATEGORY_BY_ID).addEntity(CategoryDO.class);
+        sqlQuery.setInteger("arg1", id);
         categoryDOs=sqlQuery.list();
         if (null != categoryDOs && categoryDOs.size() > 0) {
             return categoryDOs.get(0);

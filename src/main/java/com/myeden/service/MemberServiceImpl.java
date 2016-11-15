@@ -10,10 +10,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
@@ -69,6 +66,13 @@ public class MemberServiceImpl extends BaseService{
 
         return  null;
 
+    }
+
+    @GET
+    @Path("/lists")
+    public Response getAllMembs() {
+        List<MemberDO> memberDOs=memberDao.getAllMembs();
+        return Response.ok(memberDOs).build();
     }
 
 

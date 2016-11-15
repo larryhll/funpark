@@ -1,5 +1,6 @@
 package com.myeden.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.ProductDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by felhan on 11/13/2016.
@@ -41,12 +43,10 @@ public class ProductService extends BaseService {
     public Response update(String request) {
         try {
             ProductDO productDO = OBJECT_MAPPER.readValue(request, ProductDO.class);
-            int id=productDO.getId();
-            productDO = productDao.findProductById(id);
             productDao.update(productDO);
             return Response.ok().build();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -89,11 +89,27 @@ public class ProductService extends BaseService {
         return null;
     }
 
-    @GET
-    @Path("/{id}")
-    public Response findProductDetail(@PathParam("id") int id) {
-        ProductDO productDO = productDao.findProductById(id);
-        return Response.ok(productDO).build();
+
+    //  "SELECT * FROM PRODUCT WHERE PRODUCT_CATEGORY= :arg1 AND PRODUCT_TYPE= :arg2 AND PRODUCT_PUBLISH_STATE= :arg3 AND PRODUCT_RECOMMEND= :arg4 AND PRODUCT_DELETED=0";
+
+    @POST
+    @Path("/lists")
+    public Response findProductDetail(String request) {
+
+        try {
+            org.codehaus.jackson.JsonNode rooNode = OBJECT_MAPPER.readTree(request);
+            String category=rooNode.get("productCategory").asText();
+            int type=Integer.valueOf(rooNode.get("type").asText());
+            int recommed=Integer.valueOf(rooNode.get("productRecommend").asText());
+            int state=Integer.valueOf(rooNode.get("publishState").asText());
+
+            List<ProductDO> lists = productDao.getAllProducts(category, type, state, recommed);
+
+            return Response.ok(lists).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
 
     }
 

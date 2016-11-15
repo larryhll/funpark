@@ -4,10 +4,7 @@ import com.myeden.dao.intf.DownLogDao;
 import com.myeden.entity.DownLogDO;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
@@ -31,11 +28,18 @@ public class DownLogService extends BaseService{
             downLogDao.save(downLogDO);
             return Response.ok().build();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    @GET
+    @Path("/lists")
+    public Response getAllLogs() {
+        return Response.ok(downLogDao.getAllDownLogs()).build();
+    }
+
 
 
 }
