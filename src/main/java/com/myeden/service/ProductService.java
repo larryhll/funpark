@@ -3,11 +3,15 @@ package com.myeden.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.ProductDO;
+import org.apache.cxf.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -111,6 +115,69 @@ public class ProductService extends BaseService {
         }
         return null;
 
+    }
+
+    @GET
+    @Path("/latest/{publishs}")
+    public Response getLatestProducts(@PathParam("publishs") String publishs) {
+        try {
+            if (StringUtils.isEmpty(publishs)) {
+                throw new Exception("The request parametere publishs cannot be null!");
+            }
+
+
+
+
+           /* SimpleDateFormat format = new SimpleDateFormat("yyyy.MM");
+            String curMonth = format.format(new Date());
+
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.MONTH, -1);
+            String lastMonth = format.format(c.getTime());*/
+
+            /*switch (publishs) {
+                case "publishs":{
+                    RespLatestEntity entity = new RespLatestEntity();
+                    entity.setCurrentMonth(productDao.getCurrentMonthPulbished());
+                    entity.setLastMonth(productDao.getLastMonthPublished());
+                    return Response.ok(entity).build();
+                }
+                case "access":{
+
+                    break;
+                }
+
+            }*/
+
+            List<ProductDO> productDOs=productDao.getLatestProducts();
+            return Response.ok(productDOs).build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    class RespLatestEntity{
+        private List<ProductDO> currentMonth;
+        private List<ProductDO> lastMonth;
+
+        public List<ProductDO> getCurrentMonth() {
+            return currentMonth;
+        }
+
+        public void setCurrentMonth(List<ProductDO> currentMonth) {
+            this.currentMonth = currentMonth;
+        }
+
+        public List<ProductDO> getLastMonth() {
+            return lastMonth;
+        }
+
+        public void setLastMonth(List<ProductDO> lastMonth) {
+            this.lastMonth = lastMonth;
+        }
     }
 
 }

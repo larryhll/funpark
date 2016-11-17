@@ -16,6 +16,7 @@
         <mapping class="com.myeden.entity.ProductDO"/>
         <mapping class="com.myeden.entity.SystemDO"/>
         <mapping class="com.myeden.entity.VideoDO"/>
+        <mapping class="com.myeden.entity.CollectDO"/>
 
     </session-factory>
 

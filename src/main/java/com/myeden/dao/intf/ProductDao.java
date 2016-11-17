@@ -17,4 +17,10 @@ public interface ProductDao {
 
     public List<ProductDO> getAllProducts(String proCategory, int proType, int proPublish, int proRecommd);
 
+    public List<ProductDO> getCurrentMonthPulbished();
+
+    public List<ProductDO> getLastMonthPublished();
+
+    public List<ProductDO> getLatestProducts();
+
 }

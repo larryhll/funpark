@@ -53,12 +53,17 @@ public class MemberServiceImpl extends BaseService{
             String mobile = rootNode.get("mobile").asText();
             String pwd = rootNode.get("pwd").asText();
             MemberDO memberDO = memberDao.findMemberByMobile(mobile, pwd);
+            if (null == memberDO) {
+                //return Response.noContent().build();
+                return Response.ok().header("code", "801").header("msg", "User not exist!").build();
+            }
+
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
 
             entity.setLayoutDOs(layoutDOs);
             entity.setMemberDO(memberDO);
 
-            return Response.ok(entity).build();
+            return Response.ok(entity).header("code", "0").header("msg", "Success").build();
 
         } catch (IOException e) {
             e.printStackTrace();

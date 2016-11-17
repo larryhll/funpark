@@ -331,5 +331,33 @@
         </jaxrs:outInterceptors>
     </jaxrs:server>
 
+    <!--   service for collect/applications    -->
+    <bean id="collectDao" class="com.myeden.dao.CollectDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="collectService" class="com.myeden.service.CollectService"/>
+    <jaxrs:server address="/collect">
+        <jaxrs:serviceBeans>
+            <ref bean="collectService"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="xml" value="application/xml"/>
+            <entry key="json" value="application/json"/>
+        </jaxrs:extensionMappings>
+        <jaxrs:providers>
+            <ref bean="jsonProvider"/>
+            <bean class="org.codehaus.jackson.jaxrs.JsonMappingExceptionMapper"/>
+            <bean class="org.codehaus.jackson.jaxrs.JsonParseExceptionMapper"/>
+        </jaxrs:providers>
+        <jaxrs:inInterceptors>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPreStreamInterceptor"/>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPostStreamInterceptor"/>
+        </jaxrs:outInterceptors>
+    </jaxrs:server>
+
 
 </beans>

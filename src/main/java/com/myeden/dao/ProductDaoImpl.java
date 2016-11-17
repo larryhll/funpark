@@ -16,8 +16,8 @@ import java.util.List;
 public class ProductDaoImpl extends CommonDao implements ProductDao {
 
     private static final String FIND_PRODUCT_BY_ID = "SELECT * FROM PRODUCT WHERE PRODUCT_ID=:arg1 AND PRODUCT_DELETED=0";
-    private static final String FIND_PRODUCTS_BY_CONDITIONS = "SELECT * FROM PRODUCT WHERE PRODUCT_CATEGORY= :arg1 AND PRODUCT_TYPE= :arg2 AND PRODUCT_PUBLISH_STATE= :arg3 AND PRODUCT_RECOMMEND= :arg4 AND PRODUCT_DELETED=0";
-    private static final String FIND_PRODUCTS_BY_CONDITIONS_ALL = "SELECT * FROM PRODUCT WHERE PRODUCT_TYPE= :arg1 AND PRODUCT_PUBLISH_STATE= :arg2 AND PRODUCT_RECOMMEND= :arg3 AND PRODUCT_DELETED=0";
+    private static final String FIND_PRODUCTS_BY_CONDITIONS = "SELECT * FROM PRODUCT WHERE PRODUCT_CATEGORY= :arg1 AND PRODUCT_TYPE= :arg2 AND PRODUCT_PUBLISH_STATE= :arg3 AND PRODUCT_RECOMMEND= :arg4 AND PRODUCT_DELETED=0 order BY PRODUCT_UPLOAD_DATE DESC";
+    private static final String FIND_PRODUCTS_BY_CONDITIONS_ALL = "SELECT * FROM PRODUCT WHERE PRODUCT_TYPE= :arg1 AND PRODUCT_PUBLISH_STATE= :arg2 AND PRODUCT_RECOMMEND= :arg3 AND PRODUCT_DELETED=0 order BY PRODUCT_UPLOAD_DATE DESC";
 
 
 
@@ -77,6 +77,41 @@ public class ProductDaoImpl extends CommonDao implements ProductDao {
 
 
     }
+
+    //select * from log where DATE_FORMAT(LOG_DOWNLOAD_DATE,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m') and log_deleted=1;
+
+    private static final String FIND_CURRENT_MONTH_PUBLISHED = "select * from PRODUCT where DATE_FORMAT(PRODUCT_UPLOAD_DATE,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m') and PRODUCT_DELETED=0 and PRODUCT_PUBLISH_STATE=0 order BY PRODUCT_UPLOAD_DATE DESC ";
+    private static final String FIND_LAST_MONTH_PUBLISHED = "select * from PRODUCT where date_format(PRODUCT_UPLOAD_DATE,'%Y-%m')=date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y-%m') and PRODUCT_DELETED=0 and PRODUCT_PUBLISH_STATE=0 order BY PRODUCT_UPLOAD_DATE DESC";
+    private static final String FIND_LAST_MONTH_PUBLISHED_All = "select * from PRODUCT where PRODUCT_DELETED=0 and PRODUCT_PUBLISH_STATE=0 order BY PRODUCT_UPLOAD_DATE DESC";
+
+
+
+    @Transactional
+    @Override
+    public List<ProductDO> getCurrentMonthPulbished() {
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_CURRENT_MONTH_PUBLISHED).addEntity(ProductDO.class);
+        return sqlQuery.list();
+    }
+
+
+
+    @Transactional
+    @Override
+    public List<ProductDO> getLastMonthPublished() {
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_LAST_MONTH_PUBLISHED).addEntity(ProductDO.class);
+        return sqlQuery.list();
+    }
+
+    @Transactional
+    @Override
+    public List<ProductDO> getLatestProducts() {
+
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_LAST_MONTH_PUBLISHED_All).addEntity(ProductDO.class);
+
+        return sqlQuery.list();
+    }
+
+
 
    /* @Override
 
