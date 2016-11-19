@@ -25,8 +25,13 @@ public class CategoryService extends BaseService{
     public Response save(String request) {
         try {
             CategoryDO categoryDO = OBJECT_MAPPER.readValue(request, CategoryDO.class);
+            CategoryDO categoryDO2 = categoryDao.findCategoryByName(categoryDO.getCategoryName());
+            if (null != categoryDO2) {
+                return Response.ok().header("code","803").build();
+            }
             categoryDao.save(categoryDO);
-            Response.ok().build();
+            //categoryDO = categoryDao.findCategoryByName(categoryDO.getCategoryName());
+            return Response.ok(categoryDO).header("code", "0").build();
         } catch (IOException e) {
             e.printStackTrace();
         }

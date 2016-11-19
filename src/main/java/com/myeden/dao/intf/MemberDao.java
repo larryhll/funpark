@@ -15,6 +15,8 @@ public interface MemberDao {
 
     public MemberDO findMemberByMobile(String mobile, String pwd);
 
+    public MemberDO findMemberByMobile(String mobile);
+
     public List<MemberDO> getAllMembs();
 
 

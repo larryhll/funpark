@@ -69,22 +69,22 @@
                             <div class="row">
                                 <div class="col-lg-3">
                                     <form role="form" style="text-align: right">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmDiag" ng-click="actionClickModal('recommend')">推&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;荐</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-backdrop="static" data-target="#confirmDiag" ng-click="actionClickModal('recommend')">推&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;荐</button>
                                     </form>
                                 </div>
                                 <div class="col-lg-3">
                                     <form role="form" style="text-align: right">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmDiag" ng-click="actionClickModal('recommendCanncel')">取消推荐</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-backdrop="static" data-target="#confirmDiag" ng-click="actionClickModal('recommendCancel')">取消推荐</button>
                                     </form>
                                 </div>
                                 <div class="col-lg-3">
                                     <form role="form" style="text-align: right">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmDiag" ng-click="actionClickModal('online')">上&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;架</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-backdrop="static" data-target="#confirmDiag" ng-click="actionClickModal('online')">上&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;架</button>
                                     </form>
                                 </div>
                                 <div class="col-lg-3">
                                     <form role="form" style="text-align: right">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmDiag" ng-click="actionClickModal('offline')">下&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;架</button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-backdrop="static" data-target="#confirmDiag" ng-click="actionClickModal('offline')">下&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;架</button>
                                     </form>
                                 </div>
                                 <div class="modal fade" id="confirmDiag" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
@@ -117,11 +117,11 @@
                                                                     </td>
                                                                 </tr>
                                                                 <tr ng-repeat="item in productItems_selected" multiple-select-item="productItems_selected">
-                                                                    <td ng-bind="item.productName"></td>
-                                                                    <td ng-bind="item.releaseState"></td>
-                                                                    <td ng-bind="item.modifyDate | date:'yyyy-MM-dd HH:mm:ss'"></td>
-                                                                    <td ng-bind="item.recommend"></td>
-                                                                    <td ng-bind="item.productType"></td>
+                                                                    <td ng-bind="item.name"></td>
+                                                                    <td ng-bind="item.publishState"></td>
+                                                                    <td ng-bind="item.productModifyDate | date:'yyyy-MM-dd HH:mm:ss'"></td>
+                                                                    <td ng-bind="item.productRecommend"></td>
+                                                                    <td ng-bind="item.type"></td>
                                                                 </tr>
                                                                 </tbody>
                                                             </table>

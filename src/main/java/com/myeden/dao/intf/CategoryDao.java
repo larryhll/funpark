@@ -15,6 +15,8 @@ public interface CategoryDao {
 
     public CategoryDO findCategoryByID(int id);
 
+    public CategoryDO findCategoryByName(String name);
+
     public List<CategoryDO> findLevelOne();
 
     public List<CategoryDO> findLevelTwoById(int id);

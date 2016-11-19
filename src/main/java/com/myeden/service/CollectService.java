@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by felhan on 11/17/2016.
@@ -45,12 +46,30 @@ public class CollectService extends BaseService{
                       break;
                 }
 
-            return Response.ok().build();
+            return Response.ok(collectDO).header("code", "0").build();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        return null;
 
+    }
+
+
+    @GET
+    @Path("/{type}/{mobile}/lists")
+    public Response getListByType(@PathParam("type") int type, @PathParam("mobile") String mobile) {
+
+        try {
+
+            List<CollectDO> collectDOs = collectDao.getMmeberCollects(mobile, type);
+            if (null == collectDOs) {
+                return Response.ok().header("code", "802").header("msg", "no data!").build();
+            }
+            return Response.ok(collectDOs).header("code", "0").header("msg", "successful").build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return null;
 

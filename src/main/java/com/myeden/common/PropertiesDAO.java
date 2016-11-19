@@ -29,7 +29,7 @@ public class PropertiesDAO {
 					filePath = CommonUtils_cjc.getFilePath();
 				} catch (Exception e) {
 					e.printStackTrace();
-					throw new RuntimeException("找不到conf.properties");
+					throw new RuntimeException("找不到application.properties");
 				}
 			} 
 

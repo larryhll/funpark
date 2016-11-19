@@ -13,4 +13,6 @@ public interface SystemDao {
 
     public SystemDO findSystemDoByID(int id);
 
+    public SystemDO findSystemByType(String type);
+
 }

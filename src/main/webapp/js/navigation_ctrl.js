@@ -58,7 +58,9 @@ $(function() {
         $scope.productItems = null;
         $scope.productItems_selected = [];
         $scope.actionSelected = "";
+        $scope.productItems_copy = [];
 
+        //wait for loading product list
         loading();
 
         //Get product list data
@@ -70,8 +72,6 @@ $(function() {
             console.log("Selected release state: " + $("#release_state").val() + " Selected index: " + $("#release_state").prop('selectedIndex'));
             console.log("Selected recommendation: " + $("#recommendation").val() + " Selected index: " + $("#recommendation").prop('selectedIndex'));
 
-            $scope.productItems = [];
-
             var searchProductByFilters = {};
             searchProductByFilters.type = $("#product_type").prop('selectedIndex');
             searchProductByFilters.publishState = $("#release_state").prop('selectedIndex');
@@ -82,28 +82,28 @@ $(function() {
                 .then(function successCallback(response) {
                     console.log("Get product list by filter successfully.");
                     $scope.productItems = response.data;
+                    $scope.productItems_copy = response.data;
                 }, function errorCallback(response) {
                     console.log("Failed to get product list by filter");
                 });
         };
         $scope.searchProductListByFilters();
 
-        //Initialize selected product item array for actions
-        if(typeof $scope.productItems_selected == 'undefined')
-            $scope.productItems_selected = [];
-
+        //click top check item - all yes or no
         $scope.checkALLYesNo = function (){
             console.log("Check all flag: " + $scope.checkAll);
             var allCheck = $('input[name=mySelectedProduct]');
             allCheck.prop('checked', $scope.checkAll);
             $scope.productItems_selected = [];
             if($scope.checkAll){
-                for(item in productItems_temp){
-                    $scope.productItems_selected.push(productItems_temp[item]);
+                for(item in $scope.productItems_copy){
+                    $scope.productItems_selected.push($scope.productItems_copy[item]);
                 }
             }
             console.log("Current selected number: "+$scope.productItems_selected.length);
         };
+
+        //click check item for each line and update top check status if need
         $scope.checkItem = function(userItem){
             console.log("Check item flag: " + userItem.checked);
             if (userItem.checked){
@@ -119,22 +119,27 @@ $(function() {
             var allCheck = $("#allCheckControl");
             if($scope.productItems_selected.length == 0){
                 allCheck.prop('checked', false);
-            }else if($scope.productItems_selected.length == productItems_temp.length){
+            }else if($scope.productItems_selected.length == $scope.productItems_copy.length){
                 allCheck.prop('checked', true);
             }
         };
 
+        //reset productItem with copy list
         $scope.resetSearch = function (){
-            $scope.productItems = productItems_temp;
+            $scope.productItems = $scope.productItems_copy;
         };
+
+        //open modal for recommend/recommendCancel/online/offline
         $scope.actionClickModal = function (action){
-            console.log("Click buttion: "+action);
+            console.log("Click button: "+action);
             $scope.actionSelected = action;
         };
+
+        //confirm yes or no in modal dialog
         $scope.actionConfirm = function (){
             console.log("Confirm action: "+$scope.actionSelected);
         };
-    })
+    });
     app.controller("updateARProductDetail", function ($routeParams) {
         console.log("Product ID: "+ $routeParams.productID);
     });

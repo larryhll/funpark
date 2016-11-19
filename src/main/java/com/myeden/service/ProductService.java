@@ -31,8 +31,13 @@ public class ProductService extends BaseService {
     public Response addAndUpdate(String request) {
         try {
             ProductDO productDO = OBJECT_MAPPER.readValue(request, ProductDO.class);
+
+            ProductDO productDO1 = productDao.findProductByName(productDO.getName());
+            if (null != productDO1) {
+                return Response.ok().header("code","803").build();
+            }
             productDao.saveandupdate(productDO);
-            return Response.ok().build();
+            return Response.ok(productDO).header("code", "0").build();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +53,7 @@ public class ProductService extends BaseService {
         try {
             ProductDO productDO = OBJECT_MAPPER.readValue(request, ProductDO.class);
             productDao.update(productDO);
-            return Response.ok().build();
+            return Response.ok().header("code", "0").build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +90,7 @@ public class ProductService extends BaseService {
                     throw new Exception("Unsupported opeations for product!");
             }
 
-            return Response.ok().build();
+            return Response.ok().header("code", "0").build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +114,7 @@ public class ProductService extends BaseService {
 
             List<ProductDO> lists = productDao.getAllProducts(category, type, state, recommed);
 
-            return Response.ok(lists).build();
+            return Response.ok(lists).header("code", "0").build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,7 +155,10 @@ public class ProductService extends BaseService {
             }*/
 
             List<ProductDO> productDOs=productDao.getLatestProducts();
-            return Response.ok(productDOs).build();
+            if (null == productDOs) {
+                return Response.ok().header("code","802").build();
+            }
+            return Response.ok(productDOs).header("code", "0").build();
 
         } catch (Exception e) {
             e.printStackTrace();

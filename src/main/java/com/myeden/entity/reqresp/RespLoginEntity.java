@@ -1,5 +1,6 @@
 package com.myeden.entity.reqresp;
 
+import com.myeden.entity.CategoryDO;
 import com.myeden.entity.LayoutDO;
 import com.myeden.entity.MemberDO;
 
@@ -13,6 +14,16 @@ public class RespLoginEntity {
     private MemberDO memberDO;
 
     private List<LayoutDO> layoutDOs;
+
+    private List<CategoryDO> categoryDOs;
+
+    public List<CategoryDO> getCategoryDOs() {
+        return categoryDOs;
+    }
+
+    public void setCategoryDOs(List<CategoryDO> categoryDOs) {
+        this.categoryDOs = categoryDOs;
+    }
 
     public MemberDO getMemberDO() {
         return memberDO;

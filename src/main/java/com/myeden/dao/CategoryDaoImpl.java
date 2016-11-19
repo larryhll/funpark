@@ -15,6 +15,7 @@ import java.util.List;
 public class CategoryDaoImpl extends CommonDao implements CategoryDao {
 
     private static final String FIND_CATEGORY_BY_ID = "SELECT * FROM CATEGORY WHERE CATEGORY_ID=:arg1 AND CATEGORY_DELETED=0";
+    private static final String FIND_CATEGORY_BY_NAME = "SELECT * FROM CATEGORY WHERE CATEGORY_NAME=:arg1 AND CATEGORY_DELETED=0";
     private static final String FIND_CATEGORY_BY_LEVEL_ONE = "SELECT * FROM CATEGORY WHERE CATEGORY_LEVEL = 1 AND CATEGORY_DELETED = 0";
     private static final String FIND_CATEGORY_LEVEL_TWO = "SELECT * FROM CATEGORY WHERE CATEGORY_LEVEL=2 AND CATEGORY_PREVIOUS=:arg1 AND CATEGORY_DELETED=0";
 
@@ -37,6 +38,19 @@ public class CategoryDaoImpl extends CommonDao implements CategoryDao {
         List<CategoryDO> categoryDOs=null;
         SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_CATEGORY_BY_ID).addEntity(CategoryDO.class);
         sqlQuery.setInteger("arg1", id);
+        categoryDOs=sqlQuery.list();
+        if (null != categoryDOs && categoryDOs.size() > 0) {
+            return categoryDOs.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public CategoryDO findCategoryByName(String name) {
+        List<CategoryDO> categoryDOs=null;
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_CATEGORY_BY_NAME).addEntity(CategoryDO.class);
+        sqlQuery.setString("arg1", name);
         categoryDOs=sqlQuery.list();
         if (null != categoryDOs && categoryDOs.size() > 0) {
             return categoryDOs.get(0);

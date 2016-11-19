@@ -16,10 +16,12 @@ public class SystemDaoImpl extends CommonDao implements SystemDao {
 
     private static final String FIND_DO_BY_ID = "SELECT * FROM SYSTEM WHERE SYSTEM_ID=:arg1 AND SYSTEM_DELETED=0";
 
+    private static final String FIND_DO_BY_ID_TYPE = "SELECT * FROM SYSTEM WHERE SYSTEM_TYPE_NAME=:arg1 AND SYSTEM_DELETED=0";
+
     @Transactional
     @Override
     public void save(SystemDO systemDO) {
-        template.saveOrUpdate(systemDO);
+        template.save(systemDO);
     }
 
     @Transactional
@@ -34,6 +36,19 @@ public class SystemDaoImpl extends CommonDao implements SystemDao {
         List<SystemDO> systemDOs=null;
         SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_DO_BY_ID).addEntity(SystemDO.class);
         sqlQuery.setInteger("arg1", id);
+        systemDOs=sqlQuery.list();
+        if (null != systemDOs && systemDOs.size() > 0) {
+            return systemDOs.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public SystemDO findSystemByType(String type) {
+        List<SystemDO> systemDOs=null;
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_DO_BY_ID_TYPE).addEntity(SystemDO.class);
+        sqlQuery.setString("arg1", type);
         systemDOs=sqlQuery.list();
         if (null != systemDOs && systemDOs.size() > 0) {
             return systemDOs.get(0);

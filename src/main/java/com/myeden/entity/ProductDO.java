@@ -1,5 +1,7 @@
 package com.myeden.entity;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.List;
@@ -102,6 +104,9 @@ public class ProductDO{
     @JoinColumn(name = "PRODUCT_ID")
     private List<VideoDO> videoDOs;
 
+    @Column(name = "PRODCUT_VIDEOSS")
+    private String productVideos;
+
     @Column(name="PRODUCT_PUBLISH_STATE")
     private int publishState;
 
@@ -110,6 +115,15 @@ public class ProductDO{
 
     @Column(name = "PRODUCT_CATEGORY")
     private String productCategory;
+
+
+    public String getProductVideos() {
+        return productVideos;
+    }
+
+    public void setProductVideos(String productVideos) {
+        this.productVideos = productVideos;
+    }
 
     public String getProductCategory() {
         return productCategory;

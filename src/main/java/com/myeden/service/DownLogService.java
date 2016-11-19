@@ -26,7 +26,7 @@ public class DownLogService extends BaseService{
         try {
             DownLogDO downLogDO = OBJECT_MAPPER.readValue(request, DownLogDO.class);
             downLogDao.save(downLogDO);
-            return Response.ok().build();
+            return Response.ok().header("code", "0").build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class DownLogService extends BaseService{
     @GET
     @Path("/lists")
     public Response getAllLogs() {
-        return Response.ok(downLogDao.getAllDownLogs()).build();
+        return Response.ok(downLogDao.getAllDownLogs()).header("code", "0").build();
     }
 
 

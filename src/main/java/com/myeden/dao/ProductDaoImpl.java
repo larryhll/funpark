@@ -16,6 +16,8 @@ import java.util.List;
 public class ProductDaoImpl extends CommonDao implements ProductDao {
 
     private static final String FIND_PRODUCT_BY_ID = "SELECT * FROM PRODUCT WHERE PRODUCT_ID=:arg1 AND PRODUCT_DELETED=0";
+    private static final String FIND_PRODUCT_BY_NAME = "SELECT * FROM PRODUCT WHERE PRODUCT_NAME=:arg1 AND PRODUCT_DELETED=0";
+
     private static final String FIND_PRODUCTS_BY_CONDITIONS = "SELECT * FROM PRODUCT WHERE PRODUCT_CATEGORY= :arg1 AND PRODUCT_TYPE= :arg2 AND PRODUCT_PUBLISH_STATE= :arg3 AND PRODUCT_RECOMMEND= :arg4 AND PRODUCT_DELETED=0 order BY PRODUCT_UPLOAD_DATE DESC";
     private static final String FIND_PRODUCTS_BY_CONDITIONS_ALL = "SELECT * FROM PRODUCT WHERE PRODUCT_TYPE= :arg1 AND PRODUCT_PUBLISH_STATE= :arg2 AND PRODUCT_RECOMMEND= :arg3 AND PRODUCT_DELETED=0 order BY PRODUCT_UPLOAD_DATE DESC";
 
@@ -39,6 +41,19 @@ public class ProductDaoImpl extends CommonDao implements ProductDao {
         List<ProductDO> productDOs=null;
         SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_PRODUCT_BY_ID).addEntity(ProductDO.class);
         sqlQuery.setInteger("arg1", id);
+        productDOs = sqlQuery.list();
+        if (null != productDOs && productDOs.size() > 0) {
+            return productDOs.get(0);
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public ProductDO findProductByName(String name) {
+        List<ProductDO> productDOs=null;
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_PRODUCT_BY_ID).addEntity(ProductDO.class);
+        sqlQuery.setString("arg1", name);
         productDOs = sqlQuery.list();
         if (null != productDOs && productDOs.size() > 0) {
             return productDOs.get(0);

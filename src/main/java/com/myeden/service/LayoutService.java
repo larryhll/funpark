@@ -43,8 +43,12 @@ public class LayoutService extends BaseService {
         logger.info("Invoke layout save service api!");
         try {
             LayoutDO layoutDO = OBJECT_MAPPER.readValue(request, LayoutDO.class);
+            LayoutDO layoutDO1 = layoutDao.findByPosition(layoutDO.getLayoutPosition());
+            if (null != layoutDO1) {
+                return Response.ok().header("code", "803").build();
+            }
             layoutDao.save(layoutDO);
-            return Response.ok().build();
+            return Response.ok(layoutDO).header("code", "0").build();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,13 +72,16 @@ public class LayoutService extends BaseService {
                     if (null != layoutDO) {
                         ProductDO productDO=productDao.findProductById(Integer.valueOf(entity1.getLayoutValue()));
                         layoutDO.setLayoutValue(Integer.valueOf(entity1.getLayoutValue()));
+                        if (null == productDO) {
+                           return Response.ok().header("code", "805").build();
+                        }
                         layoutDO.setLayoutProdUrl(productDO.getProductPlayAddr());
                         layoutDao.update(layoutDO);
 
                     }
                 }
             }
-            return  Response.ok().build();
+            return  Response.ok().header("code", "0").build();
         } catch (Exception e) {
             e.printStackTrace();
         }
