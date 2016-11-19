@@ -64,14 +64,7 @@ $(function() {
         loading();
 
         //Get product list data
-        console.log("Invoke product list controller, get product list data from remote here!");
-        $scope.searchProductListByFilters = function (){
-            console.log("Starting to search product items by filters...");
-            console.log("Selected product category: " + $("#product_category").val() + " Selected index: " + $("#product_category").prop('selectedIndex'));
-            console.log("Selected product type: " + $("#product_type").val() + " Selected index: " + $("#product_type").prop('selectedIndex'));
-            console.log("Selected release state: " + $("#release_state").val() + " Selected index: " + $("#release_state").prop('selectedIndex'));
-            console.log("Selected recommendation: " + $("#recommendation").val() + " Selected index: " + $("#recommendation").prop('selectedIndex'));
-
+        getProductListByFilters = function(){
             var searchProductByFilters = {};
             searchProductByFilters.type = $("#product_type").prop('selectedIndex');
             searchProductByFilters.publishState = $("#release_state").prop('selectedIndex');
@@ -83,9 +76,20 @@ $(function() {
                     console.log("Get product list by filter successfully.");
                     $scope.productItems = response.data;
                     $scope.productItems_copy = response.data;
+                    $scope.productItems_selected = [];
                 }, function errorCallback(response) {
                     console.log("Failed to get product list by filter");
                 });
+        };
+        console.log("Invoke product list controller, get product list data from remote here!");
+        $scope.searchProductListByFilters = function (){
+            console.log("Starting to search product items by filters...");
+            console.log("Selected product category: " + $("#product_category").val() + " Selected index: " + $("#product_category").prop('selectedIndex'));
+            console.log("Selected product type: " + $("#product_type").val() + " Selected index: " + $("#product_type").prop('selectedIndex'));
+            console.log("Selected release state: " + $("#release_state").val() + " Selected index: " + $("#release_state").prop('selectedIndex'));
+            console.log("Selected recommendation: " + $("#recommendation").val() + " Selected index: " + $("#recommendation").prop('selectedIndex'));
+
+            getProductListByFilters();
         };
         $scope.searchProductListByFilters();
 
@@ -127,6 +131,7 @@ $(function() {
         //reset productItem with copy list
         $scope.resetSearch = function (){
             $scope.productItems = $scope.productItems_copy;
+            $scope.searchProductListByFilters();
         };
 
         //open modal for recommend/recommendCancel/online/offline
@@ -138,6 +143,18 @@ $(function() {
         //confirm yes or no in modal dialog
         $scope.actionConfirm = function (){
             console.log("Confirm action: "+$scope.actionSelected);
+
+            angular.forEach($scope.productItems_selected, function(item){
+                $http.get(apiPath + "eden/prods/opes/" + $scope.actionSelected + "/" + item.id)
+                    .then(function successCallback(response) {
+                        console.log($scope.actionSelected + " product: " + item.name + " successfully");
+                        getProductListByFilters();
+                    }, function errorCallback(response) {
+                        console.log("Failed to " + $scope.actionSelected + " product: " + item.name);
+                    });
+            });
+
+            $(confirmDiag).modal('hide');
         };
     });
     app.controller("updateARProductDetail", function ($routeParams) {
