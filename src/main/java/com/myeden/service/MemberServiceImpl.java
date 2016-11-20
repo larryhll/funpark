@@ -165,6 +165,8 @@ public class MemberServiceImpl extends BaseService{
                 if("2".equals(code)){
                     System.out.println("短信提交成功");
                    return Response.ok(mobile_code).header("code", "0").build();
+                }else{
+                    return Response.status(Response.Status.BAD_REQUEST).build();
                 }
 
             } catch (HttpException e) {
