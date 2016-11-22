@@ -17,6 +17,8 @@ public interface ProductDao {
 
     public ProductDO findProductByName(String name);
 
+    public List<ProductDO> findProductByCategoryName(String name);
+
     public List<ProductDO> getAllProducts(String proCategory, int proType, int proPublish, int proRecommd);
 
     public List<ProductDO> getCurrentMonthPulbished();

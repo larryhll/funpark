@@ -1,7 +1,9 @@
 package com.myeden.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.myeden.dao.intf.CategoryDao;
 import com.myeden.dao.intf.ProductDao;
+import com.myeden.entity.CategoryDO;
 import com.myeden.entity.ProductDO;
 import org.apache.cxf.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class ProductService extends BaseService {
     @Autowired
     private ProductDao productDao;
 
+    @Autowired
+    private CategoryDao categoryDao;
 
     @POST
     @Path("/add")
@@ -36,6 +40,8 @@ public class ProductService extends BaseService {
             if (null != productDO1) {
                 return Response.ok().header("code","803").build();
             }
+            productDO.setProductUploadDate(Calendar.getInstance());
+            productDO.setProductModifyDate(Calendar.getInstance());
             productDao.saveandupdate(productDO);
             return Response.ok(productDO).header("code", "0").build();
 
@@ -165,6 +171,29 @@ public class ProductService extends BaseService {
         }
 
         return null;
+    }
+
+    //  获取 分类  列表
+
+    /**
+     * desc:
+     */
+    @GET
+    @Path("/category/list/{id}")
+    public Response findProListByCategoryID(@PathParam("id") int id) {
+
+        CategoryDO categoryDO = categoryDao.findCategoryByID(id);
+        if (null == categoryDO) {
+            return Response.ok().header("code", "802").build();
+        }
+
+        List<ProductDO> productDOs = productDao.findProductByCategoryName(categoryDO.getCategoryName());
+        if (null == productDOs) {
+            return Response.ok().header("code", "802").build();
+        }
+
+        return Response.ok(productDOs).header("code", "0").build();
+
     }
 
     class RespLatestEntity{

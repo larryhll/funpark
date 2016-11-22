@@ -38,6 +38,9 @@ public class MemberDO {
     @Column(name = "VERICODE")
     private String vericode;
 
+    @Column(name = "ROLE")
+    private String role;
+
     public int getMemberAgeScope() {
         return memberAgeScope;
     }
@@ -50,6 +53,13 @@ public class MemberDO {
     private int memberAgeScope;
 
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public int getId() {
         return id;

@@ -69,27 +69,40 @@ public class MemberServiceImpl extends BaseService{
     }
 
     @POST
-    @Path("/update")
-    public Response updateMembere(String request) {
+    @Path("/{update}")
+    public Response updateMembere(@PathParam("update") String update,  String request) {
 
         try {
             MemberDO memberDO = OBJECT_MAPPER.readValue(request, MemberDO.class);
-
-            // TODO: 11/19/2016   verify mobile whether register?
             String mobile =memberDO.getMemberMobile();
             MemberDO member = memberDao.findMemberByMobile(mobile);
-            if (!memberDO.getVericode().equalsIgnoreCase(member.getVericode())) {
-                return Response.ok().header("code", "807").build();
+            if (null == member) {
+                return Response.ok().header("code", "801").build();
             }
-            if (StringUtils.isEmpty(memberDO.getPwd())) {
-                member.setPwd("123456");
-            }else{
-                member.setPwd(memberDO.getPwd());
+            if ("update".equalsIgnoreCase(update)) {
+                if (!memberDO.getVericode().equalsIgnoreCase(member.getVericode())) {
+                    return Response.ok().header("code", "807").build();
+                }
+                if (StringUtils.isEmpty(memberDO.getPwd())) {
+                    member.setPwd("123456");
+                }else{
+                    member.setPwd(memberDO.getPwd());
+                }
+
+                memberDao.update(member);
+                // memberDO = memberDao.findMemberByMobile(mobile);
+                return Response.ok(memberDO).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
+            }else if("edit".equalsIgnoreCase(update)){
+                    member.setMemberBirthday(memberDO.getMemberBirthday());
+                member.setMemberBabyGender(memberDO.getMemberBabyGender());
+                memberDao.update(member);
+                return Response.ok().header("code", "0").build();
+            }else {
+                Response.ok().header("code", "804").build();
             }
 
-            memberDao.update(member);
-            // memberDO = memberDao.findMemberByMobile(mobile);
-            return Response.ok(memberDO).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,7 +177,9 @@ public class MemberServiceImpl extends BaseService{
 
                 if("2".equals(code)){
                     System.out.println("短信提交成功");
-                   return Response.ok(mobile_code).header("code", "0").build();
+                    VericodeEntity vericodeEntity=new VericodeEntity();
+                    vericodeEntity.setVerifyCode(mobile_code);
+                   return Response.ok(vericodeEntity).header("code", "0").build();
                 }else{
                     return Response.status(Response.Status.BAD_REQUEST).build();
                 }
@@ -232,7 +247,9 @@ public class MemberServiceImpl extends BaseService{
 
                 if("2".equals(code)){
                     System.out.println("短信提交成功");
-                    return Response.ok(mobile_code).header("code", "0").build();
+                    VericodeEntity vericodeEntity=new VericodeEntity();
+                    vericodeEntity.setVerifyCode(mobile_code);
+                    return Response.ok(vericodeEntity).header("code", "0").build();
                 }
 
             } catch (HttpException e) {
@@ -272,7 +289,7 @@ public class MemberServiceImpl extends BaseService{
             }
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
-            List<CategoryDO> categoryDOs = categoryDao.findLevelOne();
+            List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
             entity.setLayoutDOs(layoutDOs);
             entity.setMemberDO(memberDO);
             entity.setCategoryDOs(categoryDOs);
@@ -295,7 +312,7 @@ public class MemberServiceImpl extends BaseService{
         try {
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
-            List<CategoryDO> categoryDOs = categoryDao.findLevelOne();
+            List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
             entity.setLayoutDOs(layoutDOs);
             entity.setCategoryDOs(categoryDOs);
             if (layoutDOs == null) {
@@ -319,4 +336,16 @@ public class MemberServiceImpl extends BaseService{
     }
 
 
+}
+
+class VericodeEntity{
+    private String verifyCode;
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
+    }
 }

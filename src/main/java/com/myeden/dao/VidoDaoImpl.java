@@ -19,7 +19,7 @@ public class VidoDaoImpl extends CommonDao implements VideoDao {
     @Transactional
     @Override
     public void save(VideoDO videoDO) {
-        template.saveOrUpdate(videoDO);
+        template.save(videoDO);
     }
 
     @Transactional

@@ -100,7 +100,7 @@ public class ProductDO{
     @Column(name = "PRODUCT_MODIFY_DATE")
     private Calendar productModifyDate;
 
-    @OneToMany(cascade = {},fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
     @JoinColumn(name = "PRODUCT_ID")
     private List<VideoDO> videoDOs;
 

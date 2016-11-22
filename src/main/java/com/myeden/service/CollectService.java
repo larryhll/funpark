@@ -1,12 +1,15 @@
 package com.myeden.service;
 
 import com.myeden.dao.intf.CollectDao;
+import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.CollectDO;
+import com.myeden.entity.ProductDO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +21,9 @@ public class CollectService extends BaseService{
 
     @Autowired
     private CollectDao collectDao;
+
+    @Autowired
+    private ProductDao productDao;
 
     @POST
     @Path("/{type}/{action}")
@@ -66,7 +72,14 @@ public class CollectService extends BaseService{
             if (null == collectDOs) {
                 return Response.ok().header("code", "802").header("msg", "no data!").build();
             }
-            return Response.ok(collectDOs).header("code", "0").header("msg", "successful").build();
+
+            List<ProductDO> productDOs = new ArrayList<ProductDO>();
+            for (CollectDO collectDO : collectDOs) {
+                ProductDO pp=productDao.findProductById(collectDO.getProductId());
+                pp.setProductUploadDate(collectDO.getCollectDate());
+                productDOs.add(pp);
+            }
+            return Response.ok(productDOs).header("code", "0").header("msg", "successful").build();
         } catch (Exception e) {
             e.printStackTrace();
         }

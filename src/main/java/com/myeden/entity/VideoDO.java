@@ -1,5 +1,7 @@
 package com.myeden.entity;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 
 /**
@@ -24,12 +26,21 @@ public class VideoDO {
     @Column(name = "VIDEO_DELETED")
     private int videoDeleted;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+
+    @ManyToOne(fetch = FetchType.EAGER/*, cascade = {CascadeType.ALL}*/)
     @JoinColumn(name = "VIDEO_PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
     private ProductDO productDO;
 
-/*    @Column(name = "VIDEO_PRODUCT_ID")
-    private int videoProductId;*/
+ /*   @Column(name = "PRODUCT_ID")
+    private int productId;
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }*/
 
     public ProductDO getProductDO() {
         return productDO;
@@ -70,8 +81,7 @@ public class VideoDO {
     public void setVideoDeleted(int videoDeleted) {
         this.videoDeleted = videoDeleted;
     }
-/*
-    public int getVideoProductId() {
+ /*   public int getVideoProductId() {
         return videoProductId;
     }
 
