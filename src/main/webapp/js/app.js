@@ -10,7 +10,7 @@
  * Created by hualiang on 16-10-23.
  */
 $(function() {
-    var apiPath = "http://16.168.2.38:8080/";
+    var apiPath = "http://118.178.124.197:8080/";
     var app = angular.module("app", ["ngRoute"]);
     app.config(function($routeProvider) {
         $routeProvider
@@ -170,56 +170,29 @@ $(function() {
     app.controller("newVideoDetailCtrl", function () {
         console.log("Arrived at new video product detail page already!!");
     });
-    app.controller("firstLevelCategoryCtrl", function ($scope){
+    app.controller("firstLevelCategoryCtrl", function ($scope,$http){
         $scope.firstLevelCategoryItems = null;
-        var loadScreenDiv = $("#loadingScreen");
-        var loadingScreenLen = loadScreenDiv.width();
-        loadScreenDiv.css("margin-left",(loadingScreenLen>441) ? ((loadingScreenLen-441)/2) : 0 + "px");
-
-        $(window).resize(function() {
-            var loadScreenDiv_resize = $("#loadingScreen");
-            var loadingScreenLen_resize = loadScreenDiv_resize.width();
-            loadScreenDiv_resize.css("margin-left",(loadingScreenLen_resize>441) ? ((loadingScreenLen_resize-441)/2) : 0 + "px");
-        });
+        loading();
 
         //Get first level category list data
-        $scope.firstLevelCategoryItems = [];
-        $scope.firstLevelCategoryItems[0] = {
-            "id": "1",
-            "firstCategoryName": "语言",
-            "modifyDate": new Date()
-        };
-        $scope.firstLevelCategoryItems[1] = {
-            "id": "2",
-            "firstCategoryName": "社会",
-            "modifyDate": new Date()
-        };
-        $scope.firstLevelCategoryItems[2] = {
-            "id": "3",
-            "firstCategoryName": "语言",
-            "modifyDate": new Date()
-        };
-        $scope.firstLevelCategoryItems[3] = {
-            "id": "4",
-            "firstCategoryName": "社会",
-            "modifyDate": new Date()
-        };
-        $scope.firstLevelCategoryItems[4] = {
-            "id": "5",
-            "firstCategoryName": "语言",
-            "modifyDate": new Date()
-        };
-
-        //temp first level category items array for search feature
-        firstLevelCategoryItems_temp = [];
+        $http.get(apiPath + "eden/cates/list/levelone")
+            .then(function successCallback(response) {
+                $scope.firstLevelCategoryItems = response.data;
+            }, function errorCallback(response) {
+                console.log("Failed to get the first level category");
+            });
 
         $scope.searchByCategory = function (){
-            if(firstLevelCategoryItems_temp.length == 0)
-                firstLevelCategoryItems_temp = $scope.firstLevelCategoryItems;
+            if(null === $scope.firstLevelCategoryItems){
+                console.log("The first level category is empty");
+                return;
+            }
+
+            firstLevelCategoryItems_temp = $scope.firstLevelCategoryItems;
             $scope.firstLevelCategoryItems = [];
             var pattern = new RegExp($scope.firstCategorySearch, "i");
             for(item in firstLevelCategoryItems_temp){
-                if(pattern.test(firstLevelCategoryItems_temp[item].firstCategoryName)) {
+                if(pattern.test(firstLevelCategoryItems_temp[item].categoryName)) {
                     $scope.firstLevelCategoryItems.push(firstLevelCategoryItems_temp[item]);
                 }
             }
@@ -228,7 +201,48 @@ $(function() {
         $scope.deleteItem = function(selectedItem) {
             $scope.selectedFirstLevelCategoryID = selectedItem.id;
             $scope.selectedFirstLevelCategoryItem = selectedItem;
-            console.log("Selected id: " + $scope.selectedFirstLevelCategoryID);
+        };
+
+        $scope.deleteFirstCategory = function(){
+            $http.get(apiPath + "eden/cates/delete/" + $scope.selectedFirstLevelCategoryID)
+                .then(function successCallback(response) {
+                    console.log("Success to delete the first level category ID: " + $scope.selectedFirstLevelCategoryID);
+                    $http.get(apiPath + "eden/cates/list/levelone")
+                        .then(function successCallback(response) {
+                            $(deleteFirstCategoryModal).modal('hide');
+                            $scope.firstLevelCategoryItems = response.data;
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the first level category");
+                        });
+                }, function errorCallback(response) {
+                    console.log("Failed to get the first level category");
+                });
+        };
+
+        $scope.createFirstCategory = function(){
+            var newFirstCategory = {};
+            newFirstCategory.categoryName = $scope.newFirstCategoryName;
+            newFirstCategory.categoryUpdateDate = new Date();
+            newFirstCategory.categoryLevel = 1;
+            newFirstCategory.categoryPrevious = 0;
+            newFirstCategory.categoryDeleted = 0;
+
+            $http.post(apiPath + "eden/cates/add", newFirstCategory)
+                .then(function successCallback(response) {
+                    console.log("Create first category item successfully.");
+                    $(newFirstCategoryModal).modal('hide');
+
+                    $http.get(apiPath + "eden/cates/list/levelone")
+                        .then(function successCallback(response) {
+                            $scope.firstLevelCategoryItems = response.data;
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the first level category");
+                        });
+                }, function errorCallback(response) {
+                    console.log("Failed to create first category item ");
+                });
+
+            $scope.newFirstCategoryName = "";
         };
     });
     app.controller("secondLevelCategoryCtrl", function ($scope){
