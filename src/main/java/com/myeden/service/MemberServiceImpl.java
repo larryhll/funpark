@@ -18,6 +18,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class MemberServiceImpl extends BaseService{
             if (!memberDO.getVericode().equalsIgnoreCase(member.getVericode())) {
                 return Response.ok().header("code", "807").build();
             }
-
+            memberDO.setId(member.getId());
             memberDao.update(memberDO);
            // memberDO = memberDao.findMemberByMobile(mobile);
             return Response.ok(memberDO).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
@@ -123,14 +124,14 @@ public class MemberServiceImpl extends BaseService{
 
     @GET
     @Path("/sms/{action}/{mobile}")
-    public Response sendSms(@PathParam("action") String action, @PathParam("mobile") String mobile) {
+    public Response sendSms(@PathParam("action") String action, @PathParam("mobile") String mobile) throws IOException, DocumentException {
 
         if ("register".equalsIgnoreCase(action)) {
 
             MemberDO memberDO = memberDao.findMemberByMobile(mobile);
-            if (memberDO != null) {
+       /*     if (memberDO != null) {
                 return Response.ok().header("code", "806").build();
-            }
+            }*/
 
             HttpClient client = new HttpClient();
             PostMethod method = new PostMethod(Url);
@@ -141,10 +142,8 @@ public class MemberServiceImpl extends BaseService{
             String mobile_code = getRamdom4Number();
             System.out.println("send code: "+mobile_code);
 
-            memberDO=new MemberDO();
-            memberDO.setMemberMobile(mobile);
-            memberDO.setVericode(mobile_code);
-            memberDao.save(memberDO);
+
+
 
             String content = new String("您的验证码是：注册 " + mobile_code + "。请不要把验证码泄露给其他人。");
 
@@ -179,6 +178,16 @@ public class MemberServiceImpl extends BaseService{
                     System.out.println("短信提交成功");
                     VericodeEntity vericodeEntity=new VericodeEntity();
                     vericodeEntity.setVerifyCode(mobile_code);
+                    if (null == memberDO) {
+                        memberDO=new MemberDO();
+                        memberDO.setMemberMobile(mobile);
+                        memberDO.setVericode(mobile_code);
+                        memberDao.save(memberDO);
+                    }else{
+                        memberDO.setVericode(mobile_code);
+                        memberDao.update(memberDO);
+                    }
+
                    return Response.ok(vericodeEntity).header("code", "0").build();
                 }else{
                     return Response.status(Response.Status.BAD_REQUEST).build();
@@ -187,12 +196,15 @@ public class MemberServiceImpl extends BaseService{
             } catch (HttpException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw e;
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw e;
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw e;
             }
 
 
@@ -214,7 +226,7 @@ public class MemberServiceImpl extends BaseService{
 
 
             memberDO.setVericode(mobile_code);
-            memberDao.update(memberDO);
+
 
             String content = new String("您的验证码是：重置 "  + mobile_code + "。请不要把验证码泄露给其他人。");
 
@@ -249,18 +261,22 @@ public class MemberServiceImpl extends BaseService{
                     System.out.println("短信提交成功");
                     VericodeEntity vericodeEntity=new VericodeEntity();
                     vericodeEntity.setVerifyCode(mobile_code);
+                    memberDao.update(memberDO);
                     return Response.ok(vericodeEntity).header("code", "0").build();
                 }
 
             } catch (HttpException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw e;
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw e;
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw e;
             }
 
 
