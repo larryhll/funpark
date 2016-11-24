@@ -171,6 +171,7 @@ $(function() {
         console.log("Arrived at new video product detail page already!!");
     });
     app.controller("firstLevelCategoryCtrl", function ($scope,$http){
+
         $scope.firstLevelCategoryItems = null;
         loading();
 
@@ -245,77 +246,116 @@ $(function() {
             $scope.newFirstCategoryName = "";
         };
     });
-    app.controller("secondLevelCategoryCtrl", function ($scope){
-        $scope.secondLevelCategoryItems = null;
-        var loadScreenDiv = $("#loadingScreen");
-        var loadingScreenLen = loadScreenDiv.width();
-        loadScreenDiv.css("margin-left",(loadingScreenLen>441) ? ((loadingScreenLen-441)/2) : 0 + "px");
-
-        $(window).resize(function() {
-            var loadScreenDiv_resize = $("#loadingScreen");
-            var loadingScreenLen_resize = loadScreenDiv_resize.width();
-            loadScreenDiv_resize.css("margin-left",(loadingScreenLen_resize>441) ? ((loadingScreenLen_resize-441)/2) : 0 + "px");
-        });
+    app.controller("secondLevelCategoryCtrl", function ($scope, $http){
+        $scope.levelTwoCategoryItems = null;
+        $scope.levelOneCategoryItems = null;
+        $scope.firstCategorySelected = null;
+        loading();
 
         //Get first level category list data
-        $scope.secondLevelCategoryItems = [];
-        $scope.secondLevelCategoryItems[0] = {
-            "id": "1",
-            "firstCategoryName": "语言",
-            "secondCategoryName": "语言",
-            "modifyDate": new Date()
-        };
-        $scope.secondLevelCategoryItems[1] = {
-            "id": "2",
-            "firstCategoryName": "社会",
-            "secondCategoryName": "语言",
-            "modifyDate": new Date()
-        };
-        $scope.secondLevelCategoryItems[2] = {
-            "id": "3",
-            "firstCategoryName": "语言",
-            "secondCategoryName": "社会",
-            "modifyDate": new Date()
-        };
-        $scope.secondLevelCategoryItems[3] = {
-            "id": "4",
-            "firstCategoryName": "社会",
-            "secondCategoryName": "社会",
-            "modifyDate": new Date()
-        };
-        $scope.secondLevelCategoryItems[4] = {
-            "id": "5",
-            "firstCategoryName": "语言",
-            "secondCategoryName": "语言",
-            "modifyDate": new Date()
-        };
+        $http.get(apiPath + "eden/cates/list/levelone")
+            .then(function successCallback(response) {
+                $scope.levelOneCategoryItems = response.data;
+
+                if (response.data.length > 0){
+                    $scope.levelOneCategorySelected = response.data[0];
+
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
+                            console.log("Success to get the second level category");
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }
+            }, function errorCallback(response) {
+                console.log("Failed to get the first level category");
+            });
 
         //temp second level category items array for search feature
-        secondLevelCategoryItems_temp = [];
+        levelTwoCategoryItems_temp = [];
+
+        $scope.changeLevelOneCategory = function(){
+
+            //get level two category
+            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
+                .then(function successCallback(response) {
+                    $scope.levelTwoCategoryItems = response.data;
+                    levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
+                    console.log("Success to get the second level category");
+                }, function errorCallback(response) {
+                    console.log("Failed to get the second level category");
+                });
+        };
 
         $scope.searchByCategory = function (){
-            console.log("Select first level: "+$scope.firstCategorySelected+" second level: "+$scope.secondCategorySelected);
+            $scope.levelTwoCategoryItems = [];
 
-            if(secondLevelCategoryItems_temp.length == 0)
-                secondLevelCategoryItems_temp = $scope.secondLevelCategoryItems;
-            $scope.secondLevelCategoryItems = [];
-
-            if (typeof $scope.secondCategorySelected == "undefined")
-                $scope.secondCategorySelected = "";
-            var patternFirstLevel = new RegExp($scope.firstCategorySelected, "i");
-            var patternSecondLevel = new RegExp($scope.secondCategorySelected, "i");
-            for(item in secondLevelCategoryItems_temp){
-                if(patternFirstLevel.test(secondLevelCategoryItems_temp[item].firstCategoryName)
-                    && patternSecondLevel.test(secondLevelCategoryItems_temp[item].secondCategoryName)) {
-                    $scope.secondLevelCategoryItems.push(secondLevelCategoryItems_temp[item]);
+            if (typeof $scope.levelTwoCategoryFilter == "undefined")
+                $scope.levelTwoCategoryFilter = "";
+            var patternLevelTwo = new RegExp($scope.levelTwoCategoryFilter, "i");
+            for(item in levelTwoCategoryItems_temp){
+                if(patternLevelTwo.test(levelTwoCategoryItems_temp[item].categoryName)) {
+                    $scope.levelTwoCategoryItems.push(levelTwoCategoryItems_temp[item]);
                 }
             }
         };
 
         $scope.deleteItem = function(selectedItem) {
-            $scope.selectedSecondLevelCategoryID = selectedItem.id;
-            $scope.selectedSecondLevelCategoryItem = selectedItem;
-            console.log("Selected id: " + $scope.selectedSecondLevelCategoryID);
+            $scope.selectedLevelTwoCategoryID = selectedItem.id;
+            $scope.selectedLevelTwoCategory = selectedItem;
+
+            console.log("Selected id: " + selectedItem.id + " selected category name: " + selectedItem.categoryName);
+        };
+
+        $scope.deleteLevelTwoCategory = function(){
+            $http.get(apiPath + "eden/cates/delete/" + $scope.selectedLevelTwoCategoryID)
+                .then(function successCallback(response) {
+                    console.log("Success to delete the second level category ID: " + $scope.selectedLevelTwoCategoryID);
+                    $(deleteLevelTwoCategoryModal).modal('hide');
+
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
+
+                            console.log("Success to get the second level category");
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }, function errorCallback(response) {
+                    console.log("Failed to get the second level category");
+                });
+        };
+
+        $scope.createLevelTwoCategory = function(){
+            var levelTwoCategoryItem = {};
+            levelTwoCategoryItem.categoryName = $scope.levelTwoCategoryForLevelTwoCreation;
+            levelTwoCategoryItem.categoryLevel = 2;
+            levelTwoCategoryItem.categoryUpdateDate = new Date();
+            levelTwoCategoryItem.categoryPrevious = $scope.levelOneCategoryForLevelTwoCreation.id;
+            levelTwoCategoryItem.categoryDeleted = 0;
+
+            $http.post(apiPath + "eden/cates/add", levelTwoCategoryItem)
+                .then(function successCallback(response) {
+                    console.log("Create level two category item successfully.");
+                    $(newLevelTwoCategoryModal).modal('hide');
+
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
+                            console.log("Success to get the second level category");
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }, function errorCallback(response) {
+                    console.log("Failed to create level two category item ");
+                });
         };
     });
     app.controller("userAdminCtrl", function ($scope){
