@@ -183,6 +183,7 @@ $(function() {
                 console.log("Failed to get the first level category");
             });
 
+        //filter category list by category name
         $scope.searchByCategory = function (){
             if(null === $scope.firstLevelCategoryItems){
                 console.log("The first level category is empty");
@@ -199,11 +200,12 @@ $(function() {
             }
         };
 
+        //get selected category item for deleting
         $scope.deleteItem = function(selectedItem) {
             $scope.selectedFirstLevelCategoryID = selectedItem.id;
             $scope.selectedFirstLevelCategoryItem = selectedItem;
         };
-
+        //delete level one category item
         $scope.deleteFirstCategory = function(){
             $http.get(apiPath + "eden/cates/delete/" + $scope.selectedFirstLevelCategoryID)
                 .then(function successCallback(response) {
@@ -220,6 +222,42 @@ $(function() {
                 });
         };
 
+        //get selected category item for updating
+        $scope.updateItem = function(selectedItem) {
+            $scope.currentUpdateItem = selectedItem;
+            $scope.levelOneCategoryName = selectedItem.categoryName;
+        };
+        //update level one category
+        $scope.updateFirstCategory = function(){
+            console.log("Update the first level category: "+$scope.levelOneCategoryName);
+
+            $scope.currentUpdateItem.categoryName = $scope.levelOneCategoryName;
+            $http.post(apiPath + "eden/cates/update", $scope.currentUpdateItem)
+                .then(function successCallback(response) {
+                    console.log("Update first category item successfully.");
+                    $(updateFirstCategoryModal).modal('hide');
+
+                    $http.get(apiPath + "eden/cates/list/levelone")
+                        .then(function successCallback(response) {
+                            $scope.firstLevelCategoryItems = response.data;
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the first level category");
+                        });
+                }, function errorCallback(response) {
+                    console.log("Failed to update first category item ");
+                });
+        };
+
+        //check update modal dialog fields
+        $scope.fieldCheck = function(){
+            if(typeof $scope.levelOneCategoryName === "undefined"){
+                $scope.updateFormInvalid = true;
+            }else{
+                $scope.updateFormInvalid = false;
+            }
+        };
+
+        //create level one category
         $scope.createFirstCategory = function(){
             var newFirstCategory = {};
             newFirstCategory.categoryName = $scope.newFirstCategoryName;
@@ -277,8 +315,8 @@ $(function() {
         //temp second level category items array for search feature
         levelTwoCategoryItems_temp = [];
 
+        //select level one category
         $scope.changeLevelOneCategory = function(){
-
             //get level two category
             $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
                 .then(function successCallback(response) {
@@ -290,6 +328,7 @@ $(function() {
                 });
         };
 
+        //filter level two category list by category name
         $scope.searchByCategory = function (){
             $scope.levelTwoCategoryItems = [];
 
@@ -303,13 +342,13 @@ $(function() {
             }
         };
 
+        //delete level two category
         $scope.deleteItem = function(selectedItem) {
             $scope.selectedLevelTwoCategoryID = selectedItem.id;
             $scope.selectedLevelTwoCategory = selectedItem;
 
             console.log("Selected id: " + selectedItem.id + " selected category name: " + selectedItem.categoryName);
         };
-
         $scope.deleteLevelTwoCategory = function(){
             $http.get(apiPath + "eden/cates/delete/" + $scope.selectedLevelTwoCategoryID)
                 .then(function successCallback(response) {
@@ -331,6 +370,41 @@ $(function() {
                 });
         };
 
+        //update level two category
+        $scope.updateItem = function(selectedItem){
+            $scope.updatedLevelTwoItem = selectedItem;
+            $scope.levelTwoCategoryUpdated = selectedItem.categoryName;
+        };
+        $scope.updateLevelTwoCategory = function(){
+            console.log("Update the second level category: "+$scope.levelTwoCategoryUpdated);
+
+            $scope.updatedLevelTwoItem.categoryName = $scope.levelTwoCategoryUpdated;
+            $http.post(apiPath + "eden/cates/update", $scope.updatedLevelTwoItem)
+                .then(function successCallback(response) {
+                    console.log("Update level two category item successfully.");
+                    $(updateSecondCategoryModal).modal('hide');
+
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
+                            console.log("Success to get the second level category");
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }, function errorCallback(response) {
+                    console.log("Failed to update level two category item ");
+                });
+        };
+        $scope.updateFormValidate = function(){
+            $scope.updateFormInvalid = false;
+            if($scope.levelTwoCategoryUpdated === ""){
+                $scope.updateFormInvalid = true;
+            }
+        };
+
+        //create level two category
         $scope.createLevelTwoCategory = function(){
             var levelTwoCategoryItem = {};
             levelTwoCategoryItem.categoryName = $scope.levelTwoCategoryForLevelTwoCreation;
@@ -357,68 +431,32 @@ $(function() {
                     console.log("Failed to create level two category item ");
                 });
         };
+        $scope.createFormValidate = function(){
+            $scope.createFormInvalid = false;
+            if(null === $scope.levelOneCategoryForLevelTwoCreation || $scope.levelTwoCategoryForLevelTwoCreation === ""){
+                $scope.createFormInvalid = true;
+            }
+        };
     });
-    app.controller("userAdminCtrl", function ($scope){
+    app.controller("userAdminCtrl", function ($scope, $http){
         $scope.userItems = null;
-        var loadScreenDiv = $("#loadingScreen");
-        var loadingScreenLen = loadScreenDiv.width();
-        loadScreenDiv.css("margin-left",(loadingScreenLen>441) ? ((loadingScreenLen-441)/2) : 0 + "px");
-
-        $(window).resize(function() {
-            var loadScreenDiv_resize = $("#loadingScreen");
-            var loadingScreenLen_resize = loadScreenDiv_resize.width();
-            loadScreenDiv_resize.css("margin-left",(loadingScreenLen_resize>441) ? ((loadingScreenLen_resize-441)/2) : 0 + "px");
-        });
+        loading();
 
         //Get product list data
-        console.log("Invoke user admin controller, get user admin list data here!");
-        $scope.userItems = [];
-        $scope.userItems[0] = {
-            "id": "1",
-            "phoneNumber": "13xxxxxxxxx",
-            "registerDate": new Date(),
-            "babySex": "男",
-            "babyBirthday": new Date()
-        };
-        $scope.userItems[1] = {
-            "id": "2",
-            "phoneNumber": "137xxxxxxxx",
-            "registerDate": new Date(),
-            "babySex": "男",
-            "babyBirthday": new Date()
-        };
-        $scope.userItems[2] = {
-            "id": "3",
-            "phoneNumber": "1366xxxxxxx",
-            "registerDate": new Date(),
-            "babySex": "女",
-            "babyBirthday": new Date()
-        };
-        $scope.userItems[3] = {
-            "id": "4",
-            "phoneNumber": "13777xxxxxx",
-            "registerDate": new Date(),
-            "babySex": "男",
-            "babyBirthday": new Date()
-        };
-        $scope.userItems[4] = {
-            "id": "5",
-            "phoneNumber": "131111xxxxx",
-            "registerDate": new Date(),
-            "babySex": "女",
-            "babyBirthday": new Date()
-        };
-
-        //temp user items array for search feature
-        userItems_temp = [];
+        console.log("Invoke user admin controller, get user admin list data");
+        $http.get(apiPath + "eden/membs/lists")
+            .then(function successCallback(response) {
+                $scope.userItems = response.data;
+                userItems_temp = response.data;
+            }, function errorCallback(response) {
+                console.log("Failed to get admin user list");
+            });
 
         $scope.searchUserListByPhone = function (){
-            if(userItems_temp.length == 0)
-                userItems_temp = $scope.userItems;
             $scope.userItems = [];
             var pattern = new RegExp($scope.searchPhoneNumber, "i");
             for(item in userItems_temp){
-                if(pattern.test(userItems_temp[item].phoneNumber)) {
+                if(pattern.test(userItems_temp[item].memberMobile)) {
                     $scope.userItems.push(userItems_temp[item]);
                 }
             }
@@ -430,52 +468,22 @@ $(function() {
             $scope.selectedUserItem = userItem;
             console.log("Selected user id: " + $scope.selectedUserID);
         };
+        $scope.confirmResetPWD = function(){
+            console.log("Confirmed to reset member name: " + $scope.selectedUserItem.memberName);
+        };
     })
-    app.controller("logDownloadCtrl", function ($scope){
+    app.controller("logDownloadCtrl", function ($scope, $http){
         $scope.logItems = null;
-        var loadScreenDiv = $("#loadingScreen");
-        var loadingScreenLen = loadScreenDiv.width();
-        loadScreenDiv.css("margin-left",(loadingScreenLen>441) ? ((loadingScreenLen-441)/2) : 0 + "px");
-
-        $(window).resize(function() {
-            var loadScreenDiv_resize = $("#loadingScreen");
-            var loadingScreenLen_resize = loadScreenDiv_resize.width();
-            loadScreenDiv_resize.css("margin-left",(loadingScreenLen_resize>441) ? ((loadingScreenLen_resize-441)/2) : 0 + "px");
-        });
+        loading();
 
         //Get download log list data
-        console.log("Invoke log list controller, get download log list data here!");
-        $scope.logItems = [];
-        $scope.logItems[0] = {
-            "id": "1",
-            "phoneNumber": "13xxxxxxxxx",
-            "downloadDate": new Date(),
-            "downloadProductName": "蛋生世界"
-        };
-        $scope.logItems[1] = {
-            "id": "2",
-            "phoneNumber": "1323425xxxx",
-            "downloadDate": new Date(),
-            "downloadProductName": "蛋生世界"
-        };
-        $scope.logItems[2] = {
-            "id": "3",
-            "phoneNumber": "1323666xxxx",
-            "downloadDate": new Date(),
-            "downloadProductName": "蛋生世界"
-        };
-        $scope.logItems[3] = {
-            "id": "4",
-            "phoneNumber": "13234256666",
-            "downloadDate": new Date(),
-            "downloadProductName": "蛋生世界"
-        };
-        $scope.logItems[4] = {
-            "id": "5",
-            "phoneNumber": "1377425xxxx",
-            "downloadDate": new Date(),
-            "downloadProductName": "蛋生世界"
-        };
+        console.log("Invoke log list controller, get download log list");
+        $http.get(apiPath + "eden/logs/lists")
+            .then(function successCallback(response) {
+                $scope.logItems = response.data;
+            }, function errorCallback(response) {
+                console.log("Failed to get log list");
+            });
     });
     app.controller("otherUrlCtrl", function () {
         console.log("Otherwise URL contoller...");
