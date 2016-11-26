@@ -5,6 +5,7 @@ import com.myeden.common.StringUtil;
 import com.myeden.dao.intf.CategoryDao;
 import com.myeden.dao.intf.LayoutDao;
 import com.myeden.dao.intf.MemberDao;
+import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.CategoryDO;
 import com.myeden.entity.LayoutDO;
 import com.myeden.entity.MemberDO;
@@ -44,6 +45,9 @@ public class MemberServiceImpl extends BaseService{
 
     @Autowired
     private CategoryDao categoryDao;
+
+    @Autowired
+    private ProductDao productDao;
 
     @POST
     @Path("/save")
@@ -305,6 +309,13 @@ public class MemberServiceImpl extends BaseService{
             }
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
+
+            if (null != layoutDOs && layoutDOs.size() > 0) {
+                for (LayoutDO layoutDO : layoutDOs) {
+                    layoutDO.setLayoutProdUrl(productDao.findProductById(layoutDO.getLayoutValue()).getProductCover());
+                }
+            }
+
             List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
             entity.setLayoutDOs(layoutDOs);
             entity.setMemberDO(memberDO);
@@ -329,11 +340,17 @@ public class MemberServiceImpl extends BaseService{
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
             List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
-            entity.setLayoutDOs(layoutDOs);
-            entity.setCategoryDOs(categoryDOs);
+
             if (layoutDOs == null) {
                 return Response.ok(entity).header("code", "802").build();
             }
+            if (null != layoutDOs && layoutDOs.size() > 0) {
+                for (LayoutDO layoutDO : layoutDOs) {
+                    layoutDO.setLayoutProdUrl(productDao.findProductById(layoutDO.getLayoutValue()).getProductCover());
+                }
+            }
+            entity.setLayoutDOs(layoutDOs);
+            entity.setCategoryDOs(categoryDOs);
             return Response.ok(entity).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
 
         } catch (Exception e) {
