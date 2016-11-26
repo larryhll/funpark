@@ -6,12 +6,48 @@
  * Created by hualiang on 16-10-19.
  */
 
-/**
- * Created by hualiang on 16-10-23.
- */
 $(function() {
     var apiPath = "http://118.178.124.197:8080/";
     var app = angular.module("app", ["ngRoute"]);
+    app.service('productBackAction', function(){
+        var productBack = false;
+        var type = null;
+        var publishState = null;
+        var productRecommend = null;
+        var productCategory = null;
+        return {
+            getProductBack:function(){
+               return productBack;
+            },
+            getType:function(){
+                return type;
+            },
+            getPublishState:function(){
+                return publishState;
+            },
+            getProductRecommend:function(){
+                return productRecommend;
+            },
+            getProductCategory:function(){
+                return productCategory;
+            },
+            setProductBack:function(value){
+                productBack = value;
+            },
+            setType:function(value){
+                type = value;
+            },
+            setPublishState:function(value){
+                publishState = value;
+            },
+            setProductRecommend:function(value){
+                productRecommend = value;
+            },
+            setProductCategory:function(value){
+                productCategory = value;
+            }
+        };
+    });
     app.config(function($routeProvider) {
         $routeProvider
             .when("/primary_product", {
@@ -29,6 +65,10 @@ $(function() {
             .when("/new_ar_product_detail", {
                 templateUrl : "app/views/product/new_ar_product_detail.html",
                 controller : "newARDetailCtrl"
+            })
+            .when("/new_video_product_detail/:productID", {
+                templateUrl : "app/views/product/new_video_product_detail.html",
+                controller : "updateVideoDetailCtrl"
             })
             .when("/new_video_product_detail", {
                 templateUrl : "app/views/product/new_video_product_detail.html",
@@ -58,7 +98,7 @@ $(function() {
     app.controller("primaryProductCtrl", function () {
         console.log("Arrived at primary product page already!!");
     });
-    app.controller("productListCtrl", function ($scope, $http){
+    app.controller("productListCtrl", function ($scope, $http, productBackAction){
         $scope.productItems = null;
         $scope.productItems_selected = [];
         $scope.actionSelected = "";
@@ -67,13 +107,40 @@ $(function() {
         //wait for loading product list
         loading();
 
-        //Get product list data
-        getProductListByFilters = function(){
+        //initialize product item selection
+        $scope.productCategoryList = ["故事","国学","拼音"];
+        $scope.productCategory = $scope.productCategoryList[0];
+        $scope.publishState = "上架";
+        $scope.productType = "视频产品";
+        $scope.recommendation = "是";
+
+
+        //Get product list data by filters
+        $scope.searchProductListByFilters = function (){
+            console.log("Starting to search product items by filters...");
+            console.log("Selected product category: " + $scope.productCategory + " Selected index: " + $("#product_category").prop('selectedIndex'));
+            console.log("Selected product type: " + $scope.productType + " Selected index: " + $("#product_type").prop('selectedIndex'));
+            console.log("Selected publish state: " + $scope.publishState + " Selected index: " + $("#publish_state").prop('selectedIndex'));
+            console.log("Selected recommendation: " + $scope.recommendation + " Selected index: " + $("#recommendation").prop('selectedIndex'));
+
             var searchProductByFilters = {};
-            searchProductByFilters.type = $("#product_type").prop('selectedIndex');
-            searchProductByFilters.publishState = $("#release_state").prop('selectedIndex');
-            searchProductByFilters.productRecommend = $("#recommendation").prop('selectedIndex');
-            searchProductByFilters.productCategory = $("#product_category").val();
+            if(productBackAction.getProductBack()){
+                searchProductByFilters.type = productBackAction.getType();
+                searchProductByFilters.publishState = productBackAction.getPublishState();
+                searchProductByFilters.productRecommend = productBackAction.getProductRecommend();
+                searchProductByFilters.productCategory = productBackAction.getProductCategory();
+
+                $scope.productCategory = productBackAction.getProductCategory();
+                $scope.publishState = productBackAction.getPublishState()==0 ? "上架":"下架";
+                $scope.productType = productBackAction.getType()==0 ? "视频产品":"AR产品";
+                $scope.recommendation = productBackAction.getProductRecommend()==0 ? "是":"否";
+            }else{
+                searchProductByFilters.type = $("#product_type").prop('selectedIndex');
+                searchProductByFilters.publishState = $("#publish_state").prop('selectedIndex');
+                searchProductByFilters.productRecommend = $("#recommendation").prop('selectedIndex');
+                searchProductByFilters.productCategory = $scope.productCategory;
+            }
+            productBackAction.setProductBack(false);
 
             $http.post(apiPath + "eden/prods/lists", searchProductByFilters)
                 .then(function successCallback(response) {
@@ -84,16 +151,6 @@ $(function() {
                 }, function errorCallback(response) {
                     console.log("Failed to get product list by filter");
                 });
-        };
-        console.log("Invoke product list controller, get product list data from remote here!");
-        $scope.searchProductListByFilters = function (){
-            console.log("Starting to search product items by filters...");
-            console.log("Selected product category: " + $("#product_category").val() + " Selected index: " + $("#product_category").prop('selectedIndex'));
-            console.log("Selected product type: " + $("#product_type").val() + " Selected index: " + $("#product_type").prop('selectedIndex'));
-            console.log("Selected release state: " + $("#release_state").val() + " Selected index: " + $("#release_state").prop('selectedIndex'));
-            console.log("Selected recommendation: " + $("#recommendation").val() + " Selected index: " + $("#recommendation").prop('selectedIndex'));
-
-            getProductListByFilters();
         };
         $scope.searchProductListByFilters();
 
@@ -110,7 +167,6 @@ $(function() {
             }
             console.log("Current selected number: "+$scope.productItems_selected.length);
         };
-
         //click check item for each line and update top check status if need
         $scope.checkItem = function(userItem){
             console.log("Check item flag: " + userItem.checked);
@@ -124,6 +180,8 @@ $(function() {
                 }
             }
             console.log("Current selected number: "+$scope.productItems_selected.length);
+
+            //update all check field status
             var allCheck = $("#allCheckControl");
             if($scope.productItems_selected.length == 0){
                 allCheck.prop('checked', false);
@@ -132,43 +190,381 @@ $(function() {
             }
         };
 
-        //reset productItem with copy list
-        $scope.resetSearch = function (){
-            $scope.productItems = $scope.productItems_copy;
-            $scope.searchProductListByFilters();
-        };
-
-        //open modal for recommend/recommendCancel/online/offline
+        //open modal dialog to recommend/recommendCancel/publish/un-publish
         $scope.actionClickModal = function (action){
             console.log("Click button: "+action);
             $scope.actionSelected = action;
         };
-
         //confirm yes or no in modal dialog
         $scope.actionConfirm = function (){
             console.log("Confirm action: "+$scope.actionSelected);
-
             angular.forEach($scope.productItems_selected, function(item){
                 $http.get(apiPath + "eden/prods/opes/" + $scope.actionSelected + "/" + item.id)
                     .then(function successCallback(response) {
                         console.log($scope.actionSelected + " product: " + item.name + " successfully");
-                        getProductListByFilters();
+                        $(confirmDiag).modal('hide');
+                        var allCheck = $("#allCheckControl");
+                        allCheck.prop('checked', false);
+                        $scope.searchProductListByFilters();
                     }, function errorCallback(response) {
                         console.log("Failed to " + $scope.actionSelected + " product: " + item.name);
                     });
             });
-
-            $(confirmDiag).modal('hide');
         };
     });
-    app.controller("updateARProductDetail", function ($routeParams) {
+    app.controller("updateARProductDetail", function ($scope, $http, $routeParams, productBackAction) {
         console.log("Product ID: "+ $routeParams.productID);
+
+        //get product item with id
+        $http.get(apiPath + "eden/prods/" + $routeParams.productID)
+            .then(function successCallback(response) {
+                console.log("Success to get AR product item: " + $routeParams.productID);
+                $scope.productInfo = response.data;
+            }, function errorCallback(response) {
+                console.log("Failed to get AR product item");
+            });
+
+        //get level one and two category list
+        $http.get(apiPath + "eden/cates/list/levelone")
+            .then(function successCallback(response) {
+                $scope.levelOneCategoryItems = response.data;
+
+                if (response.data.length > 0){
+                    $scope.levelOneCategory = response.data[0];
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            if (response.data.length > 0){
+                                $scope.levelTwoCategory = response.data[0];
+                            }
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }
+            }, function errorCallback(response) {
+                console.log("Failed to get the first level category");
+            });
+        //change level two category list with level one changed
+        $scope.changeLevelOneCategory = function(){
+            //get level two category
+            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                .then(function successCallback(response) {
+                    $scope.levelTwoCategory = {};
+                    $scope.levelTwoCategoryItems = response.data;
+                    if (response.data.length > 0){
+                        $scope.levelTwoCategory = response.data[0];
+                    }
+                    console.log("Success to get the second level category");
+                }, function errorCallback(response) {
+                    console.log("Failed to get the second level category");
+                });
+        };
+
+        //submit product info
+        $scope.submitProductInfo = function(){
+            //get product item info from input
+            $scope.productInfo.type = 1;
+            $scope.productInfo.publishState = 1;
+            $scope.productInfo.productRecommend = 1;
+            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
+            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productMatchScope = 3;
+            $scope.productInfo.productCover = "http://12.12.12.12:8080/part2.jpg";
+            $scope.productInfo.productImages = "http://12.12.12.12:8080/part1.jpg,http://12.12.12.12:8080/part2.jpg,http://12.13.12.12:8080/part3.jpg";
+            $scope.productInfo.productUploadDate = new Date();
+            $scope.productInfo.productModifyDate = new Date();
+            $scope.productInfo.productTrialAddr = "localhost:8080/images/1.html";
+            $scope.productInfo.productAppEnabled = 0;
+            $scope.productInfo.productPlayEnabled = 0;
+            $scope.productInfo.productTrialEnabled = 0;
+
+            $http.post(apiPath + "eden/prods/update", $scope.productInfo)
+                .then(function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Update AR product item successfully");
+                        productBackAction.setProductBack(true);
+                        productBackAction.setType($scope.productInfo.type);
+                        productBackAction.setPublishState($scope.productInfo.publishState);
+                        productBackAction.setProductRecommend($scope.productInfo.productRecommend);
+                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        window.location.href = "#product_list/";
+                    }else{
+                        console.log("Failed to update AR product item ");
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to update AR product item ");
+                });
+        };
     });
-    app.controller("newARDetailCtrl", function () {
+    app.controller("newARDetailCtrl", function ($scope, $http, productBackAction) {
         console.log("Arrived at new AR product detail page already!!");
+        //new product info
+        $scope.productInfo = {};
+
+        //get level one and two category list
+        $http.get(apiPath + "eden/cates/list/levelone")
+            .then(function successCallback(response) {
+                $scope.levelOneCategoryItems = response.data;
+
+                if (response.data.length > 0){
+                    $scope.levelOneCategory = response.data[0];
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            if (response.data.length > 0){
+                                $scope.levelTwoCategory = response.data[0];
+                            }
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }
+            }, function errorCallback(response) {
+                console.log("Failed to get the first level category");
+            });
+        //change level two category list with level one changed
+        $scope.changeLevelOneCategory = function(){
+            //get level two category
+            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                .then(function successCallback(response) {
+                    $scope.levelTwoCategory = {};
+                    $scope.levelTwoCategoryItems = response.data;
+                    if (response.data.length > 0){
+                        $scope.levelTwoCategory = response.data[0];
+                    }
+                    console.log("Success to get the second level category");
+                }, function errorCallback(response) {
+                    console.log("Failed to get the second level category");
+                });
+        };
+
+        //submit product info
+        $scope.submitProductInfo = function(){
+            //get product item info from input
+            $scope.productInfo.type = 1;
+            $scope.productInfo.publishState = 1;
+            $scope.productInfo.productRecommend = 1;
+            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
+            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productMatchScope = 3;
+            $scope.productInfo.productCover = "http://12.12.12.12:8080/part2.jpg";
+            $scope.productInfo.productImages = "http://12.12.12.12:8080/part1.jpg,http://12.12.12.12:8080/part2.jpg,http://12.13.12.12:8080/part3.jpg";
+            $scope.productInfo.productUploadDate = new Date();
+            $scope.productInfo.productModifyDate = new Date();
+            $scope.productInfo.productTrialAddr = "localhost:8080/images/1.html";
+            $scope.productInfo.productAppEnabled = 0;
+            $scope.productInfo.productPlayEnabled = 0;
+            $scope.productInfo.productTrialEnabled = 0;
+
+            $http.post(apiPath + "eden/prods/add", $scope.productInfo)
+                .then(function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Create AR product item successfully");
+                        productBackAction.setProductBack(true);
+                        productBackAction.setType($scope.productInfo.type);
+                        productBackAction.setPublishState($scope.productInfo.publishState);
+                        productBackAction.setProductRecommend($scope.productInfo.productRecommend);
+                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        window.location.href = "#product_list/";
+                    }else{
+                        console.log("Failed to create AR product item ");
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to create AR product item ");
+                });
+        };
     });
-    app.controller("newVideoDetailCtrl", function () {
-        console.log("Arrived at new video product detail page already!!");
+    app.controller("updateVideoDetailCtrl", function($scope, $http, $routeParams, productBackAction){
+        console.log("Product ID: "+ $routeParams.productID);
+        //get product item with id
+        $http.get(apiPath + "eden/prods/" + $routeParams.productID)
+            .then(function successCallback(response) {
+                console.log("Success to get product item: " + $routeParams.productID);
+                $scope.productInfo = response.data;
+            }, function errorCallback(response) {
+                console.log("Failed to get the product item");
+            });
+
+        //get level one and two category list
+        $http.get(apiPath + "eden/cates/list/levelone")
+            .then(function successCallback(response) {
+                $scope.levelOneCategoryItems = response.data;
+
+                if (response.data.length > 0){
+                    $scope.levelOneCategory = response.data[0];
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            if (response.data.length > 0){
+                                $scope.levelTwoCategory = response.data[0];
+                            }
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }
+            }, function errorCallback(response) {
+                console.log("Failed to get the first level category");
+            });
+        //change level two category list with level one changed
+        $scope.changeLevelOneCategory = function(){
+            //get level two category
+            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                .then(function successCallback(response) {
+                    $scope.levelTwoCategory = {};
+                    $scope.levelTwoCategoryItems = response.data;
+                    if (response.data.length > 0){
+                        $scope.levelTwoCategory = response.data[0];
+                    }
+                    console.log("Success to get the second level category");
+                }, function errorCallback(response) {
+                    console.log("Failed to get the second level category");
+                });
+        };
+
+        //create and delete video item
+        $scope.selectVideoItem = function(item){
+            $scope.videoItemSelected = item;
+        };
+        $scope.delVideoItem = function(){
+            for(item in $scope.productInfo.videoDOs){
+                var index = $scope.productInfo.videoDOs.indexOf($scope.videoItemSelected);
+                if(index > -1){
+                    $scope.productInfo.videoDOs.splice(index, 1);
+                    console.log("Delete video item index: "+index);
+                }
+            }
+            $(deleteVideoItemModal).modal('hide');
+        };
+        $scope.newVideoItem = function(){
+            var videoItem = {};
+            videoItem.videoName = $scope.videoName;
+            videoItem.videoUrl = $scope.videoUrl;
+
+            $scope.productInfo.videoDOs.push(videoItem);
+            $(newVideoItemModal).modal('hide');
+        };
+
+        //submit product info
+        $scope.submitProductInfo = function(){
+            $scope.productInfo.productModifyDate = new Date();
+            $http.post(apiPath + "eden/prods/update", $scope.productInfo)
+                .then(function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Update video product item successfully.");
+                        productBackAction.setProductBack(true);
+                        productBackAction.setType($scope.productInfo.type);
+                        productBackAction.setPublishState($scope.productInfo.publishState);
+                        productBackAction.setProductRecommend($scope.productInfo.productRecommend);
+                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        window.location.href = "#product_list/";
+                    }else{
+                        console.log("Failed to update video product item");
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to update video product item ");
+                });
+        };
+    });
+    app.controller("newVideoDetailCtrl", function ($scope, $http) {
+        //new product info
+        $scope.productInfo = {};
+        $scope.productInfo.videoDOs = [];
+
+        //get level one and two category list
+        $http.get(apiPath + "eden/cates/list/levelone")
+            .then(function successCallback(response) {
+                $scope.levelOneCategoryItems = response.data;
+
+                if (response.data.length > 0){
+                    $scope.levelOneCategory = response.data[0];
+                    //get level two category
+                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                        .then(function successCallback(response) {
+                            $scope.levelTwoCategoryItems = response.data;
+                            if (response.data.length > 0){
+                                $scope.levelTwoCategory = response.data[0];
+                            }
+                        }, function errorCallback(response) {
+                            console.log("Failed to get the second level category");
+                        });
+                }
+            }, function errorCallback(response) {
+                console.log("Failed to get the first level category");
+            });
+        //change level two category list with level one changed
+        $scope.changeLevelOneCategory = function(){
+            //get level two category
+            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+                .then(function successCallback(response) {
+                    $scope.levelTwoCategory = {};
+                    $scope.levelTwoCategoryItems = response.data;
+                    if (response.data.length > 0){
+                        $scope.levelTwoCategory = response.data[0];
+                    }
+                    console.log("Success to get the second level category");
+                }, function errorCallback(response) {
+                    console.log("Failed to get the second level category");
+                });
+        };
+
+        //submit product info
+        $scope.submitProductInfo = function(){
+
+            //get product item info from input
+            $scope.productInfo.type = 0;
+            $scope.productInfo.publishState = 1;
+            $scope.productInfo.productRecommend = 1;
+            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
+            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCover = "http://12.12.12.12:8080/part2.jpg";
+            $scope.productInfo.productUploadDate = new Date();
+            $scope.productInfo.productModifyDate = new Date();
+            $scope.productInfo.productMatchScope = 3;
+            $http.post(apiPath + "eden/prods/add", $scope.productInfo)
+                .then(function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Create video product item successfully");
+                        productBackAction.setProductBack(true);
+                        productBackAction.setType($scope.productInfo.type);
+                        productBackAction.setPublishState($scope.productInfo.publishState);
+                        productBackAction.setProductRecommend($scope.productInfo.productRecommend);
+                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        window.location.href = "#product_list/";
+                    }else{
+                        console.log("Failed to create video product item ");
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to create video product item ");
+                });
+        };
+
+        //create and delete video item
+        $scope.selectVideoItem = function(item){
+            $scope.videoItemSelected = item;
+        };
+        $scope.delVideoItem = function(){
+            for(item in $scope.productInfo.videoDOs){
+                var index = $scope.productInfo.videoDOs.indexOf($scope.videoItemSelected);
+                if(index > -1){
+                    $scope.productInfo.videoDOs.splice(index, 1);
+                    console.log("Delete video item index: "+index);
+                }
+            }
+            $(deleteVideoItemModal).modal('hide');
+        };
+        $scope.newVideoItem = function(){
+            var videoItem = {};
+            videoItem.videoName = $scope.videoName;
+            videoItem.videoUrl = $scope.videoUrl;
+
+            $scope.productInfo.videoDOs.push(videoItem);
+            $(newVideoItemModal).modal('hide');
+        };
     });
     app.controller("firstLevelCategoryCtrl", function ($scope,$http){
 
