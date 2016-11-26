@@ -69,6 +69,15 @@ public class CategoryService extends BaseService{
     }
 
     @GET
+    @Path("/list/leveltwo")
+    public Response findAllLevelsforLevelTwoDirectly() {
+
+        List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
+        return Response.ok(categoryDOs).build();
+
+    }
+
+    @GET
     @Path("/delete/{id}")
     public Response deleteCategoryById(@PathParam("id") int id) {
         CategoryDO categoryDO = categoryDao.findCategoryByID(id);

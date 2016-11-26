@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -54,6 +56,7 @@ public class MemberServiceImpl extends BaseService{
     public Response registerMember(String request) {
 
         try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             MemberDO memberDO = OBJECT_MAPPER.readValue(request, MemberDO.class);
 
              // TODO: 11/19/2016   verify mobile whether register?
@@ -63,6 +66,7 @@ public class MemberServiceImpl extends BaseService{
                 return Response.ok().header("code", "807").build();
             }
             memberDO.setId(member.getId());
+            memberDO.setMemberName(format.format(Calendar.getInstance().getTime()));
             memberDao.update(memberDO);
            // memberDO = memberDao.findMemberByMobile(mobile);
             return Response.ok(memberDO).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
@@ -371,6 +375,25 @@ public class MemberServiceImpl extends BaseService{
         List<MemberDO> memberDOs=memberDao.getAllMembs();
         return Response.ok(memberDOs).build();
     }
+
+    @GET
+    @Path("/pc/{mobile}")
+    public Response resetPCPwd(@PathParam("mobile") String mobile) {
+
+        try {
+
+            MemberDO memberDO = memberDao.findMemberByMobile(mobile);
+            memberDO.setPwd("123456");
+            return Response.ok().header("code", "0").build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+
 
 
 }
