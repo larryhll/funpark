@@ -30,6 +30,26 @@ public class ProductService extends BaseService {
     @Autowired
     private CategoryDao categoryDao;
 
+    @GET
+    @Path("/{id}")
+    public Response findProDetail(@PathParam("id") int id) {
+
+        try {
+
+            ProductDO productDO = productDao.findProductById(id);
+            if (null==productDO) {
+                return Response.ok().header("code", "802").header("msg", "No Data").build();
+            }
+            return Response.ok(productDO).header("code","0").header("msg", "successful").build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+
     @POST
     @Path("/add")
     public Response addAndUpdate(String request) {

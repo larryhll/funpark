@@ -80,7 +80,7 @@ public class MemberServiceImpl extends BaseService{
             if (null == member) {
                 return Response.ok().header("code", "801").build();
             }
-            if ("update".equalsIgnoreCase(update)) {
+            if ("edit".equalsIgnoreCase(update)) {
                 if (!memberDO.getVericode().equalsIgnoreCase(member.getVericode())) {
                     return Response.ok().header("code", "807").build();
                 }
@@ -93,7 +93,7 @@ public class MemberServiceImpl extends BaseService{
                 memberDao.update(member);
                 // memberDO = memberDao.findMemberByMobile(mobile);
                 return Response.ok(memberDO).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
-            }else if("edit".equalsIgnoreCase(update)){
+            }else if("update".equalsIgnoreCase(update)){
                     member.setMemberBirthday(memberDO.getMemberBirthday());
                 member.setMemberBabyGender(memberDO.getMemberBabyGender());
                 memberDao.update(member);
