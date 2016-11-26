@@ -302,10 +302,14 @@ public class MemberServiceImpl extends BaseService{
             ObjectNode rootNode = (ObjectNode) OBJECT_MAPPER.readTree(request);
             String mobile = rootNode.get("mobile").asText();
             String pwd = rootNode.get("pwd").asText();
+            MemberDO memberDO2 = memberDao.findMemberByMobile(mobile);
+            if (null == memberDO2) {
+                return Response.ok().header("code", "801").build();
+            }
             MemberDO memberDO = memberDao.findMemberByMobile(mobile, pwd);
             if (null == memberDO) {
                 //return Response.noContent().build();
-                return Response.ok().header("code", "801").header("msg",  PropertiesDAO.readValue("", "801")).build();
+                return Response.ok().header("code", "808").build();
             }
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
