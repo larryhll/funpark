@@ -37,15 +37,23 @@ public class CollectService extends BaseService{
                 switch (action) {
                     case "save":
                         if (0 == type) {
-                            collectDO.setType(0);
-                            collectDO.setState(0);
-                            collectDO.setCollectDate(Calendar.getInstance());
-                            collectDao.save(collectDO);
+                            CollectDO collectDO2 = collectDao.getMemberCollectStateByType(collectDO.getMobile(), collectDO.getProductId(), type);
+                            if (null == collectDO2) {
+                                collectDO.setType(0);
+                                collectDO.setState(0);
+                                collectDO.setCollectDate(Calendar.getInstance());
+                                collectDao.save(collectDO);
+                            }
+
+
                         }else{
-                            collectDO.setType(1);
-                            collectDO.setCollectDate(Calendar.getInstance());
-                            collectDO.setState(0);
-                            collectDao.save(collectDO);
+                            CollectDO collectDO2 = collectDao.getMemberCollectStateByType(collectDO.getMobile(), collectDO.getProductId(), type);
+                            if (null == collectDO2) {
+                                collectDO.setType(1);
+                                collectDO.setCollectDate(Calendar.getInstance());
+                                collectDO.setState(0);
+                                collectDao.save(collectDO);
+                            }
                         }
 
                         return Response.ok(collectDO).header("code", "0").build();
