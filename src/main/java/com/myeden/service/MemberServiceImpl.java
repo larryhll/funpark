@@ -384,6 +384,7 @@ public class MemberServiceImpl extends BaseService{
 
             MemberDO memberDO = memberDao.findMemberByMobile(mobile);
             memberDO.setPwd("123456");
+            memberDao.update(memberDO);
             return Response.ok().header("code", "0").build();
 
         } catch (Exception e) {
