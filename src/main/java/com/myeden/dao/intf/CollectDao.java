@@ -16,4 +16,8 @@ public interface CollectDao {
     public List<CollectDO> getMmeberCollects(String mobile, int type);
 
     public CollectDO findById(int id);
+
+    public List<CollectDO> getMemberCollectState(String mobile ,int id);
+
+    public CollectDO getMemberCollectStateByType(String mobile ,int id, int type);
 }

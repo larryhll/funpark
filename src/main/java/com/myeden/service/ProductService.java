@@ -8,9 +8,10 @@ import com.myeden.entity.ProductDO;
 import org.apache.cxf.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.activation.DataHandler;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,7 +41,7 @@ public class ProductService extends BaseService {
             if (null==productDO) {
                 return Response.ok().header("code", "802").header("msg", "No Data").build();
             }
-            return Response.ok(productDO).header("code","0").header("msg", "successful").build();
+            return Response.ok(productDO).header("code","0").build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,7 +217,9 @@ public class ProductService extends BaseService {
 
     }
 
-    class RespLatestEntity{
+
+
+        class RespLatestEntity{
         private List<ProductDO> currentMonth;
         private List<ProductDO> lastMonth;
 

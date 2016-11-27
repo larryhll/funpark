@@ -10,6 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -37,22 +38,30 @@ public class CollectService extends BaseService{
                     case "save":
                         if (0 == type) {
                             collectDO.setType(0);
+                            collectDO.setState(0);
+                            collectDO.setCollectDate(Calendar.getInstance());
                             collectDao.save(collectDO);
                         }else{
                             collectDO.setType(1);
+                            collectDO.setCollectDate(Calendar.getInstance());
+                            collectDO.setState(0);
                             collectDao.save(collectDO);
                         }
 
-                      break;
+                        return Response.ok(collectDO).header("code", "0").build();
                     case "update":
-                        CollectDO collectDO2 = collectDao.findById(collectDO.getId());
-                        collectDO2.setDeleted(1);
-                        collectDO2.setState(1);
-                        collectDao.update(collectDO2);
-                      break;
+                        CollectDO collectDO2 = collectDao.getMemberCollectStateByType(collectDO.getMobile(), collectDO.getProductId(), type);
+                        if(null!=collectDO2){
+                            collectDO2.setDeleted(1);
+                            collectDO2.setState(1);
+                            collectDao.update(collectDO2);
+                            return Response.ok().header("code", "0").build();
+                        }else{
+                            return Response.ok().header("code", "0").build();
+                        }
                 }
 
-            return Response.ok(collectDO).header("code", "0").build();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,5 +97,33 @@ public class CollectService extends BaseService{
 
     }
 
+    @GET
+    @Path("/{mobile}/{id}")
+    public Response getCollectState(@PathParam("mobile") String mobile, @PathParam("id") int id) {
 
+        List<CollectDO> collectDOs = collectDao.getMemberCollectState(mobile, id);
+        EntityState entityState=new EntityState();
+        if(null==collectDOs || collectDOs.size()==0){
+            entityState.setState(1);
+            return Response.ok(entityState).header("code", "0").build();
+        }else{
+            entityState.setState(0);
+            return Response.ok(entityState).header("code", "0").build();
+        }
+
+    }
+
+
+}
+
+class EntityState{
+    private int state;
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
 }
