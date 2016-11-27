@@ -11,12 +11,15 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.activation.DataHandler;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by felhan on 11/13/2016.
@@ -245,31 +248,63 @@ public class ProductService extends BaseService {
     @POST
     @Path("/upload")
     @Consumes("multipart/form-data")
-    public Response upload(MultipartBody body) throws IOException {
+    public Response upload(MultipartBody body, @Context HttpServletRequest request) throws IOException {
         System.out.println("------------ start picture upload  -----------------");
         //String fileName=String.valueOf(new Date().getTime());
         long t=new Date().getTime();
         Attachment attachment = body.getAttachment("root");
             DataHandler handler = attachment.getDataHandler();
-            ContentDisposition cd = attachment.getContentDisposition();
-            String fileName = cd.getParameter("file");
-            String paths="pro_img";
+
+        String papa=request.getRealPath("/pro_img");
+        String paths="pro_img";
+        ContentDisposition cd = attachment.getContentDisposition();
+        String fileName = cd.getParameter("filename");
+        writeToFile(handler.getInputStream(),papa+"/"+fileName);
+
+      /*      ContentDisposition cd = attachment.getContentDisposition();
+        Map<String, String> maps=cd.getParameters();
+        for (String ss : maps.keySet()) {
+            System.out.println("key:" + ss + " value: " + maps.get(ss));
+        }
+            String fileName = cd.getParameter("filename");
+
+
             File file = new File(paths + "\\" + fileName);
             System.out.println("file path:"+file.getAbsolutePath());
 
             if(handler.getInputStream().available()>0) System.out.println("get input stream");
-            writeFileWithStream(file, handler.getInputStream());
+            writeFileWithStream(file, handler.getInputStream());*/
 
-            String urls="http://118.178.124.197:8080/"+paths+"/"+fileName;
+            String urls="http://localhost:8080/"+paths+"/"+fileName;
+        UrlEntity entity=new UrlEntity();
+        entity.setUrls(urls);
 
 
-
-        return Response.ok(urls).header("code","0").build();
+        return Response.ok(entity).header("code","0").build();
      /*   Attachment att = body.getAttachment("root");
         System.out.println(att.getContentDisposition());
         InputStream inputStream = att.getDataHandler().getInputStream();
         return null;*/
     }
+
+    private void writeToFile(InputStream ins, String path) {
+        try {
+            OutputStream out = new FileOutputStream(new File(path));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+
+            while ((read = ins.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void writeFileWithStream(File f,InputStream is){
         System.out.println("begin upload file:"+f.getAbsolutePath());
@@ -292,7 +327,17 @@ public class ProductService extends BaseService {
 
 
 
+class UrlEntity{
+    private String urls;
 
+    public String getUrls() {
+        return urls;
+    }
+
+    public void setUrls(String urls) {
+        this.urls = urls;
+    }
+}
 
 
 
