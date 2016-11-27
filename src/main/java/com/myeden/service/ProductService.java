@@ -1,18 +1,19 @@
 package com.myeden.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.myeden.dao.intf.CategoryDao;
 import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.CategoryDO;
 import com.myeden.entity.ProductDO;
 import org.apache.cxf.common.util.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.activation.DataHandler;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -239,5 +240,66 @@ public class ProductService extends BaseService {
             this.lastMonth = lastMonth;
         }
     }
+
+
+    @POST
+    @Path("/upload")
+    @Consumes("multipart/form-data")
+    public Response upload(MultipartBody body) throws IOException {
+        System.out.println("------------ start picture upload  -----------------");
+        //String fileName=String.valueOf(new Date().getTime());
+        long t=new Date().getTime();
+        Attachment attachment = body.getAttachment("root");
+            DataHandler handler = attachment.getDataHandler();
+            ContentDisposition cd = attachment.getContentDisposition();
+            String fileName = cd.getParameter("file");
+            String paths="pro_img";
+            File file = new File(paths + "\\" + fileName);
+            System.out.println("file path:"+file.getAbsolutePath());
+
+            if(handler.getInputStream().available()>0) System.out.println("get input stream");
+            writeFileWithStream(file, handler.getInputStream());
+
+            String urls="http://118.178.124.197:8080/"+paths+"/"+fileName;
+
+
+
+        return Response.ok(urls).header("code","0").build();
+     /*   Attachment att = body.getAttachment("root");
+        System.out.println(att.getContentDisposition());
+        InputStream inputStream = att.getDataHandler().getInputStream();
+        return null;*/
+    }
+
+    public static void writeFileWithStream(File f,InputStream is){
+        System.out.println("begin upload file:"+f.getAbsolutePath());
+        try {
+            if (!f.exists())
+                f.createNewFile();
+            else{
+                f.delete();
+                f.createNewFile();
+            }
+            OutputStream os = new FileOutputStream(f);
+            byte buffer[] = new byte[4 * 1024];
+            while (is.read(buffer) != -1)
+                os.write(buffer);
+            System.out.println("end upload file:"+f.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
