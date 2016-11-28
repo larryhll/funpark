@@ -1,5 +1,6 @@
 package com.myeden.service;
 
+import com.myeden.common.PropertiesDAO;
 import com.myeden.dao.intf.CategoryDao;
 import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.CategoryDO;
@@ -280,10 +281,9 @@ public class ProductService extends BaseService {
             if(handler.getInputStream().available()>0) System.out.println("get input stream");
             writeFileWithStream(file, handler.getInputStream());*/
 //118.178.124.197
-            String urls="http://118.178.124.197:8080/"+paths+"/"+fileName;
+            String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
         UrlEntity entity=new UrlEntity();
         entity.setUrls(urls);
-
 
         return Response.ok(entity).header("code","0").build();
      /*   Attachment att = body.getAttachment("root");
