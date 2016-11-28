@@ -369,6 +369,98 @@ $(function() {
                 });
         };
 
+        //update image file
+        var updateImage = function(files, imageDisplayID, imageType){
+            console.log("Selected file number: " + files.length);
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload image file successfully");
+                        $("#"+imageDisplayID).attr("src", response.data.urls);
+                        if(imageType == "description"){
+                            $scope.productInfo.productDesc = response.data.urls;
+                        }else if(imageType == "cover"){
+                            $scope.productInfo.productCover = response.data.urls;
+                        }else if(imageType == "firstScreen"){
+                            $scope.firstScreenShot = response.data.urls;
+                        }else if(imageType == "secondScreen"){
+                            $scope.secondScreenShot = response.data.urls;
+                        }else if(imageType == "thirdScreen"){
+                            $scope.thirdScreenShot = response.data.urls;
+                        }else if(imageType == "trial"){
+                            $scope.productInfo.productTrialAddr = response.data.urls;
+                        }else if(imageType == "QRCode"){
+                            $scope.productInfo.productMicroStoreByecodeAddr = response.data.urls;
+                        }
+                    }else{
+                        console.log("Failed to upload image file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload image file");
+                });
+        };
+        //update product description image
+        $scope.updateProductDescriptionImage = function(){
+            updateImage($scope.productDescriptionImageFile, "productDescImage","description");
+        };
+        $scope.updateProductDescriptionImageStart = function(){
+            $(productDescFileSelect).click();
+            console.log("Click product description file selection dialog");
+        };
+        //update product cover image
+        $scope.updateProductCoverImage = function(){
+            updateImage($scope.productCoverImageFile, "productCoverImage","cover");
+        };
+        $scope.updateProductCoverImageStart = function(){
+            $(productCoverFileSelect).click();
+            console.log("Click product cover file selection dialog");
+        };
+        //update product screen shot images
+        $scope.updateFirstScreenShotImage = function(){
+            updateImage($scope.firstScreenShotFile, "productScreenShotFirstImage","firstScreen");
+        };
+        $scope.updateFirstScreenShotImageStart = function(){
+            $("#productScreenShotFirstFileSelect").click();
+            console.log("Click the first product screen shot file selection dialog");
+        };
+        $scope.updateSecondScreenShotImage = function(){
+            updateImage($scope.secondScreenShotFile, "productScreenShotSecondImage","secondScreen");
+        };
+        $scope.updateSecondScreenShotImageStart = function(){
+            $("#productScreenShotSecondFileSelect").click();
+            console.log("Click the second product screen shot file selection dialog");
+        };
+        $scope.updateThirdScreenShotImage = function(){
+            updateImage($scope.thirdScreenShotFile, "productScreenShotThirdImage","thirdScreen");
+        };
+        $scope.updateThirdScreenShotImageStart = function(){
+            $("#productScreenShotThirdFileSelect").click();
+            console.log("Click the third product screen shot file selection dialog");
+        };
+        //update trial image
+        $scope.updateProductTrialImage = function(){
+            updateImage($scope.productTrialFile, "productTrialImage","trial");
+        };
+        $scope.updateProductTrialImageStart = function(){
+            $("#productTrialFileSelect").click();
+            console.log("Click product trial file selection dialog");
+        };
+        //update QR code image
+        $scope.updateProductQRImage = function(){
+            updateImage($scope.productQRFile, "productQRImage","QRCode");
+        };
+        $scope.updateProductQRImageStart = function(){
+            $("#productQRFileSelect").click();
+            console.log("Click product QR code image file selection dialog");
+        };
+
         //submit product info
         $scope.submitProductInfo = function(){
             //get product item info from input
@@ -460,14 +552,8 @@ $(function() {
         };
 
         //update image file
-        var updateImage = function(files, imageDisplayID){
-            if(files.length <= 0){
-                console.log("No file selected");
-                return "";
-            }
+        var updateImage = function(files, imageDisplayID, imageType){
             console.log("Selected file number: " + files.length);
-
-            var imageUrl = "";
             var fd = new FormData();
             fd.append("root", files[0]);
             $http.post(apiPath + "eden/prods/upload",fd,
@@ -479,7 +565,21 @@ $(function() {
                     if(response.status === 200){
                         console.log("Upload image file successfully");
                         $("#"+imageDisplayID).attr("src", response.data.urls);
-                        imageUrl = response.data.urls;
+                        if(imageType == "description"){
+                            $scope.productInfo.productDesc = response.data.urls;
+                        }else if(imageType == "cover"){
+                            $scope.productInfo.productCover = response.data.urls;
+                        }else if(imageType == "firstScreen"){
+                            $scope.firstScreenShot = response.data.urls;
+                        }else if(imageType == "secondScreen"){
+                            $scope.secondScreenShot = response.data.urls;
+                        }else if(imageType == "thirdScreen"){
+                            $scope.thirdScreenShot = response.data.urls;
+                        }else if(imageType == "trial"){
+                            $scope.productInfo.productTrialAddr = response.data.urls;
+                        }else if(imageType == "QRCode"){
+                            $scope.productInfo.productMicroStoreByecodeAddr = response.data.urls;
+                        }
                     }else{
                         console.log("Failed to upload image file");
                     }
@@ -487,12 +587,10 @@ $(function() {
                 function errorCallback(response) {
                     console.log("Failed to upload image file");
                 });
-
-            return imageUrl;
         };
         //update product description image
         $scope.updateProductDescriptionImage = function(){
-            $scope.productInfo.productDesc = updateImage($scope.productDescriptionImageFile, "productDescImage");
+            updateImage($scope.productDescriptionImageFile, "productDescImage","description");
         };
         $scope.updateProductDescriptionImageStart = function(){
             $(productDescFileSelect).click();
@@ -500,7 +598,7 @@ $(function() {
         };
         //update product cover image
         $scope.updateProductCoverImage = function(){
-            $scope.productInfo.productCover = updateImage($scope.productCoverImageFile, "productCoverImage");
+            updateImage($scope.productCoverImageFile, "productCoverImage","cover");
         };
         $scope.updateProductCoverImageStart = function(){
             $(productCoverFileSelect).click();
@@ -508,21 +606,21 @@ $(function() {
         };
         //update product screen shot images
         $scope.updateFirstScreenShotImage = function(){
-            $scope.firstScreenShot = updateImage($scope.firstScreenShotFile, "productScreenShotFirstImage");
+            updateImage($scope.firstScreenShotFile, "productScreenShotFirstImage","firstScreen");
         };
         $scope.updateFirstScreenShotImageStart = function(){
             $("#productScreenShotFirstFileSelect").click();
             console.log("Click the first product screen shot file selection dialog");
         };
         $scope.updateSecondScreenShotImage = function(){
-            $scope.secondScreenShot = updateImage($scope.secondScreenShotFile, "productScreenShotSecondImage");
+            updateImage($scope.secondScreenShotFile, "productScreenShotSecondImage","secondScreen");
         };
         $scope.updateSecondScreenShotImageStart = function(){
             $("#productScreenShotSecondFileSelect").click();
             console.log("Click the second product screen shot file selection dialog");
         };
         $scope.updateThirdScreenShotImage = function(){
-            $scope.thirdScreenShot = updateImage($scope.thirdScreenShotFile, "productScreenShotThirdImage");
+            updateImage($scope.thirdScreenShotFile, "productScreenShotThirdImage","thirdScreen");
         };
         $scope.updateThirdScreenShotImageStart = function(){
             $("#productScreenShotThirdFileSelect").click();
@@ -530,7 +628,7 @@ $(function() {
         };
         //update trial image
         $scope.updateProductTrialImage = function(){
-            $scope.productInfo.productTrialAddr = updateImage($scope.productTrialFile, "productTrialImage");
+            updateImage($scope.productTrialFile, "productTrialImage","trial");
         };
         $scope.updateProductTrialImageStart = function(){
             $("#productTrialFileSelect").click();
@@ -538,7 +636,7 @@ $(function() {
         };
         //update QR code image
         $scope.updateProductQRImage = function(){
-            $scope.productInfo.productMicroStoreByecodeAddr = updateImage($scope.productQRFile, "productQRImage");
+            updateImage($scope.productQRFile, "productQRImage","QRCode");
         };
         $scope.updateProductQRImageStart = function(){
             $("#productQRFileSelect").click();
@@ -640,14 +738,8 @@ $(function() {
         };
 
         //update image file
-        var updateImage = function(files, imageDisplayID){
-            if(files.length <= 0){
-                console.log("No file selected");
-                return "";
-            }
+        var updateImage = function(files, imageDisplayID, imageType){
             console.log("Selected file number: " + files.length);
-
-            var imageUrl = "";
             var fd = new FormData();
             fd.append("root", files[0]);
             $http.post(apiPath + "eden/prods/upload",fd,
@@ -659,7 +751,11 @@ $(function() {
                     if(response.status === 200){
                         console.log("Upload image file successfully");
                         $("#"+imageDisplayID).attr("src", response.data.urls);
-                        imageUrl = response.data.urls;
+                        if(imageType == "description"){
+                            $scope.productInfo.productDesc = response.data.urls;
+                        }else if(imageType == "cover"){
+                            $scope.productInfo.productCover = response.data.urls;
+                        }
                     }else{
                         console.log("Failed to upload image file");
                     }
@@ -667,12 +763,10 @@ $(function() {
                 function errorCallback(response) {
                     console.log("Failed to upload image file");
                 });
-
-            return imageUrl;
         };
         //update product description image
         $scope.updateProductDescriptionImage = function(){
-            $scope.productInfo.productDesc = updateImage($scope.productDescriptionImageFile, "productDescImage");
+            updateImage($scope.productDescriptionImageFile, "productDescImage","description");
         };
         $scope.updateProductDescriptionImageStart = function(){
             $(productDescFileSelect).click();
@@ -680,7 +774,7 @@ $(function() {
         };
         //update product cover image
         $scope.updateProductCoverImage = function(){
-            $scope.productInfo.productCover = updateImage($scope.productCoverImageFile, "productCoverImage");
+            updateImage($scope.productCoverImageFile, "productCoverImage","cover");
         };
         $scope.updateProductCoverImageStart = function(){
             $(productCoverFileSelect).click();
@@ -774,14 +868,8 @@ $(function() {
         };
 
         //update image file
-        var updateImage = function(files, imageDisplayID){
-            if(files.length <= 0){
-                console.log("No file selected");
-                return "";
-            }
+        var updateImage = function(files, imageDisplayID, imageType){
             console.log("Selected file number: " + files.length);
-
-            var imageUrl = "";
             var fd = new FormData();
             fd.append("root", files[0]);
             $http.post(apiPath + "eden/prods/upload",fd,
@@ -793,7 +881,11 @@ $(function() {
                     if(response.status === 200){
                         console.log("Upload image file successfully");
                         $("#"+imageDisplayID).attr("src", response.data.urls);
-                        imageUrl = response.data.urls;
+                        if(imageType == "description"){
+                            $scope.productInfo.productDesc = response.data.urls;
+                        }else if(imageType == "cover"){
+                            $scope.productInfo.productCover = response.data.urls;
+                        }
                     }else{
                         console.log("Failed to upload image file");
                     }
@@ -801,12 +893,10 @@ $(function() {
                 function errorCallback(response) {
                     console.log("Failed to upload image file");
                 });
-
-            return imageUrl;
         };
         //update product description image
         $scope.updateProductDescriptionImage = function(){
-            $scope.productInfo.productDesc = updateImage($scope.productDescriptionImageFile, "productDescImage");
+            updateImage($scope.productDescriptionImageFile, "productDescImage","description");
         };
         $scope.updateProductDescriptionImageStart = function(){
             $(productDescFileSelect).click();
@@ -814,7 +904,7 @@ $(function() {
         };
         //update product cover image
         $scope.updateProductCoverImage = function(){
-            $scope.productInfo.productCover = updateImage($scope.productCoverImageFile, "productCoverImage");
+            updateImage($scope.productCoverImageFile, "productCoverImage","cover");
         };
         $scope.updateProductCoverImageStart = function(){
             $(productCoverFileSelect).click();
