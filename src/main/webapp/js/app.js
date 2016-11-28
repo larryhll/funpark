@@ -122,7 +122,7 @@ $(function() {
         //get product list data
         $scope.productItems = [];
         $scope.layoutUpdate = {"entities": []};
-        $scope.productImage = [{haveImage:false},{haveImage:false},{haveImage:false},{haveImage:false}];
+        $scope.productImage = [{"haveImage":false},{"haveImage":false},{"haveImage":false},{"haveImage":false}];
         var searchProductByFilters = {};
         searchProductByFilters.type = 1;
         searchProductByFilters.publishState = 1;
@@ -147,13 +147,40 @@ $(function() {
                             //initialize each product layout item
                             angular.forEach($scope.productItems, function(product){
                                 if(product.id === item.layoutValue){
-                                    $scope.mainProductOne = product;
-                                    if( null !== $scope.mainProductOne.productCover && typeof $scope.mainProductOne.productCover !== "undefined"){
-                                        $("#mainProductOneImage").attr("src", $scope.mainProductOne.productCover);
-                                        $scope.productImage[item.layoutPosition-1].haveImage = true;
-                                    }else{
-                                        $scope.productImage[item.layoutPosition-1].haveImage = false;
+                                    if(item.layoutPosition == 1){
+                                        $scope.mainProductOne = product;
+                                        if( null !== $scope.mainProductOne.productCover && typeof $scope.mainProductOne.productCover !== "undefined"){
+                                            $("#mainProductOneImage").attr("src", $scope.mainProductOne.productCover);
+                                            $scope.productImage[0].haveImage = true;
+                                        }else{
+                                            $scope.productImage[0].haveImage = false;
+                                        }
+                                    }else if(item.layoutPosition == 2){
+                                        $scope.mainProductTwo = product;
+                                        if( null !== $scope.mainProductTwo.productCover && typeof $scope.mainProductTwo.productCover !== "undefined"){
+                                            $("#mainProductTwoImage").attr("src", $scope.mainProductTwo.productCover);
+                                            $scope.productImage[1].haveImage = true;
+                                        }else{
+                                            $scope.productImage[1].haveImage = false;
+                                        }
+                                    }else if(item.layoutPosition == 3){
+                                        $scope.mainProductThree = product;
+                                        if( null !== $scope.mainProductThree.productCover && typeof $scope.mainProductThree.productCover !== "undefined"){
+                                            $("#mainProductThreeImage").attr("src", $scope.mainProductThree.productCover);
+                                            $scope.productImage[2].haveImage = true;
+                                        }else{
+                                            $scope.productImage[2].haveImage = false;
+                                        }
+                                    }else if(item.layoutPosition == 4){
+                                        $scope.mainProductFour = product;
+                                        if( null !== $scope.mainProductFour.productCover && typeof $scope.mainProductFour.productCover !== "undefined"){
+                                            $("#mainProductFourImage").attr("src", $scope.mainProductFour.productCover);
+                                            $scope.productImage[3].haveImage = true;
+                                        }else{
+                                            $scope.productImage[3].haveImage = false;
+                                        }
                                     }
+
                                 }
                             });
                         });
