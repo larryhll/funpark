@@ -328,6 +328,10 @@ $(function() {
                 $scope.firstScreenShot = (typeof imageArr[0] === "undefined" ? "" : imageArr[0]);
                 $scope.secondScreenShot = (typeof imageArr[1] === "undefined" ? "" : imageArr[1]);
                 $scope.thirdScreenShot = (typeof imageArr[2] === "undefined" ? "" : imageArr[2]);
+
+                $scope.productInfo.productAppEnabled = $scope.productInfo.productAppEnabled == 0 ? true : false;
+                $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled == 0 ? true : false;
+                $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled == 0 ? true : false;
             }, function errorCallback(response) {
                 console.log("Failed to get AR product item");
             });
