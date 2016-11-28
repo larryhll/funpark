@@ -41,6 +41,17 @@ public class MemberDO {
     @Column(name = "ROLE")
     private String role;
 
+    @Column(name = "MEMBER_DATE")
+    private Calendar memberDate;
+
+    public Calendar getMemberDate() {
+        return memberDate;
+    }
+
+    public void setMemberDate(Calendar memberDate) {
+        this.memberDate = memberDate;
+    }
+
     public int getMemberAgeScope() {
         return memberAgeScope;
     }

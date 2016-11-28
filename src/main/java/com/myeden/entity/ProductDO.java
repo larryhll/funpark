@@ -116,6 +116,16 @@ public class ProductDO{
     @Column(name = "PRODUCT_CATEGORY")
     private String productCategory;
 
+    @Column(name = "PRODCUT_SCORE")
+    private int productScore;
+
+    public int getProductScore() {
+        return productScore;
+    }
+
+    public void setProductScore(int productScore) {
+        this.productScore = productScore;
+    }
 
     public String getProductVideos() {
         return productVideos;

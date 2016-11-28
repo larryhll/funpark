@@ -75,7 +75,7 @@ public class LayoutService extends BaseService {
                         if (null == productDO) {
                            return Response.ok().header("code", "805").build();
                         }
-                        layoutDO.setLayoutProdUrl(productDO.getProductPlayAddr());
+                        layoutDO.setLayoutProdUrl(productDO.getProductCover());
                         layoutDao.update(layoutDO);
 
                     }

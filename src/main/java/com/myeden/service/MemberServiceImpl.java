@@ -67,6 +67,7 @@ public class MemberServiceImpl extends BaseService{
             }
             memberDO.setId(member.getId());
             memberDO.setMemberName(format.format(Calendar.getInstance().getTime()));
+            memberDO.setMemberDate(Calendar.getInstance());
             memberDao.update(memberDO);
            // memberDO = memberDao.findMemberByMobile(mobile);
             return Response.ok(memberDO).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();

@@ -259,6 +259,11 @@ public class ProductService extends BaseService {
         String paths="pro_img";
         ContentDisposition cd = attachment.getContentDisposition();
         String fileName = cd.getParameter("filename");
+        //String timees = String.valueOf(new Date().getTime());
+        String[]aa=fileName.split("\\.");
+        String ss = aa[0];
+        fileName = ss + getRamdom4Number() + "." + aa[1];
+        //fileName=fileName+getRamdom4Number();
         writeToFile(handler.getInputStream(),papa+"/"+fileName);
 
       /*      ContentDisposition cd = attachment.getContentDisposition();
@@ -305,6 +310,10 @@ public class ProductService extends BaseService {
         }
     }
 
+    private String getRamdom4Number() {
+        Double a = Math.random() * 9000 + 1000;
+        return String.valueOf(a.intValue());
+    }
 
     public static void writeFileWithStream(File f,InputStream is){
         System.out.println("begin upload file:"+f.getAbsolutePath());
