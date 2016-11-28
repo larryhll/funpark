@@ -135,8 +135,8 @@
                                 <label>产品截图(建议1280 x*1024，最多3张)：</label>
                                 <div class="row">
                                     <div class="col-lg-4">
-                                        <img ng-if="secondScreenShot.length>0" id="productScreenShotFirstImage" src="{{firstScreenShot}}" style="max-height: 200px; width: auto">
-                                        <img ng-if="secondScreenShot.length==0" id="productScreenShotFirstImage" src="img/blank.jpg" style="max-height: 200px; width: auto">
+                                        <img ng-if="firstScreenShot.length>0" id="productScreenShotFirstImage" src="{{firstScreenShot}}" style="max-height: 200px; width: auto">
+                                        <img ng-if="firstScreenShot.length==0" id="productScreenShotFirstImage" src="img/blank.jpg" style="max-height: 200px; width: auto">
                                         <input id="productScreenShotFirstFileSelect" type="file" file-input="firstScreenShotFile" style="display:none">
                                         <button style="display:none" ng-click="updateFirstScreenShotImage()"></button>
                                         <button class="btn btn-default" ng-click="updateFirstScreenShotImageStart()" style="display: block; margin-top: 5px">上传产品截图1</button>
@@ -149,8 +149,8 @@
                                         <button class="btn btn-default" ng-click="updateSecondScreenShotImageStart()" style="display: block; margin-top: 5px">上传产品截图2</button>
                                     </div>
                                     <div class="col-lg-4">
-                                        <img ng-if="secondScreenShot.length>0" id="productScreenShotThirdImage" src="{{thirdScreenShot}}" style="max-height: 200px; width: auto">
-                                        <img ng-if="secondScreenShot.length==0" id="productScreenShotThirdImage" src="img/blank.jpg" style="max-height: 200px; width: auto">
+                                        <img ng-if="thirdScreenShot.length>0" id="productScreenShotThirdImage" src="{{thirdScreenShot}}" style="max-height: 200px; width: auto">
+                                        <img ng-if="thirdScreenShot.length==0" id="productScreenShotThirdImage" src="img/blank.jpg" style="max-height: 200px; width: auto">
                                         <input id="productScreenShotThirdFileSelect" type="file" file-input="thirdScreenShotFile" style="display:none">
                                         <button style="display:none" ng-click="updateThirdScreenShotImage()"></button>
                                         <button class="btn btn-default" ng-click="updateThirdScreenShotImageStart()" style="display: block; margin-top: 5px">上传产品截图3</button>

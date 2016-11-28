@@ -325,9 +325,9 @@ $(function() {
                 $scope.productInfo = response.data;
                 //parse images list
                 var imageArr = response.data.productImages.split(',');
-                $scope.firstScreenShot = imageArr[0];
-                $scope.secondScreenShot = imageArr[1];
-                $scope.thirdScreenShot = imageArr[2];
+                $scope.firstScreenShot = (typeof imageArr[0] === "undefined" ? "" : imageArr[0]);
+                $scope.secondScreenShot = (typeof imageArr[1] === "undefined" ? "" : imageArr[1]);
+                $scope.thirdScreenShot = (typeof imageArr[2] === "undefined" ? "" : imageArr[2]);
             }, function errorCallback(response) {
                 console.log("Failed to get AR product item");
             });
@@ -484,9 +484,9 @@ $(function() {
             $scope.productInfo.productImages = productScreenshotImage.map(function(item){return item}).join(',');
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
-            $scope.productInfo.productAppEnabled = 0;
-            $scope.productInfo.productPlayEnabled = 0;
-            $scope.productInfo.productTrialEnabled = 0;
+            $scope.productInfo.productAppEnabled = $scope.productInfo.productAppEnabled ? 0 : 1;
+            $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled ? 0 : 1;
+            $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled ? 0 : 1;
 
             $http.post(apiPath + "eden/prods/update", $scope.productInfo)
                 .then(function successCallback(response) {
@@ -651,8 +651,8 @@ $(function() {
             $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
-            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.productMatchScope = 3;
+            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.productImages = "";
             var productScreenshotImage = [];
             if($scope.firstScreenShot !== ""){
@@ -667,9 +667,9 @@ $(function() {
             $scope.productInfo.productImages = productScreenshotImage.map(function(item){return item}).join(',');
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
-            $scope.productInfo.productAppEnabled = 0;
-            $scope.productInfo.productPlayEnabled = 0;
-            $scope.productInfo.productTrialEnabled = 0;
+            $scope.productInfo.productAppEnabled = $scope.productInfo.productAppEnabled ? 0 : 1;
+            $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled ? 0 : 1;
+            $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled ? 0 : 1;
 
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
                 .then(function successCallback(response) {
@@ -943,10 +943,10 @@ $(function() {
             $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
+            $scope.productInfo.productMatchScope = 3;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
-            $scope.productInfo.productMatchScope = 3;
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
                 .then(function successCallback(response) {
                     if(response.status === 200){

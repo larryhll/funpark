@@ -142,7 +142,6 @@
                                     <thead>
                                         <tr>
                                             <th><input type="checkbox" ng-model="checkAll" ng-click="checkALLYesNo()" id="allCheckControl"></th>
-                                            <th>产品封面图</th>
                                             <th>产品名</th>
                                             <th>产品发布状态</th>
                                             <th>是否推荐</th>
@@ -153,7 +152,7 @@
                                     </thead>
                                     <tbody>
                                         <tr ng-show="productItems==null">
-                                            <td colspan="8" style="background-color: #ffffff">
+                                            <td colspan="7" style="background-color: #ffffff">
                                                 <div id="loadingScreen">
                                                     <img src="img/loading_icon.gif" style="position: relative; margin: auto;">
                                                 </div>
@@ -161,7 +160,6 @@
                                         </tr>
                                         <tr ng-repeat="item in productItems" multiple-select-item="productItems">
                                             <td><input type="checkbox" ng-model="item.checked" name="mySelectedProduct" ng-click="checkItem(item)"></td>
-                                            <td ng-bind="item.productCover"></td>
                                             <td>
                                                 <a ng-if="item.type==1" href="#new_ar_product_detail/{{item.id}}" ng-bind="item.name"></a>
                                                 <a ng-if="item.type==0" href="#new_video_product_detail/{{item.id}}" ng-bind="item.name"></a>
