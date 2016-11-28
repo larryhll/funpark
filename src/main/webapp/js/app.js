@@ -314,12 +314,20 @@ $(function() {
     });
     app.controller("updateARProductDetail", function ($scope, $http, $routeParams, productBackAction) {
         console.log("Product ID: "+ $routeParams.productID);
+        $scope.firstScreenShot = "";
+        $scope.secondScreenShot = "";
+        $scope.thirdScreenShot = "";
 
         //get product item with id
         $http.get(apiPath + "eden/prods/" + $routeParams.productID)
             .then(function successCallback(response) {
                 console.log("Success to get AR product item: " + $routeParams.productID);
                 $scope.productInfo = response.data;
+                //parse images list
+                var imageArr = response.data.productImages.split(',');
+                $scope.firstScreenShot = imageArr[0];
+                $scope.secondScreenShot = imageArr[1];
+                $scope.thirdScreenShot = imageArr[2];
             }, function errorCallback(response) {
                 console.log("Failed to get AR product item");
             });
@@ -371,11 +379,19 @@ $(function() {
             $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.productMatchScope = 3;
-            $scope.productInfo.productCover = "http://12.12.12.12:8080/part2.jpg";
-            $scope.productInfo.productImages = "http://12.12.12.12:8080/part1.jpg,http://12.12.12.12:8080/part2.jpg,http://12.13.12.12:8080/part3.jpg";
+            var productScreenshotImage = [];
+            if($scope.firstScreenShot !== ""){
+                productScreenshotImage.push($scope.firstScreenShot);
+            }
+            if($scope.secondScreenShot !== ""){
+                productScreenshotImage.push($scope.secondScreenShot);
+            }
+            if($scope.thirdScreenShot !== ""){
+                productScreenshotImage.push($scope.thirdScreenShot);
+            }
+            $scope.productInfo.productImages = productScreenshotImage.map(function(item){return item}).join(',');
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
-            $scope.productInfo.productTrialAddr = "localhost:8080/images/1.html";
             $scope.productInfo.productAppEnabled = 0;
             $scope.productInfo.productPlayEnabled = 0;
             $scope.productInfo.productTrialEnabled = 0;
@@ -402,6 +418,9 @@ $(function() {
         console.log("Arrived at new AR product detail page already!!");
         //new product info
         $scope.productInfo = {};
+        $scope.firstScreenShot = "";
+        $scope.secondScreenShot = "";
+        $scope.thirdScreenShot = "";
 
         //get level one and two category list
         $http.get(apiPath + "eden/cates/list/levelone")
@@ -536,15 +555,23 @@ $(function() {
             $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.productMatchScope = 3;
-            $scope.productInfo.productCover = "http://12.12.12.12:8080/part2.jpg";
-            $scope.productInfo.productImages = "http://12.12.12.12:8080/part1.jpg,http://12.12.12.12:8080/part2.jpg,http://12.13.12.12:8080/part3.jpg";
+            $scope.productInfo.productImages = "";
+            var productScreenshotImage = [];
+            if($scope.firstScreenShot !== ""){
+                productScreenshotImage.push($scope.firstScreenShot);
+            }
+            if($scope.secondScreenShot !== ""){
+                productScreenshotImage.push($scope.secondScreenShot);
+            }
+            if($scope.thirdScreenShot !== ""){
+                productScreenshotImage.push($scope.thirdScreenShot);
+            }
+            $scope.productInfo.productImages = productScreenshotImage.map(function(item){return item}).join(',');
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
-            $scope.productInfo.productTrialAddr = "localhost:8080/images/1.html";
             $scope.productInfo.productAppEnabled = 0;
             $scope.productInfo.productPlayEnabled = 0;
             $scope.productInfo.productTrialEnabled = 0;
-            $scope.productInfo.productPlayAddr = "http://11.11.11.11";
 
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
                 .then(function successCallback(response) {
@@ -830,7 +857,6 @@ $(function() {
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
             $scope.productInfo.productMatchScope = 3;
-            $scope.productInfo.productPlayAddr = "http://11.11.11.11";
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
                 .then(function successCallback(response) {
                     if(response.status === 200){
