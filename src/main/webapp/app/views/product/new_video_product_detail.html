@@ -105,29 +105,26 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-12">
-                                <form role="form">
-                                    <div class="form-group">
-                                        <label>产品描述：</label>
-                                        <textarea contenteditable="true" class="form-control" rows="3" ng-model="productInfo.productDesc"></textarea>
+                                <div class="form-group">
+                                    <label>产品描述：</label>
+                                    <div>
+                                        <img id="productDescImage" src="{{productInfo.productDesc}}" style="max-height: 200px; width: auto">
+                                        <input id="productDescFileSelect" type="file" file-input="productDescriptionImageFile" style="display:none">
+                                        <button style="display:none" ng-click="updateProductDescriptionImage()"></button>
+                                        <button class="btn btn-default" ng-click="updateProductDescriptionImageStart()" style="display: block; margin-top: 5px">上传产品描述</button>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-4">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">产品封面图(建议360*360)</div>
-                                    <div class="panel-body">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <form role="form">
-                                                    <div class="form-group">
-                                                        <img src="img/view.jpg" class="img-rounded" style="max-width: 200px; height: auto">
-                                                        <input type="file">
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>产品封面图(建议360*360)：</label>
+                                    <div class="form-group">
+                                        <img id="productCoverImage" src="{{productInfo.productCover}}" style="max-height: 200px; width: auto">
+                                        <input id="productCoverFileSelect" type="file" file-input="productCoverImageFile" style="display:none">
+                                        <button style="display:none" ng-click="updateProductCoverImage()"></button>
+                                        <button class="btn btn-default" ng-click="updateProductCoverImageStart()" style="display: block; margin-top: 5px">上传产品封面</button>
                                     </div>
                                 </div>
                             </div>

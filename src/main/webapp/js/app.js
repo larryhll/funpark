@@ -8,6 +8,17 @@
 
 $(function() {
     var apiPath = "http://118.178.124.197:8080/";
+    var loading = function(){
+        var loadScreenDiv = $("#loadingScreen");
+        var loadingScreenLen = loadScreenDiv.width();
+        loadScreenDiv.css("margin-left",(loadingScreenLen>441) ? ((loadingScreenLen-441)/2) : 0 + "px");
+
+        $(window).resize(function() {
+            var loadScreenDiv_resize = $("#loadingScreen");
+            var loadingScreenLen_resize = loadScreenDiv_resize.width();
+            loadScreenDiv_resize.css("margin-left",(loadingScreenLen_resize>441) ? ((loadingScreenLen_resize-441)/2) : 0 + "px");
+        });
+    };
     var app = angular.module("app", ["ngRoute"]);
     app.service('productBackAction', function(){
         var productBack = false;
@@ -48,6 +59,18 @@ $(function() {
             }
         };
     });
+    app.directive('fileInput',['$parse',function($parse){
+        return {
+            restrict: 'A',
+            link:function(scope, elm, attrs){
+                elm.bind('change', function(){
+                    $parse(attrs.fileInput).assign(scope, elm[0].files);
+                    scope.$apply();
+                    angular.element(this)[0].nextElementSibling.click();
+                });
+            }
+        };
+    }]);
     app.config(function($routeProvider) {
         $routeProvider
             .when("/primary_product", {
@@ -95,8 +118,76 @@ $(function() {
                 controller : "otherUrlCtrl"
             });
     });
-    app.controller("primaryProductCtrl", function () {
-        console.log("Arrived at primary product page already!!");
+    app.controller("primaryProductCtrl", function ($scope, $http) {
+        //get product list data
+        $scope.productItems = [];
+        $scope.layoutUpdate = {"entities": []};
+        $scope.productImage = [{haveImage:false},{haveImage:false},{haveImage:false},{haveImage:false}];
+        var searchProductByFilters = {};
+        searchProductByFilters.type = 1;
+        searchProductByFilters.publishState = 1;
+        searchProductByFilters.productRecommend = 1;
+        searchProductByFilters.productCategory = "故事";
+        $http.post(apiPath + "eden/prods/lists", searchProductByFilters)
+            .then(function successCallback(response) {
+                console.log("Get product list by filter successfully.");
+                $scope.productItems = response.data;
+
+                //get layout items
+                $http.get(apiPath + "eden/membs/unlogin")
+                    .then(function successCallback(response) {
+                        console.log("Get product layout");
+
+                        angular.forEach(response.data.layoutDOs, function(item){
+                            var layoutItem = {};
+                            layoutItem.layoutPosition = item.layoutPosition;
+                            layoutItem.layoutValue = item.layoutValue;
+                            $scope.layoutUpdate.entities.push(layoutItem);
+
+                            //initialize each product layout item
+                            angular.forEach($scope.productItems, function(product){
+                                if(product.id === item.layoutValue){
+                                    $scope.mainProductOne = product;
+                                    if( null !== $scope.mainProductOne.productCover && typeof $scope.mainProductOne.productCover !== "undefined"){
+                                        $("#mainProductOneImage").attr("src", $scope.mainProductOne.productCover);
+                                        $scope.productImage[item.layoutPosition-1].haveImage = true;
+                                    }else{
+                                        $scope.productImage[item.layoutPosition-1].haveImage = false;
+                                    }
+                                }
+                            });
+                        });
+                    }, function errorCallback(response) {
+                        console.log("Failed to get product layout");
+                    });
+            }, function errorCallback(response) {
+                console.log("Failed to get product list by filter");
+            });
+
+        $scope.mainProductOneChange = function(){
+            $scope.layoutUpdate.entities[0].layoutValue = $scope.mainProductOne.id;
+            $("#mainProductOneImage").attr("src", $scope.mainProductOne.productCover);
+        };
+        $scope.mainProductTwoChange = function(){
+            $scope.layoutUpdate.entities[1].layoutValue = $scope.mainProductTwo.id;
+            $("#mainProductTwoImage").attr("src", $scope.mainProductTwo.productCover);
+        };
+        $scope.mainProductThreeChange = function(){
+            $scope.layoutUpdate.entities[2].layoutValue = $scope.mainProductThree.id;
+            $("#mainProductThreeImage").attr("src", $scope.mainProductThree.productCover);
+        };
+        $scope.mainProductFourChange = function(){
+            $scope.layoutUpdate.entities[3].layoutValue = $scope.mainProductFour.id;
+            $("#mainProductFourImage").attr("src", $scope.mainProductFour.productCover);
+        };
+        $scope.saveLayout = function(){
+            $http.post(apiPath + "eden/layout/updates", $scope.layoutUpdate)
+                .then(function successCallback(response) {
+                    console.log("Update product layout successfully.");
+                }, function errorCallback(response) {
+                    console.log("Failed to update product layout");
+                });
+        };
     });
     app.controller("productListCtrl", function ($scope, $http, productBackAction){
         $scope.productItems = null;
@@ -108,8 +199,17 @@ $(function() {
         loading();
 
         //initialize product item selection
-        $scope.productCategoryList = ["故事","国学","拼音"];
-        $scope.productCategory = $scope.productCategoryList[0];
+        $scope.productCategoryList = [];
+        $http.get(apiPath + "eden/cates/list/leveltwo")
+            .then(function successCallback(response) {
+                console.log("Get all level two category list successfully");
+                for(var item in response.data){
+                    $scope.productCategoryList.push(response.data[item].categoryName);
+                }
+                $scope.productCategory = $scope.productCategoryList[0];
+            }, function errorCallback(response) {
+                console.log("Failed to get level two category list");
+            });
         $scope.publishState = "上架";
         $scope.productType = "视频产品";
         $scope.recommendation = "是";
@@ -161,7 +261,7 @@ $(function() {
             allCheck.prop('checked', $scope.checkAll);
             $scope.productItems_selected = [];
             if($scope.checkAll){
-                for(item in $scope.productItems_copy){
+                for(var item in $scope.productItems_copy){
                     $scope.productItems_selected.push($scope.productItems_copy[item]);
                 }
             }
@@ -173,7 +273,7 @@ $(function() {
             if (userItem.checked){
                 $scope.productItems_selected.push(userItem);
             }else{
-                for(item in $scope.productItems_selected){
+                for(var item in $scope.productItems_selected){
                     if($scope.productItems_selected[item].id == userItem.id){
                         $scope.productItems_selected.splice(item, 1);
                     }
@@ -340,6 +440,92 @@ $(function() {
                 });
         };
 
+        //update image file
+        var updateImage = function(files, imageDisplayID){
+            if(files.length <= 0){
+                console.log("No file selected");
+                return "";
+            }
+            console.log("Selected file number: " + files.length);
+
+            var imageUrl = "";
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload image file successfully");
+                        $("#"+imageDisplayID).attr("src", response.data.urls);
+                        imageUrl = response.data.urls;
+                    }else{
+                        console.log("Failed to upload image file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload image file");
+                });
+
+            return imageUrl;
+        };
+        //update product description image
+        $scope.updateProductDescriptionImage = function(){
+            $scope.productInfo.productDesc = updateImage($scope.productDescriptionImageFile, "productDescImage");
+        };
+        $scope.updateProductDescriptionImageStart = function(){
+            $(productDescFileSelect).click();
+            console.log("Click product description file selection dialog");
+        };
+        //update product cover image
+        $scope.updateProductCoverImage = function(){
+            $scope.productInfo.productCover = updateImage($scope.productCoverImageFile, "productCoverImage");
+        };
+        $scope.updateProductCoverImageStart = function(){
+            $(productCoverFileSelect).click();
+            console.log("Click product cover file selection dialog");
+        };
+        //update product screen shot images
+        $scope.updateFirstScreenShotImage = function(){
+            $scope.firstScreenShot = updateImage($scope.firstScreenShotFile, "productScreenShotFirstImage");
+        };
+        $scope.updateFirstScreenShotImageStart = function(){
+            $("#productScreenShotFirstFileSelect").click();
+            console.log("Click the first product screen shot file selection dialog");
+        };
+        $scope.updateSecondScreenShotImage = function(){
+            $scope.secondScreenShot = updateImage($scope.secondScreenShotFile, "productScreenShotSecondImage");
+        };
+        $scope.updateSecondScreenShotImageStart = function(){
+            $("#productScreenShotSecondFileSelect").click();
+            console.log("Click the second product screen shot file selection dialog");
+        };
+        $scope.updateThirdScreenShotImage = function(){
+            $scope.thirdScreenShot = updateImage($scope.thirdScreenShotFile, "productScreenShotThirdImage");
+        };
+        $scope.updateThirdScreenShotImageStart = function(){
+            $("#productScreenShotThirdFileSelect").click();
+            console.log("Click the third product screen shot file selection dialog");
+        };
+        //update trial image
+        $scope.updateProductTrialImage = function(){
+            $scope.productInfo.productTrialAddr = updateImage($scope.productTrialFile, "productTrialImage");
+        };
+        $scope.updateProductTrialImageStart = function(){
+            $("#productTrialFileSelect").click();
+            console.log("Click product trial file selection dialog");
+        };
+        //update QR code image
+        $scope.updateProductQRImage = function(){
+            $scope.productInfo.productMicroStoreByecodeAddr = updateImage($scope.productQRFile, "productQRImage");
+        };
+        $scope.updateProductQRImageStart = function(){
+            $("#productQRFileSelect").click();
+            console.log("Click product QR code image file selection dialog");
+        };
+
         //submit product info
         $scope.submitProductInfo = function(){
             //get product item info from input
@@ -358,6 +544,7 @@ $(function() {
             $scope.productInfo.productAppEnabled = 0;
             $scope.productInfo.productPlayEnabled = 0;
             $scope.productInfo.productTrialEnabled = 0;
+            $scope.productInfo.productPlayAddr = "http://11.11.11.11";
 
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
                 .then(function successCallback(response) {
@@ -425,12 +612,60 @@ $(function() {
                 });
         };
 
+        //update image file
+        var updateImage = function(files, imageDisplayID){
+            if(files.length <= 0){
+                console.log("No file selected");
+                return "";
+            }
+            console.log("Selected file number: " + files.length);
+
+            var imageUrl = "";
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload image file successfully");
+                        $("#"+imageDisplayID).attr("src", response.data.urls);
+                        imageUrl = response.data.urls;
+                    }else{
+                        console.log("Failed to upload image file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload image file");
+                });
+
+            return imageUrl;
+        };
+        //update product description image
+        $scope.updateProductDescriptionImage = function(){
+            $scope.productInfo.productDesc = updateImage($scope.productDescriptionImageFile, "productDescImage");
+        };
+        $scope.updateProductDescriptionImageStart = function(){
+            $(productDescFileSelect).click();
+            console.log("Click product description file selection dialog");
+        };
+        //update product cover image
+        $scope.updateProductCoverImage = function(){
+            $scope.productInfo.productCover = updateImage($scope.productCoverImageFile, "productCoverImage");
+        };
+        $scope.updateProductCoverImageStart = function(){
+            $(productCoverFileSelect).click();
+            console.log("Click product cover file selection dialog");
+        };
+
         //create and delete video item
         $scope.selectVideoItem = function(item){
             $scope.videoItemSelected = item;
         };
         $scope.delVideoItem = function(){
-            for(item in $scope.productInfo.videoDOs){
+            for(var item in $scope.productInfo.videoDOs){
                 var index = $scope.productInfo.videoDOs.indexOf($scope.videoItemSelected);
                 if(index > -1){
                     $scope.productInfo.videoDOs.splice(index, 1);
@@ -469,7 +704,7 @@ $(function() {
                 });
         };
     });
-    app.controller("newVideoDetailCtrl", function ($scope, $http) {
+    app.controller("newVideoDetailCtrl", function ($scope, $http, productBackAction) {
         //new product info
         $scope.productInfo = {};
         $scope.productInfo.videoDOs = [];
@@ -511,6 +746,77 @@ $(function() {
                 });
         };
 
+        //update image file
+        var updateImage = function(files, imageDisplayID){
+            if(files.length <= 0){
+                console.log("No file selected");
+                return "";
+            }
+            console.log("Selected file number: " + files.length);
+
+            var imageUrl = "";
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload image file successfully");
+                        $("#"+imageDisplayID).attr("src", response.data.urls);
+                        imageUrl = response.data.urls;
+                    }else{
+                        console.log("Failed to upload image file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload image file");
+                });
+
+            return imageUrl;
+        };
+        //update product description image
+        $scope.updateProductDescriptionImage = function(){
+            $scope.productInfo.productDesc = updateImage($scope.productDescriptionImageFile, "productDescImage");
+        };
+        $scope.updateProductDescriptionImageStart = function(){
+            $(productDescFileSelect).click();
+            console.log("Click product description file selection dialog");
+        };
+        //update product cover image
+        $scope.updateProductCoverImage = function(){
+            $scope.productInfo.productCover = updateImage($scope.productCoverImageFile, "productCoverImage");
+        };
+        $scope.updateProductCoverImageStart = function(){
+            $(productCoverFileSelect).click();
+            console.log("Click product cover file selection dialog");
+        };
+
+        //create and delete video item
+        $scope.selectVideoItem = function(item){
+            $scope.videoItemSelected = item;
+        };
+        $scope.delVideoItem = function(){
+            for(var item in $scope.productInfo.videoDOs){
+                var index = $scope.productInfo.videoDOs.indexOf($scope.videoItemSelected);
+                if(index > -1){
+                    $scope.productInfo.videoDOs.splice(index, 1);
+                    console.log("Delete video item index: "+index);
+                }
+            }
+            $(deleteVideoItemModal).modal('hide');
+        };
+        $scope.newVideoItem = function(){
+            var videoItem = {};
+            videoItem.videoName = $scope.videoName;
+            videoItem.videoUrl = $scope.videoUrl;
+
+            $scope.productInfo.videoDOs.push(videoItem);
+            $(newVideoItemModal).modal('hide');
+        };
+
         //submit product info
         $scope.submitProductInfo = function(){
 
@@ -521,10 +827,10 @@ $(function() {
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
             $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.productCover = "http://12.12.12.12:8080/part2.jpg";
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
             $scope.productInfo.productMatchScope = 3;
+            $scope.productInfo.productPlayAddr = "http://11.11.11.11";
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
                 .then(function successCallback(response) {
                     if(response.status === 200){
@@ -541,29 +847,6 @@ $(function() {
                 }, function errorCallback(response) {
                     console.log("Failed to create video product item ");
                 });
-        };
-
-        //create and delete video item
-        $scope.selectVideoItem = function(item){
-            $scope.videoItemSelected = item;
-        };
-        $scope.delVideoItem = function(){
-            for(item in $scope.productInfo.videoDOs){
-                var index = $scope.productInfo.videoDOs.indexOf($scope.videoItemSelected);
-                if(index > -1){
-                    $scope.productInfo.videoDOs.splice(index, 1);
-                    console.log("Delete video item index: "+index);
-                }
-            }
-            $(deleteVideoItemModal).modal('hide');
-        };
-        $scope.newVideoItem = function(){
-            var videoItem = {};
-            videoItem.videoName = $scope.videoName;
-            videoItem.videoUrl = $scope.videoUrl;
-
-            $scope.productInfo.videoDOs.push(videoItem);
-            $(newVideoItemModal).modal('hide');
         };
     });
     app.controller("firstLevelCategoryCtrl", function ($scope,$http){
@@ -589,7 +872,7 @@ $(function() {
             firstLevelCategoryItems_temp = $scope.firstLevelCategoryItems;
             $scope.firstLevelCategoryItems = [];
             var pattern = new RegExp($scope.firstCategorySearch, "i");
-            for(item in firstLevelCategoryItems_temp){
+            for(var item in firstLevelCategoryItems_temp){
                 if(pattern.test(firstLevelCategoryItems_temp[item].categoryName)) {
                     $scope.firstLevelCategoryItems.push(firstLevelCategoryItems_temp[item]);
                 }
@@ -731,7 +1014,7 @@ $(function() {
             if (typeof $scope.levelTwoCategoryFilter == "undefined")
                 $scope.levelTwoCategoryFilter = "";
             var patternLevelTwo = new RegExp($scope.levelTwoCategoryFilter, "i");
-            for(item in levelTwoCategoryItems_temp){
+            for(var item in levelTwoCategoryItems_temp){
                 if(patternLevelTwo.test(levelTwoCategoryItems_temp[item].categoryName)) {
                     $scope.levelTwoCategoryItems.push(levelTwoCategoryItems_temp[item]);
                 }
@@ -851,7 +1134,7 @@ $(function() {
         $scope.searchUserListByPhone = function (){
             $scope.userItems = [];
             var pattern = new RegExp($scope.searchPhoneNumber, "i");
-            for(item in userItems_temp){
+            for(var item in userItems_temp){
                 if(pattern.test(userItems_temp[item].memberMobile)) {
                     $scope.userItems.push(userItems_temp[item]);
                 }
@@ -866,8 +1149,20 @@ $(function() {
         };
         $scope.confirmResetPWD = function(){
             console.log("Confirmed to reset member name: " + $scope.selectedUserItem.memberName);
+
+            $http.get(apiPath + "eden/membs/pc/" + $scope.selectedUserItem.memberMobile)
+                .then(function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Reset password for user item successfully.");
+                        $(reset).modal('hide');
+                    }else{
+                        console.log("Failed to reset password for user item, status code: " + response.status);
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to reset password for user item");
+                });
         };
-    })
+    });
     app.controller("logDownloadCtrl", function ($scope, $http){
         $scope.logItems = null;
         loading();
@@ -884,18 +1179,5 @@ $(function() {
     app.controller("otherUrlCtrl", function () {
         console.log("Otherwise URL contoller...");
     });
-
-    loading = function(){
-        var loadScreenDiv = $("#loadingScreen");
-        var loadingScreenLen = loadScreenDiv.width();
-        loadScreenDiv.css("margin-left",(loadingScreenLen>441) ? ((loadingScreenLen-441)/2) : 0 + "px");
-
-        $(window).resize(function() {
-            var loadScreenDiv_resize = $("#loadingScreen");
-            var loadingScreenLen_resize = loadScreenDiv_resize.width();
-            loadScreenDiv_resize.css("margin-left",(loadingScreenLen_resize>441) ? ((loadingScreenLen_resize-441)/2) : 0 + "px");
-        });
-    };
-
 }());
 
