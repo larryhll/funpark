@@ -122,12 +122,13 @@ $(function() {
         //get product list data
         $scope.productItems = [];
         $scope.layoutUpdate = {"entities": []};
-        $scope.productImage = [{"haveImage":false},{"haveImage":false},{"haveImage":false},{"haveImage":false}];
+
         var searchProductByFilters = {};
         searchProductByFilters.type = 1;
         searchProductByFilters.publishState = 1;
         searchProductByFilters.productRecommend = 1;
         searchProductByFilters.productCategory = "故事";
+
         $http.post(apiPath + "eden/prods/lists", searchProductByFilters)
             .then(function successCallback(response) {
                 console.log("Get product list by filter successfully.");
@@ -137,7 +138,6 @@ $(function() {
                 $http.get(apiPath + "eden/membs/unlogin")
                     .then(function successCallback(response) {
                         console.log("Get product layout");
-
                         angular.forEach(response.data.layoutDOs, function(item){
                             var layoutItem = {};
                             layoutItem.layoutPosition = item.layoutPosition;
@@ -146,44 +146,40 @@ $(function() {
 
                             //initialize each product layout item
                             angular.forEach($scope.productItems, function(product){
-                                if(product.id === item.layoutValue){
+                                if(null !== item.layoutValue && product.id === item.layoutValue){
                                     if(item.layoutPosition == 1){
                                         $scope.mainProductOne = product;
                                         if( null !== $scope.mainProductOne.productCover && typeof $scope.mainProductOne.productCover !== "undefined"){
                                             $("#mainProductOneImage").attr("src", $scope.mainProductOne.productCover);
-                                            $scope.productImage[0].haveImage = true;
-                                        }else{
-                                            $scope.productImage[0].haveImage = false;
                                         }
                                     }else if(item.layoutPosition == 2){
                                         $scope.mainProductTwo = product;
                                         if( null !== $scope.mainProductTwo.productCover && typeof $scope.mainProductTwo.productCover !== "undefined"){
                                             $("#mainProductTwoImage").attr("src", $scope.mainProductTwo.productCover);
-                                            $scope.productImage[1].haveImage = true;
-                                        }else{
-                                            $scope.productImage[1].haveImage = false;
                                         }
                                     }else if(item.layoutPosition == 3){
                                         $scope.mainProductThree = product;
                                         if( null !== $scope.mainProductThree.productCover && typeof $scope.mainProductThree.productCover !== "undefined"){
                                             $("#mainProductThreeImage").attr("src", $scope.mainProductThree.productCover);
-                                            $scope.productImage[2].haveImage = true;
-                                        }else{
-                                            $scope.productImage[2].haveImage = false;
                                         }
                                     }else if(item.layoutPosition == 4){
                                         $scope.mainProductFour = product;
                                         if( null !== $scope.mainProductFour.productCover && typeof $scope.mainProductFour.productCover !== "undefined"){
                                             $("#mainProductFourImage").attr("src", $scope.mainProductFour.productCover);
-                                            $scope.productImage[3].haveImage = true;
-                                        }else{
-                                            $scope.productImage[3].haveImage = false;
                                         }
                                     }
-
                                 }
                             });
                         });
+
+                        if($scope.layoutUpdate.entities.length == 0){
+                            $scope.layoutUpdate = {"entities": [
+                                {"layoutPosition":1,"layoutValue":null},
+                                {"layoutPosition":2,"layoutValue":null},
+                                {"layoutPosition":3,"layoutValue":null},
+                                {"layoutPosition":4,"layoutValue":null}
+                            ]};
+                        }
                     }, function errorCallback(response) {
                         console.log("Failed to get product layout");
                     });
@@ -210,7 +206,11 @@ $(function() {
         $scope.saveLayout = function(){
             $http.post(apiPath + "eden/layout/updates", $scope.layoutUpdate)
                 .then(function successCallback(response) {
-                    console.log("Update product layout successfully.");
+                    if(response.msg == "successful"){
+                        console.log("Update product layout successfully");
+                    }else{
+                        console.log("Failed to update product layout");
+                    }
                 }, function errorCallback(response) {
                     console.log("Failed to update product layout");
                 });
