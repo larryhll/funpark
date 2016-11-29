@@ -27,4 +27,6 @@ public interface ProductDao {
 
     public List<ProductDO> getLatestProducts();
 
+    public List<ProductDO> getAllDefaultProds();
+
 }

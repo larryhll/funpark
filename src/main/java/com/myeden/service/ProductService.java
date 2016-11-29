@@ -281,6 +281,7 @@ public class ProductService extends BaseService {
             if(handler.getInputStream().available()>0) System.out.println("get input stream");
             writeFileWithStream(file, handler.getInputStream());*/
 //118.178.124.197
+
             String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
         UrlEntity entity=new UrlEntity();
         entity.setUrls(urls);
@@ -332,6 +333,16 @@ public class ProductService extends BaseService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    @GET
+    @Path("/allprods")
+    public Response getAllProdsDefault() {
+
+        List<ProductDO> productDOs = productDao.getAllDefaultProds();
+
+        return Response.ok(productDOs).header("code", "0").build();
     }
 
 
