@@ -123,15 +123,9 @@ $(function() {
         $scope.productItems = [];
         $scope.layoutUpdate = {"entities": []};
 
-        var searchProductByFilters = {};
-        searchProductByFilters.type = 1;
-        searchProductByFilters.publishState = 1;
-        searchProductByFilters.productRecommend = 1;
-        searchProductByFilters.productCategory = "故事";
-
-        $http.post(apiPath + "eden/prods/lists", searchProductByFilters)
+        $http.get(apiPath + "eden/prods/allprods")
             .then(function successCallback(response) {
-                console.log("Get product list by filter successfully.");
+                console.log("Get all product list successfully.");
                 $scope.productItems = response.data;
 
                 //get layout items
@@ -346,59 +340,57 @@ $(function() {
         $scope.thirdScreenShot = "";
 
         //get product item with id
-        $http.get(apiPath + "eden/prods/" + $routeParams.productID)
-            .then(function successCallback(response) {
-                console.log("Success to get AR product item: " + $routeParams.productID);
-                $scope.productInfo = response.data;
-                //parse images list
-                var imageArr = response.data.productImages.split(',');
-                $scope.firstScreenShot = (typeof imageArr[0] === "undefined" ? "" : imageArr[0]);
-                $scope.secondScreenShot = (typeof imageArr[1] === "undefined" ? "" : imageArr[1]);
-                $scope.thirdScreenShot = (typeof imageArr[2] === "undefined" ? "" : imageArr[2]);
+        var getProductItem = function(){
+            $http.get(apiPath + "eden/prods/" + $routeParams.productID)
+                .then(function successCallback(response) {
+                    console.log("Success to get AR product item: " + $routeParams.productID);
+                    $scope.productInfo = response.data;
+                    //parse images list
+                    var imageArr = response.data.productImages.split(',');
+                    $scope.firstScreenShot = (typeof imageArr[0] === "undefined" ? "" : imageArr[0]);
+                    $scope.secondScreenShot = (typeof imageArr[1] === "undefined" ? "" : imageArr[1]);
+                    $scope.thirdScreenShot = (typeof imageArr[2] === "undefined" ? "" : imageArr[2]);
 
-                $scope.productInfo.productAppEnabled = $scope.productInfo.productAppEnabled == 0 ? true : false;
-                $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled == 0 ? true : false;
-                $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled == 0 ? true : false;
-            }, function errorCallback(response) {
-                console.log("Failed to get AR product item");
-            });
+                    var mediaTypeArr = response.data.media.split(',');
+                    (mediaTypeArr.indexOf("电子书")>=0) ? $scope.mediaTypeElectricBook = true : $scope.mediaTypeElectricBook = false;
+                    (mediaTypeArr.indexOf("书籍")>=0) ? $scope.mediaTypeBook = true : $scope.mediaTypeBook = false;
+                    (mediaTypeArr.indexOf("卡牌")>=0) ? $scope.mediaTypeCard = true : $scope.mediaTypeCard = false;
+                    (mediaTypeArr.indexOf("教具")>=0) ? $scope.mediaTypeTeachTool = true : $scope.mediaTypeTeachTool = false;
+                    (mediaTypeArr.indexOf("益智玩具")>=0) ? $scope.mediaTypeIntelligentToy = true : $scope.mediaTypeIntelligentToy = false;
+                    (mediaTypeArr.indexOf("其它")>=0) ? $scope.mediaTypeOther = true : $scope.mediaTypeOther = false;
 
-        //get level one and two category list
-        $http.get(apiPath + "eden/cates/list/levelone")
-            .then(function successCallback(response) {
-                $scope.levelOneCategoryItems = response.data;
+                    $scope.productInfo.productAppEnabled = $scope.productInfo.productAppEnabled == 0 ? true : false;
+                    $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled == 0 ? true : false;
+                    $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled == 0 ? true : false;
 
-                if (response.data.length > 0){
-                    $scope.levelOneCategory = response.data[0];
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            if (response.data.length > 0){
-                                $scope.levelTwoCategory = response.data[0];
-                            }
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
-                }
-            }, function errorCallback(response) {
-                console.log("Failed to get the first level category");
-            });
+                    $("#productMatchAgeScope").prop('selectedIndex', $scope.productInfo.productMatchScope);
+                    angular.forEach($scope.levelTwoCategoryItems, function(item){
+                        if(item.categoryName == $scope.productInfo.productCategory){
+                            $scope.levelTwoCategory = item;
+                        }
+                    });
+                }, function errorCallback(response) {
+                    console.log("Failed to get AR product item");
+                });
+        };
         //change level two category list with level one changed
-        $scope.changeLevelOneCategory = function(){
+        var initialize = function(){
             //get level two category
-            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+            $http.get(apiPath + "eden/cates/list/leveltwo")
                 .then(function successCallback(response) {
                     $scope.levelTwoCategory = {};
                     $scope.levelTwoCategoryItems = response.data;
                     if (response.data.length > 0){
                         $scope.levelTwoCategory = response.data[0];
                     }
-                    console.log("Success to get the second level category");
+                    getProductItem();
+                    console.log("Success to get all the second level category");
                 }, function errorCallback(response) {
-                    console.log("Failed to get the second level category");
+                    console.log("Failed to get all the second level category");
                 });
         };
+        //initialize product page
+        initialize();
 
         //update image file
         var updateImage = function(files, imageDisplayID, imageType){
@@ -492,16 +484,51 @@ $(function() {
             console.log("Click product QR code image file selection dialog");
         };
 
+        //update APK file
+        var updateAPKFile = function(files){
+            console.log("Selected file number: " + files.length);
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload APK file successfully");
+                        $scope.productInfo.productApkDownUrl = response.data.urls;
+                    }else{
+                        console.log("Failed to upload APK file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload APK file");
+                });
+        };
+        $scope.updateAPKFile = function(){
+            updateAPKFile($scope.apkFile);
+        };
+        $scope.updateAPKFileStart = function(){
+            $("#apkFileSelect").click();
+            console.log("Click APK file selection dialog");
+        };
+
         //submit product info
         $scope.submitProductInfo = function(){
             //get product item info from input
-            $scope.productInfo.type = 1;
-            $scope.productInfo.publishState = 1;
-            $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.productMatchScope = 3;
+            var mediaItems = [];
+            mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
+            mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
+            mediaItems.push($scope.mediaTypeCard ? "卡牌" : "");
+            mediaItems.push($scope.mediaTypeTeachTool ? "教具" : "");
+            mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
+            mediaItems.push($scope.mediaTypeOther ? "其它" : "");
+            $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
+            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
+
             var productScreenshotImage = [];
             if($scope.firstScreenShot !== ""){
                 productScreenshotImage.push($scope.firstScreenShot);
@@ -545,42 +572,18 @@ $(function() {
         $scope.secondScreenShot = "";
         $scope.thirdScreenShot = "";
 
-        //get level one and two category list
-        $http.get(apiPath + "eden/cates/list/levelone")
+        //get level two category list
+        $http.get(apiPath + "eden/cates/list/leveltwo")
             .then(function successCallback(response) {
-                $scope.levelOneCategoryItems = response.data;
-
+                $scope.levelTwoCategory = {};
+                $scope.levelTwoCategoryItems = response.data;
                 if (response.data.length > 0){
-                    $scope.levelOneCategory = response.data[0];
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            if (response.data.length > 0){
-                                $scope.levelTwoCategory = response.data[0];
-                            }
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
+                    $scope.levelTwoCategory = response.data[0];
                 }
+                console.log("Success to get all the second level category");
             }, function errorCallback(response) {
-                console.log("Failed to get the first level category");
+                console.log("Failed to get all the second level category");
             });
-        //change level two category list with level one changed
-        $scope.changeLevelOneCategory = function(){
-            //get level two category
-            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
-                .then(function successCallback(response) {
-                    $scope.levelTwoCategory = {};
-                    $scope.levelTwoCategoryItems = response.data;
-                    if (response.data.length > 0){
-                        $scope.levelTwoCategory = response.data[0];
-                    }
-                    console.log("Success to get the second level category");
-                }, function errorCallback(response) {
-                    console.log("Failed to get the second level category");
-                });
-        };
 
         //update image file
         var updateImage = function(files, imageDisplayID, imageType){
@@ -674,6 +677,36 @@ $(function() {
             console.log("Click product QR code image file selection dialog");
         };
 
+        //update APK file
+        var updateAPKFile = function(files){
+            console.log("Selected file number: " + files.length);
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload APK file successfully");
+                        $scope.productInfo.productApkDownUrl = response.data.urls;
+                    }else{
+                        console.log("Failed to upload APK file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload APK file");
+                });
+        };
+        $scope.updateAPKFile = function(){
+            updateAPKFile($scope.apkFile);
+        };
+        $scope.updateAPKFileStart = function(){
+            $("#apkFileSelect").click();
+            console.log("Click APK file selection dialog");
+        };
+
         //submit product info
         $scope.submitProductInfo = function(){
             //get product item info from input
@@ -681,9 +714,16 @@ $(function() {
             $scope.productInfo.publishState = 1;
             $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
-            $scope.productInfo.productMatchScope = 3;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            var mediaItems = [];
+            mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
+            mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
+            mediaItems.push($scope.mediaTypeCard ? "卡牌" : "");
+            mediaItems.push($scope.mediaTypeTeachTool ? "教具" : "");
+            mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
+            mediaItems.push($scope.mediaTypeOther ? "其它" : "");
+            $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
+            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
             $scope.productInfo.productImages = "";
             var productScreenshotImage = [];
             if($scope.firstScreenShot !== ""){
@@ -723,50 +763,48 @@ $(function() {
     app.controller("updateVideoDetailCtrl", function($scope, $http, $routeParams, productBackAction){
         console.log("Product ID: "+ $routeParams.productID);
         //get product item with id
-        $http.get(apiPath + "eden/prods/" + $routeParams.productID)
-            .then(function successCallback(response) {
-                console.log("Success to get product item: " + $routeParams.productID);
-                $scope.productInfo = response.data;
-            }, function errorCallback(response) {
-                console.log("Failed to get the product item");
-            });
+        var getProductItem = function(){
+            $http.get(apiPath + "eden/prods/" + $routeParams.productID)
+                .then(function successCallback(response) {
+                    console.log("Success to get Video product item: " + $routeParams.productID);
+                    $scope.productInfo = response.data;
 
-        //get level one and two category list
-        $http.get(apiPath + "eden/cates/list/levelone")
-            .then(function successCallback(response) {
-                $scope.levelOneCategoryItems = response.data;
+                    var mediaTypeArr = response.data.media.split(',');
+                    (mediaTypeArr.indexOf("电子书")>=0) ? $scope.mediaTypeElectricBook = true : $scope.mediaTypeElectricBook = false;
+                    (mediaTypeArr.indexOf("书籍")>=0) ? $scope.mediaTypeBook = true : $scope.mediaTypeBook = false;
+                    (mediaTypeArr.indexOf("卡牌")>=0) ? $scope.mediaTypeCard = true : $scope.mediaTypeCard = false;
+                    (mediaTypeArr.indexOf("教具")>=0) ? $scope.mediaTypeTeachTool = true : $scope.mediaTypeTeachTool = false;
+                    (mediaTypeArr.indexOf("益智玩具")>=0) ? $scope.mediaTypeIntelligentToy = true : $scope.mediaTypeIntelligentToy = false;
+                    (mediaTypeArr.indexOf("其它")>=0) ? $scope.mediaTypeOther = true : $scope.mediaTypeOther = false;
 
-                if (response.data.length > 0){
-                    $scope.levelOneCategory = response.data[0];
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            if (response.data.length > 0){
-                                $scope.levelTwoCategory = response.data[0];
-                            }
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
-                }
-            }, function errorCallback(response) {
-                console.log("Failed to get the first level category");
-            });
+                    $("#productMatchAgeScope").prop('selectedIndex', $scope.productInfo.productMatchScope);
+                    angular.forEach($scope.levelTwoCategoryItems, function(item){
+                        if(item.categoryName == $scope.productInfo.productCategory){
+                            $scope.levelTwoCategory = item;
+                        }
+                    });
+                }, function errorCallback(response) {
+                    console.log("Failed to get AR product item");
+                });
+        };
         //change level two category list with level one changed
-        $scope.changeLevelOneCategory = function(){
+        var initialize = function(){
             //get level two category
-            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
+            $http.get(apiPath + "eden/cates/list/leveltwo")
                 .then(function successCallback(response) {
                     $scope.levelTwoCategory = {};
                     $scope.levelTwoCategoryItems = response.data;
                     if (response.data.length > 0){
                         $scope.levelTwoCategory = response.data[0];
                     }
-                    console.log("Success to get the second level category");
+                    getProductItem();
+                    console.log("Success to get all the second level category");
                 }, function errorCallback(response) {
-                    console.log("Failed to get the second level category");
+                    console.log("Failed to get all the second level category");
                 });
         };
+        //initialize product page
+        initialize();
 
         //update image file
         var updateImage = function(files, imageDisplayID, imageType){
@@ -838,6 +876,18 @@ $(function() {
         //submit product info
         $scope.submitProductInfo = function(){
             $scope.productInfo.productModifyDate = new Date();
+            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            var mediaItems = [];
+            mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
+            mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
+            mediaItems.push($scope.mediaTypeCard ? "卡牌" : "");
+            mediaItems.push($scope.mediaTypeTeachTool ? "教具" : "");
+            mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
+            mediaItems.push($scope.mediaTypeOther ? "其它" : "");
+            $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
+            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
+
             $http.post(apiPath + "eden/prods/update", $scope.productInfo)
                 .then(function successCallback(response) {
                     if(response.status === 200){
@@ -861,42 +911,18 @@ $(function() {
         $scope.productInfo = {};
         $scope.productInfo.videoDOs = [];
 
-        //get level one and two category list
-        $http.get(apiPath + "eden/cates/list/levelone")
+        //get level two category list
+        $http.get(apiPath + "eden/cates/list/leveltwo")
             .then(function successCallback(response) {
-                $scope.levelOneCategoryItems = response.data;
-
+                $scope.levelTwoCategory = {};
+                $scope.levelTwoCategoryItems = response.data;
                 if (response.data.length > 0){
-                    $scope.levelOneCategory = response.data[0];
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            if (response.data.length > 0){
-                                $scope.levelTwoCategory = response.data[0];
-                            }
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
+                    $scope.levelTwoCategory = response.data[0];
                 }
+                console.log("Success to get all the second level category");
             }, function errorCallback(response) {
-                console.log("Failed to get the first level category");
+                console.log("Failed to get all the second level category");
             });
-        //change level two category list with level one changed
-        $scope.changeLevelOneCategory = function(){
-            //get level two category
-            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategory.id)
-                .then(function successCallback(response) {
-                    $scope.levelTwoCategory = {};
-                    $scope.levelTwoCategoryItems = response.data;
-                    if (response.data.length > 0){
-                        $scope.levelTwoCategory = response.data[0];
-                    }
-                    console.log("Success to get the second level category");
-                }, function errorCallback(response) {
-                    console.log("Failed to get the second level category");
-                });
-        };
 
         //update image file
         var updateImage = function(files, imageDisplayID, imageType){
@@ -967,15 +993,20 @@ $(function() {
 
         //submit product info
         $scope.submitProductInfo = function(){
-
-            //get product item info from input
             $scope.productInfo.type = 0;
             $scope.productInfo.publishState = 1;
             $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.media = "电子书,书籍,教具,益智玩具";
-            $scope.productInfo.productMatchScope = 3;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            var mediaItems = [];
+            mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
+            mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
+            mediaItems.push($scope.mediaTypeCard ? "卡牌" : "");
+            mediaItems.push($scope.mediaTypeTeachTool ? "教具" : "");
+            mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
+            mediaItems.push($scope.mediaTypeOther ? "其它" : "");
+            $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
+            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
@@ -1074,15 +1105,6 @@ $(function() {
                 });
         };
 
-        //check update modal dialog fields
-        $scope.fieldCheck = function(){
-            if(typeof $scope.levelOneCategoryName === "undefined"){
-                $scope.updateFormInvalid = true;
-            }else{
-                $scope.updateFormInvalid = false;
-            }
-        };
-
         //create level one category
         $scope.createFirstCategory = function(){
             var newFirstCategory = {};
@@ -1113,7 +1135,6 @@ $(function() {
     app.controller("secondLevelCategoryCtrl", function ($scope, $http){
         $scope.levelTwoCategoryItems = null;
         $scope.levelOneCategoryItems = null;
-        $scope.firstCategorySelected = null;
         loading();
 
         //Get first level category list data
@@ -1123,6 +1144,7 @@ $(function() {
 
                 if (response.data.length > 0){
                     $scope.levelOneCategorySelected = response.data[0];
+                    $scope.levelOneCategoryForLevelTwoCreation = response.data[0];
 
                     //get level two category
                     $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
@@ -1223,12 +1245,6 @@ $(function() {
                     console.log("Failed to update level two category item ");
                 });
         };
-        $scope.updateFormValidate = function(){
-            $scope.updateFormInvalid = false;
-            if($scope.levelTwoCategoryUpdated === ""){
-                $scope.updateFormInvalid = true;
-            }
-        };
 
         //create level two category
         $scope.createLevelTwoCategory = function(){
@@ -1256,12 +1272,6 @@ $(function() {
                 }, function errorCallback(response) {
                     console.log("Failed to create level two category item ");
                 });
-        };
-        $scope.createFormValidate = function(){
-            $scope.createFormInvalid = false;
-            if(null === $scope.levelOneCategoryForLevelTwoCreation || $scope.levelTwoCategoryForLevelTwoCreation === ""){
-                $scope.createFormInvalid = true;
-            }
         };
     });
     app.controller("userAdminCtrl", function ($scope, $http){

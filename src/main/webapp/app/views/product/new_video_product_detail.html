@@ -34,7 +34,7 @@
                                 <form role="form">
                                     <div class="form-group">
                                         <label>评分：</label>
-                                        <input class="form-control" placeholder="输入评分..." ng-model="productInfo.score" required>
+                                        <input class="form-control" placeholder="输入评分..." ng-model="productInfo.productScore" required>
                                     </div>
                                 </form>
                             </div>
@@ -59,13 +59,12 @@
                                 <form role="form">
                                     <div class="form-group">
                                         <label>适合年龄:</label>
-                                        <div class="checkbox">
-                                            <label><input type="checkbox" id="matchAgeThree" ng-model="matchAgeThree">3岁&nbsp;&nbsp;</label>
-                                            <label><input type="checkbox" id="matchAgeFour" ng-model="matchAgeFour">4岁&nbsp;&nbsp;</label>
-                                            <label><input type="checkbox" id="matchAgeFive" ng-model="matchAgeFive">5岁&nbsp;&nbsp;</label>
-                                            <label><input type="checkbox" id="matchAgeSix" ng-model="matchAgeSix">6岁&nbsp;&nbsp;</label>
-                                            <label><input type="checkbox" id="matchAgeSeven" ng-model="matchAgeSeven">7岁</label>
-                                        </div>
+                                        <select class="form-control" id="productMatchAgeScope" ng-model="productInfo.productMatchScope" required>
+                                            <option selected>3-4岁</option>
+                                            <option>4-5岁</option>
+                                            <option>5-6岁</option>
+                                            <option>6-7岁</option>
+                                        </select>
                                     </div>
                                 </form>
                             </div>
@@ -74,17 +73,7 @@
                             <div class="col-lg-4">
                                 <form role="form">
                                     <div class="form-group">
-                                        <label for="levelOneCategory">一级分类:</label>
-                                        <select class="form-control" id="levelOneCategory" ng-model="levelOneCategory" ng-options="option as option.categoryName for option in levelOneCategoryItems track by option.id" ng-change="changeLevelOneCategory()">
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-lg-4">
-                                <form role="form">
-                                    <div class="form-group">
-                                        <label for="levelTwoCategory">二级分类:</label>
+                                        <label for="levelTwoCategory">产品分类:</label>
                                         <select class="form-control" id="levelTwoCategory" ng-model="levelTwoCategory" ng-options="option as option.categoryName for option in levelTwoCategoryItems track by option.id" required>
                                             <option></option>
                                         </select>
