@@ -17,6 +17,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.*;
+import java.net.Inet4Address;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -266,6 +267,7 @@ public class ProductService extends BaseService {
         fileName = ss + getRamdom4Number() + "." + aa[1];
         //fileName=fileName+getRamdom4Number();
         writeToFile(handler.getInputStream(),papa+"/"+fileName);
+
 
       /*      ContentDisposition cd = attachment.getContentDisposition();
         Map<String, String> maps=cd.getParameters();
