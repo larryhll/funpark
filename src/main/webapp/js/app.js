@@ -7,7 +7,7 @@
  */
 
 $(function() {
-    var apiPath = "http://118.178.124.197:8080/";
+    var apiPath = "http://15.107.9.7:8080/";
     var loading = function(){
         var loadScreenDiv = $("#loadingScreen");
         var loadingScreenLen = loadScreenDiv.width();
