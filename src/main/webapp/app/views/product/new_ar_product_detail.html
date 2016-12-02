@@ -194,7 +194,7 @@
                                 <div class="panel panel-default">
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-lg-4">
+                                            <div class="col-lg-8">
                                                 <form role="form">
                                                     <div class="form-group">
                                                         <label>版本号：</label>
@@ -215,16 +215,12 @@
                                                         <button style="display:none" ng-click="updateAPKFile()"></button>
                                                         <button class="btn btn-default" ng-click="updateAPKFileStart()" style="display: block; margin-top: 5px">上传/更新APK文件</button>
                                                     </div>
-                                                </form>
-                                            </div>
-                                            <div class="col-lg-8">
-                                                <form role="form">
                                                     <div class="form-group">
                                                         <label>手机端/视端产品微店二维码（建议360*360）：</label>
-                                                            <img id="productQRImage" src="{{productInfo.productMicroStoreByecodeAddr}}" style="display:block; max-height: 200px; width: auto">
-                                                            <input id="productQRFileSelect" type="file" file-input="productQRFile" style="display:none">
-                                                            <button style="display:none" ng-click="updateProductQRImage()"></button>
-                                                            <button class="btn btn-default" ng-click="updateProductQRImageStart()" style="display: block; margin-top: 5px">上传二维码图</button>
+                                                        <img id="productQRImage" src="{{productInfo.productMicroStoreByecodeAddr}}" style="display:block; max-height: 200px; width: auto">
+                                                        <input id="productQRFileSelect" type="file" file-input="productQRFile" style="display:none">
+                                                        <button style="display:none" ng-click="updateProductQRImage()"></button>
+                                                        <button class="btn btn-default" ng-click="updateProductQRImageStart()" style="display: block; margin-top: 5px">上传二维码图</button>
                                                     </div>
                                                 </form>
                                             </div>
