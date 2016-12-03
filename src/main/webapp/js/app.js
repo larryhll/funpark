@@ -1339,13 +1339,13 @@ $(function() {
         //update previous and next page button status, get current page log items
         var pageControlUpdate = function(){
             $scope.pageInTotal = ($scope.allItemsLength/$scope.itemNumOfPage).toFixed();
-            if($scope.allItemsLength % $scope.itemNumOfPage > 0){
+            if($scope.allItemsLength > ($scope.itemNumOfPage * $scope.pageInTotal)){
                 $scope.pageInTotal++;
             }
             $scope.previousInvalid = true;
             ($scope.pageInTotal > $scope.currentPage) ? ($scope.nextInvalid = false) : ($scope.nextInvalid = true);
             ($scope.currentPage > 1) ? ($scope.previousInvalid = false) : ($scope.previousInvalid = true);
-            $scope.logItems = $scope.logAllItems.slice(($scope.currentPage-1)*10,$scope.itemNumOfPage);
+            $scope.logItems = $scope.logAllItems.slice(($scope.currentPage-1) * $scope.itemNumOfPage, $scope.itemNumOfPage);
         };
 
         //change page number selection
