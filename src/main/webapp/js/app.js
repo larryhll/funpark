@@ -385,9 +385,9 @@ $(function() {
                     $scope.productInfo = response.data;
                     //parse images list
                     var imageArr = response.data.productImages.split(',');
-                    $scope.firstScreenShot = (typeof imageArr[0] === "undefined" ? "" : imageArr[0]);
-                    $scope.secondScreenShot = (typeof imageArr[1] === "undefined" ? "" : imageArr[1]);
-                    $scope.thirdScreenShot = (typeof imageArr[2] === "undefined" ? "" : imageArr[2]);
+                    $scope.firstScreenShot = (typeof imageArr[0] == "undefined" ? "" : imageArr[0]);
+                    $scope.secondScreenShot = (typeof imageArr[1] == "undefined" ? "" : imageArr[1]);
+                    $scope.thirdScreenShot = (typeof imageArr[2] == "undefined" ? "" : imageArr[2]);
 
                     var mediaTypeArr = response.data.media.split(',');
                     (mediaTypeArr.indexOf("电子书")>=0) ? $scope.mediaTypeElectricBook = true : $scope.mediaTypeElectricBook = false;
@@ -606,7 +606,7 @@ $(function() {
         console.log("Arrived at new AR product detail page already!!");
         //new product info
         $scope.productInfo = {};
-        $scope.firstScreenShot = "";
+        $scope.firstScreenShot = ""
         $scope.secondScreenShot = "";
         $scope.thirdScreenShot = "";
 
@@ -1310,16 +1310,65 @@ $(function() {
     });
     app.controller("logDownloadCtrl", function ($scope, $http){
         $scope.logItems = null;
+        $scope.allItemsLength = 0;
+        $scope.currentPage = 0;
+        $scope.pageInTotal = 0;
+        $scope.previousInvalid = true;
+        $scope.nextInvalid = true;
+
+        $scope.pageNumType = ["5","10","20","50"];
         loading();
+        $scope.itemNumOfPage = "10";
 
         //Get download log list data
         console.log("Invoke log list controller, get download log list");
         $http.get(apiPath + "eden/logs/lists")
             .then(function successCallback(response) {
-                $scope.logItems = response.data;
+                $scope.logAllItems = response.data;
+                $scope.allItemsLength = $scope.logAllItems.length;
+
+                if($scope.allItemsLength > 0){
+                    $scope.changeNumOfPage();
+                }else{
+                    $scope.logItems = [];
+                }
             }, function errorCallback(response) {
                 console.log("Failed to get log list");
             });
+
+        //update previous and next page button status, get current page log items
+        var pageControlUpdate = function(){
+            $scope.pageInTotal = ($scope.allItemsLength/$scope.itemNumOfPage).toFixed();
+            if($scope.allItemsLength % $scope.itemNumOfPage > 0){
+                $scope.pageInTotal++;
+            }
+            $scope.previousInvalid = true;
+            ($scope.pageInTotal > $scope.currentPage) ? ($scope.nextInvalid = false) : ($scope.nextInvalid = true);
+            ($scope.currentPage > 1) ? ($scope.previousInvalid = false) : ($scope.previousInvalid = true);
+            $scope.logItems = $scope.logAllItems.slice(($scope.currentPage-1)*10,$scope.itemNumOfPage);
+        };
+
+        //change page number selection
+        $scope.changeNumOfPage = function(){
+            console.log("Change number of page to " + $scope.itemNumOfPage);
+            if($scope.allItemsLength > 0){
+                $scope.currentPage = 1;
+                pageControlUpdate();
+            }
+        };
+
+        //click previous page button
+        $scope.previousPage = function(){
+            console.log("Click previous button");
+            $scope.currentPage--;
+            pageControlUpdate();
+        };
+        //click next page button
+        $scope.nextPage = function(){
+            console.log("Click next button");
+            $scope.currentPage++;
+            pageControlUpdate();
+        }
     });
     app.controller("otherUrlCtrl", function () {
         console.log("Otherwise URL contoller...");
