@@ -84,9 +84,9 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="form-group">
-                                        <label>产品描述：</label>
+                                        <label>产品描述(建议1710*1200)：</label>
                                         <div>
-                                            <img id="productDescImage" src="{{productInfo.productDesc}}" style="max-height: 200px; width: auto">
+                                            <img id="productDescImage" src="{{productInfo.productDesc}}" style="max-height: 400px; min-height:400px; max-width:570px; min-width:570px;">
                                             <input id="productDescFileSelect" type="file" file-input="productDescriptionImageFile" style="display:none">
                                             <button style="display:none" ng-click="updateProductDescriptionImage()"></button>
                                             <button class="btn btn-default" ng-click="updateProductDescriptionImageStart()" style="display: block; margin-top: 5px">上传产品描述</button>
@@ -97,9 +97,9 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="form-group">
-                                        <label>产品封面图(建议360*360)：</label>
+                                        <label>产品封面图(建议486*630或792*519)：</label>
                                         <div class="form-group">
-                                            <img id="productCoverImage" src="{{productInfo.productCover}}" style="max-height: 200px; width: auto">
+                                            <img id="productCoverImage" src="{{productInfo.productCover}}" style="max-height: 210px; min-height:173px; max-width:264px; min-width:162px;">
                                             <input id="productCoverFileSelect" type="file" file-input="productCoverImageFile" style="display:none">
                                             <button style="display:none" ng-click="updateProductCoverImage()"></button>
                                             <button class="btn btn-default" ng-click="updateProductCoverImageStart()" style="display: block; margin-top: 5px">上传产品封面</button>

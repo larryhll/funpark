@@ -420,9 +420,9 @@ $(function() {
                     $scope.levelTwoCategoryItems = response.data;
                     if (response.data.length > 0){
                         $scope.levelTwoCategory = response.data[0];
+                        console.log("Success to get all the second level category");
                     }
                     getProductItem();
-                    console.log("Success to get all the second level category");
                 }, function errorCallback(response) {
                     console.log("Failed to get all the second level category");
                 });
@@ -556,6 +556,7 @@ $(function() {
         $scope.submitProductInfo = function(){
             //get product item info from input
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
@@ -603,7 +604,6 @@ $(function() {
         };
     });
     app.controller("newARDetailCtrl", function ($scope, $http, productBackAction) {
-        console.log("Arrived at new AR product detail page already!!");
         //new product info
         $scope.productInfo = {};
         $scope.firstScreenShot = ""
@@ -617,8 +617,8 @@ $(function() {
                 $scope.levelTwoCategoryItems = response.data;
                 if (response.data.length > 0){
                     $scope.levelTwoCategory = response.data[0];
+                    console.log("Success to get all the second level category");
                 }
-                console.log("Success to get all the second level category");
             }, function errorCallback(response) {
                 console.log("Failed to get all the second level category");
             });
@@ -752,6 +752,7 @@ $(function() {
             $scope.productInfo.publishState = 1;
             $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
@@ -799,12 +800,10 @@ $(function() {
         };
     });
     app.controller("updateVideoDetailCtrl", function($scope, $http, $routeParams, productBackAction){
-        console.log("Product ID: "+ $routeParams.productID);
         //get product item with id
         var getProductItem = function(){
             $http.get(apiPath + "eden/prods/" + $routeParams.productID)
                 .then(function successCallback(response) {
-                    console.log("Success to get Video product item: " + $routeParams.productID);
                     $scope.productInfo = response.data;
 
                     var mediaTypeArr = response.data.media.split(',');
@@ -825,23 +824,24 @@ $(function() {
                     console.log("Failed to get AR product item");
                 });
         };
-        //change level two category list with level one changed
+
+        //initialize product info fields
         var initialize = function(){
-            //get level two category
+            //get all level two category list
             $http.get(apiPath + "eden/cates/list/leveltwo")
                 .then(function successCallback(response) {
                     $scope.levelTwoCategory = {};
                     $scope.levelTwoCategoryItems = response.data;
                     if (response.data.length > 0){
                         $scope.levelTwoCategory = response.data[0];
+                        console.log("Success to get all the second level category");
                     }
                     getProductItem();
-                    console.log("Success to get all the second level category");
                 }, function errorCallback(response) {
                     console.log("Failed to get all the second level category");
                 });
         };
-        //initialize product page
+        //call function to initialize product page
         initialize();
 
         //update image file
@@ -915,6 +915,7 @@ $(function() {
         $scope.submitProductInfo = function(){
             $scope.productInfo.productModifyDate = new Date();
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
@@ -929,7 +930,7 @@ $(function() {
             $http.post(apiPath + "eden/prods/update", $scope.productInfo)
                 .then(function successCallback(response) {
                     if(response.status === 200){
-                        console.log("Update video product item successfully.");
+                        console.log("Update video product item successfully, go back to product list page...");
                         productBackAction.setProductBack(true);
                         productBackAction.setType($scope.productInfo.type);
                         productBackAction.setPublishState($scope.productInfo.publishState);
@@ -956,8 +957,8 @@ $(function() {
                 $scope.levelTwoCategoryItems = response.data;
                 if (response.data.length > 0){
                     $scope.levelTwoCategory = response.data[0];
+                    console.log("Success to get all the second level category");
                 }
-                console.log("Success to get all the second level category");
             }, function errorCallback(response) {
                 console.log("Failed to get all the second level category");
             });
@@ -1035,6 +1036,7 @@ $(function() {
             $scope.productInfo.publishState = 1;
             $scope.productInfo.productRecommend = 1;
             $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
             $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
