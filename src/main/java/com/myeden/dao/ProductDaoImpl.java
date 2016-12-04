@@ -110,7 +110,7 @@ public class ProductDaoImpl extends CommonDao implements ProductDao {
     private static final String FIND_LAST_MONTH_PUBLISHED = "select * from PRODUCT where date_format(PRODUCT_UPLOAD_DATE,'%Y-%m')=date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y-%m') and PRODUCT_DELETED=0 and PRODUCT_PUBLISH_STATE=0 order BY PRODUCT_UPLOAD_DATE DESC";
     private static final String FIND_LAST_MONTH_PUBLISHED_All = "select * from PRODUCT where PRODUCT_DELETED=0 and PRODUCT_PUBLISH_STATE=0 order BY PRODUCT_UPLOAD_DATE DESC";
     private static final String FIND_LAST_MONTH_PUBLISHED_All_DEF = "select * from PRODUCT where PRODUCT_DELETED=0 order BY PRODUCT_UPLOAD_DATE DESC";
-
+    private static final String FIND_LAST_MONTH_PUBLISHED_All_Cate = "select * from PRODUCT where PRODUCT_DELETED=0 and PRODUCT_CATEGORY_ID= :arg1 order BY PRODUCT_UPLOAD_DATE DESC";
 
 
     @Transactional
@@ -143,6 +143,14 @@ public class ProductDaoImpl extends CommonDao implements ProductDao {
     public List<ProductDO> getAllDefaultProds() {
         SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_LAST_MONTH_PUBLISHED_All_DEF).addEntity(ProductDO.class);
 
+        return sqlQuery.list();
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDO> getAllProductsByCategoryId(int id) {
+        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_LAST_MONTH_PUBLISHED_All_Cate).addEntity(ProductDO.class);
+        sqlQuery.setInteger("arg1", id);
         return sqlQuery.list();
     }
 

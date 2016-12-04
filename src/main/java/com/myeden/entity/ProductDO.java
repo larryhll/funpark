@@ -119,6 +119,17 @@ public class ProductDO{
     @Column(name = "PRODCUT_SCORE")
     private int productScore;
 
+    @Column(name = "PRODUCT_CATEGORY_ID")
+    private int productCategoryId;
+
+    public int getProductCategoryId() {
+        return productCategoryId;
+    }
+
+    public void setProductCategoryId(int productCategoryId) {
+        this.productCategoryId = productCategoryId;
+    }
+
     public int getProductScore() {
         return productScore;
     }

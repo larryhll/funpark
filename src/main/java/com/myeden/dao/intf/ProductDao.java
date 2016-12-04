@@ -29,4 +29,6 @@ public interface ProductDao {
 
     public List<ProductDO> getAllDefaultProds();
 
+    public List<ProductDO> getAllProductsByCategoryId(int id);
+
 }

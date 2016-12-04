@@ -1,7 +1,9 @@
 package com.myeden.service;
 
 import com.myeden.dao.intf.CategoryDao;
+import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.CategoryDO;
+import com.myeden.entity.ProductDO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
@@ -19,6 +21,9 @@ public class CategoryService extends BaseService{
 
     @Autowired
     private CategoryDao categoryDao;
+
+    @Autowired
+    private ProductDao productDao;
 
     @POST
     @Path("/add")
@@ -45,8 +50,18 @@ public class CategoryService extends BaseService{
         try {
             CategoryDO categoryDO = OBJECT_MAPPER.readValue(request, CategoryDO.class);
             // categoryDO = categoryDao.findCategoryByID(categoryDO.getId());
+
             categoryDao.update(categoryDO);
-            Response.ok().build();
+            if(categoryDO.getCategoryLevel()==2) {
+                List<ProductDO> productDOs = productDao.getAllProductsByCategoryId(categoryDO.getId());
+                if (null != productDOs && productDOs.size() > 0) {
+                    for (ProductDO productDO : productDOs) {
+                        productDO.setProductCategory(categoryDO.getCategoryName());
+                        productDao.update(productDO);
+                    }
+                }
+            }
+           return Response.ok().header("code","0").build();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,6 +99,16 @@ public class CategoryService extends BaseService{
         if (null != categoryDO) {
             categoryDO.setCategoryDeleted(1);
             categoryDao.update(categoryDO);
+            if(categoryDO.getCategoryLevel()==2) {
+            List<ProductDO> productDOs = productDao.getAllProductsByCategoryId(categoryDO.getId());
+                if (null != productDOs && productDOs.size() > 0) {
+                    for (ProductDO productDO : productDOs) {
+                        productDO.setProductCategory("");
+                        productDO.setProductCategoryId(0);
+                        productDao.update(productDO);
+                    }
+                }
+             }
         }
         return Response.ok().build();
     }

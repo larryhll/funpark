@@ -47,6 +47,12 @@ public class ProductService extends BaseService {
             if (null==productDO) {
                 return Response.ok().header("code", "802").header("msg", "No Data").build();
             }
+         /*   CategoryDO categoryDO=categoryDao.findCategoryByName(productDO.getProductCategory());
+            productDO.setCategoryDeleted(categoryDO.getCategoryDeleted());
+            productDO.setCategoryLevel(categoryDO.getCategoryLevel());
+            productDO.setCategoryName(categoryDO.getCategoryName());
+            productDO.setCategoryPrevious(categoryDO.getCategoryPrevious());
+            productDO.setCategoryUpdateDate(categoryDO.getCategoryUpdateDate());*/
             return Response.ok(productDO).header("code","0").build();
 
         } catch (Exception e) {
