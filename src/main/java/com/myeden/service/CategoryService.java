@@ -97,10 +97,11 @@ public class CategoryService extends BaseService{
     public Response deleteCategoryById(@PathParam("id") int id) {
         CategoryDO categoryDO = categoryDao.findCategoryByID(id);
         if (null != categoryDO) {
-            categoryDO.setCategoryDeleted(1);
-            categoryDao.update(categoryDO);
+
             if(categoryDO.getCategoryLevel()==2) {
-            List<ProductDO> productDOs = productDao.getAllProductsByCategoryId(categoryDO.getId());
+                 List<ProductDO> productDOs = productDao.getAllProductsByCategoryId(categoryDO.getId());
+                categoryDO.setCategoryDeleted(1);
+                categoryDao.update(categoryDO);
                 if (null != productDOs && productDOs.size() > 0) {
                     for (ProductDO productDO : productDOs) {
                         productDO.setProductCategory("");
@@ -108,7 +109,7 @@ public class CategoryService extends BaseService{
                         productDao.update(productDO);
                     }
                 }
-             }
+            }
         }
         return Response.ok().build();
     }
