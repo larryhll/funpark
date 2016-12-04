@@ -83,7 +83,7 @@
                                     <label>产品描述(建议1710*1200)：</label>
                                     <div>
                                         <img id="productDescImage" src="{{productInfo.productDesc}}" style="max-height: 400px; min-height: 400px; max-width: 570px; min-width: 570px">
-                                        <input id="productDescFileSelect" type="file" file-input="productDescriptionImageFile" style="display:none">
+                                        <input id="productDescFileSelect" type="file" file-input="productDescriptionImageFile" accept=".png,.jpg" style="display:none">
                                         <button style="display:none" ng-click="updateProductDescriptionImage()"></button>
                                         <button class="btn btn-default" ng-click="updateProductDescriptionImageStart()" style="display: block; margin-top: 5px">上传产品描述图</button>
                                     </div>
@@ -96,7 +96,7 @@
                                     <label>产品封面图(建议486*630或792*519)：</label>
                                     <div class="form-group">
                                         <img id="productCoverImage" src="{{productInfo.productCover}}" style="max-height: 210px; min-height:173px; max-width:264px; min-width:162px;">
-                                        <input id="productCoverFileSelect" type="file" file-input="productCoverImageFile" style="display:none">
+                                        <input id="productCoverFileSelect" type="file" file-input="productCoverImageFile" accept=".png,.jpg" style="display:none">
                                         <button style="display:none" ng-click="updateProductCoverImage()"></button>
                                         <button class="btn btn-default" ng-click="updateProductCoverImageStart()" style="display: block; margin-top: 5px">上传产品封面</button>
                                     </div>
@@ -111,21 +111,21 @@
                                         <div class="col-lg-4">
                                             <img ng-if="firstScreenShot.length>0" id="productScreenShotFirstImage" src="{{firstScreenShot}}" style="max-height: 120px; min-height:120px; max-width:180px; min-width:180px;">
                                             <img ng-if="firstScreenShot.length==0" id="productScreenShotFirstImage" src="img/blank.jpg" style="max-height: 120px; min-height:120px; max-width:180px; min-width:180px;">
-                                            <input id="productScreenShotFirstFileSelect" type="file" file-input="firstScreenShotFile" style="display:none">
+                                            <input id="productScreenShotFirstFileSelect" type="file" file-input="firstScreenShotFile" accept=".png,.jpg" style="display:none">
                                             <button style="display:none" ng-click="updateFirstScreenShotImage()"></button>
                                             <button class="btn btn-default" ng-click="updateFirstScreenShotImageStart()" style="display: block; margin-top: 5px">上传产品截图1</button>
                                         </div>
                                         <div class="col-lg-4">
                                             <img ng-if="secondScreenShot.length>0" id="productScreenShotSecondImage" src="{{secondScreenShot}}" style="max-height: 120px; min-height:120px; max-width:180px; min-width:180px;">
                                             <img ng-if="secondScreenShot.length==0" id="productScreenShotSecondImage" src="img/blank.jpg" style="max-height: 120px; min-height:120px; max-width:180px; min-width:180px;">
-                                            <input id="productScreenShotSecondFileSelect" type="file" file-input="secondScreenShotFile" style="display:none">
+                                            <input id="productScreenShotSecondFileSelect" type="file" file-input="secondScreenShotFile" accept=".png,.jpg" style="display:none">
                                             <button style="display:none" ng-click="updateSecondScreenShotImage()"></button>
                                             <button class="btn btn-default" ng-click="updateSecondScreenShotImageStart()" style="display: block; margin-top: 5px">上传产品截图2</button>
                                         </div>
                                         <div class="col-lg-4">
                                             <img ng-if="thirdScreenShot.length>0" id="productScreenShotThirdImage" src="{{thirdScreenShot}}" style="max-height: 120px; min-height:120px; max-width:180px; min-width:180px;">
                                             <img ng-if="thirdScreenShot.length==0" id="productScreenShotThirdImage" src="img/blank.jpg" style="max-height: 120px; min-height:120px; max-width:180px; min-width:180px;">
-                                            <input id="productScreenShotThirdFileSelect" type="file" file-input="thirdScreenShotFile" style="display:none">
+                                            <input id="productScreenShotThirdFileSelect" type="file" file-input="thirdScreenShotFile" accept=".png,.jpg" style="display:none">
                                             <button style="display:none" ng-click="updateThirdScreenShotImage()"></button>
                                             <button class="btn btn-default" ng-click="updateThirdScreenShotImageStart()" style="display: block; margin-top: 5px">上传产品截图3</button>
                                         </div>
@@ -151,7 +151,7 @@
                                     </div>
                                     <div>
                                         <img id="productTrialImage" src="{{productInfo.productTrialAddr}}" style="max-height: 135px; min-height:135px; max-width:570px; min-width:570px;">
-                                        <input id="productTrialFileSelect" type="file" file-input="productTrialFile" style="display:none">
+                                        <input id="productTrialFileSelect" type="file" file-input="productTrialFile" accept=".png,.jpg" style="display:none">
                                         <button style="display:none" ng-click="updateProductTrialImage()"></button>
                                         <button class="btn btn-default" ng-click="updateProductTrialImageStart()" style="display: block; margin-top: 5px">上传试用体验图</button>
                                     </div>
@@ -188,14 +188,14 @@
                                                 <div class="form-group">
                                                     <label>APK URL：</label>
                                                     <span ng-bind="productInfo.productApkDownUrl"></span>
-                                                    <input id="apkFileSelect" type="file" file-input="apkFile" style="display:none">
+                                                    <input id="apkFileSelect" type="file" file-input="apkFile" accept=".apk" style="display:none">
                                                     <button style="display:none" ng-click="updateAPKFile()"></button>
                                                     <button class="btn btn-default" ng-click="updateAPKFileStart()" style="display: block; margin-top: 5px">上传/更新APK文件</button>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>手机端/视端产品微店二维码（建议240*240）：</label>
                                                     <img id="productQRImage" src="{{productInfo.productMicroStoreByecodeAddr}}" style="display:block; max-height: 80px; min-height:80px; max-width:80px; min-width:80px;">
-                                                    <input id="productQRFileSelect" type="file" file-input="productQRFile" style="display:none">
+                                                    <input id="productQRFileSelect" type="file" file-input="productQRFile" accept=".png,.jpg" style="display:none">
                                                     <button style="display:none" ng-click="updateProductQRImage()"></button>
                                                     <button class="btn btn-default" ng-click="updateProductQRImageStart()" style="display: block; margin-top: 5px">上传二维码图</button>
                                                 </div>

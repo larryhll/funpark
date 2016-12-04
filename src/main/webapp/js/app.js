@@ -1072,10 +1072,14 @@ $(function() {
         $scope.firstLevelCategoryItems = null;
         loading();
 
+        //temp level one category items array for search feature
+        firstLevelCategoryItems_temp = [];
+
         //Get first level category list data
         $http.get(apiPath + "eden/cates/list/levelone")
             .then(function successCallback(response) {
                 $scope.firstLevelCategoryItems = response.data;
+                firstLevelCategoryItems_temp = $scope.firstLevelCategoryItems;
             }, function errorCallback(response) {
                 console.log("Failed to get the first level category");
             });
@@ -1087,7 +1091,6 @@ $(function() {
                 return;
             }
 
-            firstLevelCategoryItems_temp = $scope.firstLevelCategoryItems;
             $scope.firstLevelCategoryItems = [];
             var pattern = new RegExp($scope.firstCategorySearch, "i");
             for(var item in firstLevelCategoryItems_temp){
