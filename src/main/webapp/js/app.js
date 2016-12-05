@@ -402,6 +402,7 @@ $(function() {
                     $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled == 0 ? true : false;
 
                     $("#productMatchAgeScope").prop('selectedIndex', $scope.productInfo.productMatchScope);
+                    $scope.matchAge = $("#productMatchAgeScope").val();
                     angular.forEach($scope.levelTwoCategoryItems, function(item){
                         if(item.categoryName == $scope.productInfo.productCategory){
                             $scope.levelTwoCategory = item;
@@ -609,6 +610,7 @@ $(function() {
         $scope.firstScreenShot = ""
         $scope.secondScreenShot = "";
         $scope.thirdScreenShot = "";
+        $scope.mediaTypeElectricBook = true;
 
         //get level two category list
         $http.get(apiPath + "eden/cates/list/leveltwo")
@@ -815,6 +817,7 @@ $(function() {
                     (mediaTypeArr.indexOf("其它")>=0) ? $scope.mediaTypeOther = true : $scope.mediaTypeOther = false;
 
                     $("#productMatchAgeScope").prop('selectedIndex', $scope.productInfo.productMatchScope);
+                    $scope.matchAge = $("#productMatchAgeScope").val();
                     angular.forEach($scope.levelTwoCategoryItems, function(item){
                         if(item.categoryName == $scope.productInfo.productCategory){
                             $scope.levelTwoCategory = item;
@@ -949,6 +952,7 @@ $(function() {
         //new product info
         $scope.productInfo = {};
         $scope.productInfo.videoDOs = [];
+        $scope.mediaTypeElectricBook = true;
 
         //get level two category list
         $http.get(apiPath + "eden/cates/list/leveltwo")
