@@ -86,7 +86,7 @@ public class ProductDO{
     private Calendar productUploadDate;
 
     @Column(name = "PRODUCT_MATCH_SCOPE")
-    private int productMatchScope;
+    private String productMatchScope;
 
     @Column(name = "PRODUCT_MENU_TYPE")
     private int productMenuType;
@@ -346,11 +346,11 @@ public class ProductDO{
         this.productUploadDate = productUploadDate;
     }
 
-    public int getProductMatchScope() {
+    public String getProductMatchScope() {
         return productMatchScope;
     }
 
-    public void setProductMatchScope(int productMatchScope) {
+    public void setProductMatchScope(String productMatchScope) {
         this.productMatchScope = productMatchScope;
     }
 

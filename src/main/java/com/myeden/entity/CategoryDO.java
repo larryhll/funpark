@@ -19,15 +19,6 @@ public class CategoryDO {
     @Column(name = "CATEGORY_NAME")
     private String categoryName;
 
-    @Column(name = "CATEGORY_UPDATE_DATE")
-    private Calendar categoryUpdateDate;
-
-    @Column(name = "CATEGORY_LEVEL")
-    private int categoryLevel;
-
-    @Column(name = "CATEGORY_PREVIOUS")
-    private int categoryPrevious;
-
     @Column(name = "CATEGORY_DELETED")
     private int categoryDeleted;
 
@@ -45,30 +36,6 @@ public class CategoryDO {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public Calendar getCategoryUpdateDate() {
-        return categoryUpdateDate;
-    }
-
-    public void setCategoryUpdateDate(Calendar categoryUpdateDate) {
-        this.categoryUpdateDate = categoryUpdateDate;
-    }
-
-    public int getCategoryLevel() {
-        return categoryLevel;
-    }
-
-    public void setCategoryLevel(int categoryLevel) {
-        this.categoryLevel = categoryLevel;
-    }
-
-    public int getCategoryPrevious() {
-        return categoryPrevious;
-    }
-
-    public void setCategoryPrevious(int categoryPrevious) {
-        this.categoryPrevious = categoryPrevious;
     }
 
     public int getCategoryDeleted() {

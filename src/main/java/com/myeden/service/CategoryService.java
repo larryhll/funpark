@@ -52,15 +52,6 @@ public class CategoryService extends BaseService{
             // categoryDO = categoryDao.findCategoryByID(categoryDO.getId());
 
             categoryDao.update(categoryDO);
-            if(categoryDO.getCategoryLevel()==2) {
-                List<ProductDO> productDOs = productDao.getAllProductsByCategoryId(categoryDO.getId());
-                if (null != productDOs && productDOs.size() > 0) {
-                    for (ProductDO productDO : productDOs) {
-                        productDO.setProductCategory(categoryDO.getCategoryName());
-                        productDao.update(productDO);
-                    }
-                }
-            }
            return Response.ok().header("code","0").build();
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,43 +66,27 @@ public class CategoryService extends BaseService{
     }
 
     @GET
-    @Path("/list/leveltwo/{leveloneId}")
-    public Response findAllLevelsforLevelOne(@PathParam("leveloneId") int leveloneId) {
-
-        List<CategoryDO> categoryDOs = categoryDao.findLevelTwoById(leveloneId);
-        return Response.ok(categoryDOs).build();
-
-    }
-
-    @GET
-    @Path("/list/leveltwo")
-    public Response findAllLevelsforLevelTwoDirectly() {
-
-        List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
-        return Response.ok(categoryDOs).build();
-
-    }
-
-    @GET
     @Path("/delete/{id}")
     public Response deleteCategoryById(@PathParam("id") int id) {
         CategoryDO categoryDO = categoryDao.findCategoryByID(id);
         if (null != categoryDO) {
+            // TODO: 12/6/2016  handle products
+                 List<ProductDO> productDOs = productDao.getAllDefaultProds();
+            if (null != productDOs) {
+                for (ProductDO productDO : productDOs) {
+                    //productDO.setProductCategory();
+                    productDO.setProductCategory(updateProductCategory(productDO.getProductCategory(), categoryDO.getId()));
+                    productDao.update(productDO);
+                }
 
-            if(categoryDO.getCategoryLevel()==2) {
-                 List<ProductDO> productDOs = productDao.getAllProductsByCategoryId(categoryDO.getId());
+            }
+
                 categoryDO.setCategoryDeleted(1);
                 categoryDao.update(categoryDO);
-                if (null != productDOs && productDOs.size() > 0) {
-                    for (ProductDO productDO : productDOs) {
-                        productDO.setProductCategory("");
-                        productDO.setProductCategoryId(0);
-                        productDao.update(productDO);
-                    }
-                }
-            }
+
+            return Response.ok().header("code", "0").build();
         }
-        return Response.ok().build();
+        return Response.ok().header("code", "0").build();
     }
 
 

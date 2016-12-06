@@ -325,10 +325,10 @@ public class MemberServiceImpl extends BaseService{
                 }
             }
 
-            List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
+           List<CategoryDO> categoryDOs = categoryDao.findLevelOne();
             entity.setLayoutDOs(layoutDOs);
             entity.setMemberDO(memberDO);
-            entity.setCategoryDOs(categoryDOs);
+           entity.setCategoryDOs(categoryDOs);
 
             return Response.ok(entity).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
 
@@ -348,7 +348,7 @@ public class MemberServiceImpl extends BaseService{
         try {
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
-            List<CategoryDO> categoryDOs = categoryDao.findLevelTwo();
+            List<CategoryDO> categoryDOs = categoryDao.findLevelOne();
 
             if (layoutDOs == null) {
                 return Response.ok(entity).header("code", "802").build();

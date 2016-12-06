@@ -16,10 +16,7 @@ public class CategoryDaoImpl extends CommonDao implements CategoryDao {
 
     private static final String FIND_CATEGORY_BY_ID = "SELECT * FROM CATEGORY WHERE CATEGORY_ID=:arg1 AND CATEGORY_DELETED=0";
     private static final String FIND_CATEGORY_BY_NAME = "SELECT * FROM CATEGORY WHERE CATEGORY_NAME=:arg1 AND CATEGORY_DELETED=0";
-    private static final String FIND_CATEGORY_BY_LEVEL_ONE = "SELECT * FROM CATEGORY WHERE CATEGORY_LEVEL = 1 AND CATEGORY_DELETED = 0";
-    private static final String FIND_CATEGORY_LEVEL_TWO = "SELECT * FROM CATEGORY WHERE CATEGORY_LEVEL=2 AND CATEGORY_PREVIOUS=:arg1 AND CATEGORY_DELETED=0";
-    private static final String FIND_CATEGORY_LEVEL_TWO_0 = "SELECT * FROM CATEGORY WHERE CATEGORY_LEVEL=2 AND CATEGORY_DELETED=0";
-
+    private static final String FIND_CATEGORY_BY_LEVEL_ONE = "SELECT * FROM CATEGORY WHERE CATEGORY_DELETED = 0";
 
     @Transactional
     @Override
@@ -70,21 +67,4 @@ public class CategoryDaoImpl extends CommonDao implements CategoryDao {
 
     }
 
-    @Transactional
-    @Override
-    public List<CategoryDO> findLevelTwo() {
-        List<CategoryDO> categoryDOs=null;
-        SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_CATEGORY_LEVEL_TWO_0).addEntity(CategoryDO.class);
-        return sqlQuery.list();
-    }
-
-    @Transactional
-    @Override
-    public List<CategoryDO> findLevelTwoById(int id) {
-
-        SQLQuery sqlQuery=template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_CATEGORY_LEVEL_TWO).addEntity(CategoryDO.class);
-        sqlQuery.setInteger("arg1", id);
-        return sqlQuery.list();
-
-    }
 }

@@ -18,10 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.Inet4Address;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by felhan on 11/13/2016.
@@ -220,12 +217,21 @@ public class ProductService extends BaseService {
             return Response.ok().header("code", "802").build();
         }
 
-        List<ProductDO> productDOs = productDao.findProductByCategoryName(categoryDO.getCategoryName());
+        List<ProductDO> productDOs = productDao.getAllDefaultProds();
+        List<ProductDO> productDOs2 = new ArrayList<ProductDO>();
+        if (null != productDOs && productDOs.size() > 0) {
+            for (ProductDO productDO : productDOs) {
+                if (containsCategory(productDO.getProductCategory(), categoryDO.getId())) {
+                    productDOs2.add(productDO);
+                }
+            }
+        }
+
         if (null == productDOs) {
             return Response.ok().header("code", "802").build();
         }
 
-        return Response.ok(productDOs).header("code", "0").build();
+        return Response.ok(productDOs2).header("code", "0").build();
 
     }
 
@@ -270,7 +276,7 @@ public class ProductService extends BaseService {
         //String timees = String.valueOf(new Date().getTime());
         String[]aa=fileName.split("\\.");
         String ss = aa[0];
-        fileName = ss + getRamdom4Number() + "." + aa[1];
+        fileName = String.valueOf(t) + getRamdom4Number() + "." + aa[1];
         //fileName=fileName+getRamdom4Number();
         writeToFile(handler.getInputStream(),papa+"/"+fileName);
 

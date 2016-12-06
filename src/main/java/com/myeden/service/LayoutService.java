@@ -63,6 +63,50 @@ public class LayoutService extends BaseService {
     public Response updateLayouts(String request) {
 
         try {
+            LayoutDO layoutDO1 = layoutDao.findByPosition(1);
+            if (null == layoutDO1) {
+                layoutDO1 = new LayoutDO();
+                layoutDO1.setLayoutProdUrl("");
+                layoutDO1.setLayoutValue(1);
+                layoutDO1.setLayoutDeleted(0);
+                layoutDO1.setLayoutName("layout");
+                layoutDO1.setLayoutPosition(1);
+                layoutDao.save(layoutDO1);
+            }
+
+            layoutDO1 = layoutDao.findByPosition(2);
+            if (null == layoutDO1) {
+                layoutDO1 = new LayoutDO();
+                layoutDO1.setLayoutProdUrl("");
+                layoutDO1.setLayoutValue(1);
+                layoutDO1.setLayoutDeleted(0);
+                layoutDO1.setLayoutName("layout");
+                layoutDO1.setLayoutPosition(2);
+                layoutDao.save(layoutDO1);
+            }
+
+            layoutDO1 = layoutDao.findByPosition(3);
+            if (null == layoutDO1) {
+                layoutDO1 = new LayoutDO();
+                layoutDO1.setLayoutProdUrl("");
+                layoutDO1.setLayoutValue(1);
+                layoutDO1.setLayoutDeleted(0);
+                layoutDO1.setLayoutName("layout");
+                layoutDO1.setLayoutPosition(3);
+                layoutDao.save(layoutDO1);
+            }
+
+            layoutDO1 = layoutDao.findByPosition(4);
+            if (null == layoutDO1) {
+                layoutDO1 = new LayoutDO();
+                layoutDO1.setLayoutProdUrl("");
+                layoutDO1.setLayoutValue(1);
+                layoutDO1.setLayoutDeleted(0);
+                layoutDO1.setLayoutName("layout");
+                layoutDO1.setLayoutPosition(4);
+                layoutDao.save(layoutDO1);
+            }
+
             System.out.println("request: " + request);
             RequestPosiEntity entity = OBJECT_MAPPER.readValue(request, RequestPosiEntity.class);
             List<PostionEntity> entityList=entity.getEntities();
