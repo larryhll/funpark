@@ -21,13 +21,12 @@
                                     <thead>
                                         <tr>
                                             <th>产品分类名</th>
-                                            <th>修改时间</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr ng-show="firstLevelCategoryItems==null">
-                                            <td colspan="3" style="background-color: #ffffff">
+                                            <td colspan="2" style="background-color: #ffffff">
                                                 <div id="loadingScreen">
                                                     <img src="img/loading_icon.gif" style="position: relative; margin: auto;">
                                                 </div>
@@ -35,7 +34,6 @@
                                         </tr>
                                         <tr ng-repeat="item in firstLevelCategoryItems" multiple-select-item="firstLevelCategoryItems">
                                             <td><a href="" data-toggle="modal" data-target="#updateFirstCategoryModal" data-backdrop="static" ng-bind="item.categoryName" ng-click="updateItem(item)"></a></td>
-                                            <td ng-bind="item.categoryUpdateDate | date:'yyyy-MM-dd'"></td>
                                             <td>
                                                 <button class="btn" data-toggle="modal" data-target="#deleteFirstCategoryModal" data-backdrop="static" ng-model="selectedFirstLevelCategoryID" ng-click="deleteItem(item)">删除</button>
                                             </td>
@@ -55,10 +53,6 @@
                                                         <p>
                                                             <label>一级分类名:</label>
                                                             <span ng-bind="selectedFirstLevelCategoryItem.categoryName"></span>
-                                                        </p>
-                                                        <p>
-                                                            <label>修改日期:</label>
-                                                            <span ng-bind="selectedFirstLevelCategoryItem.categoryUpdateDate | date:'yyyy-MM-dd'"></span>
                                                         </p>
                                                     </div>
                                                     <div class="modal-footer">

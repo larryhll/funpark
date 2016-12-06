@@ -410,13 +410,15 @@ $(function() {
                     (matchAgeItems.indexOf("7")>=0) ? $scope.sevenYearsOld = true : $scope.sevenYearsOld = false;
 
                     var productCategoryItems = response.data.productCategory.split(',');
+                    $scope.productCategorySelected = [];
                     angular.forEach($scope.productCategoryItems, function(item){
                         angular.forEach(productCategoryItems, function(selectedItem){
                             if(selectedItem == item.id){
-                                $scope.productCategory.push(item);
+                                $scope.productCategorySelected.push(item);
                             }
                         });
                     });
+                    $scope.productCategory = $scope.productCategorySelected;
                 }, function errorCallback(response) {
                     console.log("Failed to get AR product item");
                 });
@@ -853,13 +855,15 @@ $(function() {
                     (matchAgeItems.indexOf("7")>=0) ? $scope.sevenYearsOld = true : $scope.sevenYearsOld = false;
 
                     var productCategoryItems = response.data.productCategory.split(',');
+                    $scope.productCategorySelected = [];
                     angular.forEach($scope.productCategoryItems, function(item){
                         angular.forEach(productCategoryItems, function(selectedItem){
                             if(selectedItem == item.id){
-                                $scope.productCategory.push(item);
+                                $scope.productCategorySelected.push(item);
                             }
                         });
                     });
+                    $scope.productCategory = $scope.productCategorySelected;
                 }, function errorCallback(response) {
                     console.log("Failed to get AR product item");
                 });
