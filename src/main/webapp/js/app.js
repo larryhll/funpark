@@ -376,6 +376,7 @@ $(function() {
         $scope.firstScreenShot = "";
         $scope.secondScreenShot = "";
         $scope.thirdScreenShot = "";
+        $scope.productCategory = [];
 
         //get product item with id
         var getProductItem = function(){
@@ -401,12 +402,20 @@ $(function() {
                     $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled == 0 ? true : false;
                     $scope.productInfo.productTrialEnabled = $scope.productInfo.productTrialEnabled == 0 ? true : false;
 
-                    $("#productMatchAgeScope").prop('selectedIndex', $scope.productInfo.productMatchScope);
-                    $scope.matchAge = $("#productMatchAgeScope").val();
-                    angular.forEach($scope.levelTwoCategoryItems, function(item){
-                        if(item.categoryName == $scope.productInfo.productCategory){
-                            $scope.levelTwoCategory = item;
-                        }
+                    var matchAgeItems = response.data.productMatchScope.split(',');
+                    (matchAgeItems.indexOf("3")>=0) ? $scope.threeYearsOld = true : $scope.threeYearsOld = false;
+                    (matchAgeItems.indexOf("4")>=0) ? $scope.fourYearsOld = true : $scope.fourYearsOld = false;
+                    (matchAgeItems.indexOf("5")>=0) ? $scope.fiveYearsOld = true : $scope.fiveYearsOld = false;
+                    (matchAgeItems.indexOf("6")>=0) ? $scope.sixYearsOld = true : $scope.sixYearsOld = false;
+                    (matchAgeItems.indexOf("7")>=0) ? $scope.sevenYearsOld = true : $scope.sevenYearsOld = false;
+
+                    var productCategoryItems = response.data.productCategory.split(',');
+                    angular.forEach($scope.productCategoryItems, function(item){
+                        angular.forEach(productCategoryItems, function(selectedItem){
+                            if(selectedItem == item.id){
+                                $scope.productCategory.push(item);
+                            }
+                        });
                     });
                 }, function errorCallback(response) {
                     console.log("Failed to get AR product item");
@@ -414,18 +423,17 @@ $(function() {
         };
         //change level two category list with level one changed
         var initialize = function(){
-            //get level two category
-            $http.get(apiPath + "eden/cates/list/leveltwo")
+            //get product category
+            $http.get(apiPath + "eden/cates/list/levelone")
                 .then(function successCallback(response) {
-                    $scope.levelTwoCategory = {};
-                    $scope.levelTwoCategoryItems = response.data;
+                    $scope.productCategoryItems = response.data;
                     if (response.data.length > 0){
-                        $scope.levelTwoCategory = response.data[0];
-                        console.log("Success to get all the second level category");
+                        $scope.productCategory.push(response.data[0]);
+                        console.log("Success to get all product category");
                     }
                     getProductItem();
                 }, function errorCallback(response) {
-                    console.log("Failed to get all the second level category");
+                    console.log("Failed to get all product category");
                 });
         };
         //initialize product page
@@ -556,9 +564,8 @@ $(function() {
         //submit product info
         $scope.submitProductInfo = function(){
             //get product item info from input
-            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
-            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategory = $scope.productCategory.map(function(item){return item.id}).join(',')+",";
+
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
             mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
@@ -567,7 +574,14 @@ $(function() {
             mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
             mediaItems.push($scope.mediaTypeOther ? "其它" : "");
             $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
-            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
+
+            var matchAgeItems = [];
+            matchAgeItems.push($scope.threeYearsOld ? "3" : "");
+            matchAgeItems.push($scope.fourYearsOld ? "4" : "");
+            matchAgeItems.push($scope.fiveYearsOld ? "5" : "");
+            matchAgeItems.push($scope.sixYearsOld ? "6" : "");
+            matchAgeItems.push($scope.sevenYearsOld ? "7" : "");
+            $scope.productInfo.productMatchScope = matchAgeItems.map(function(item){if(item != ""){return item;}}).join(',');
 
             var productScreenshotImage = [];
             if($scope.firstScreenShot !== ""){
@@ -580,7 +594,6 @@ $(function() {
                 productScreenshotImage.push($scope.thirdScreenShot);
             }
             $scope.productInfo.productImages = productScreenshotImage.map(function(item){return item}).join(',');
-            $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
             $scope.productInfo.productAppEnabled = $scope.productInfo.productAppEnabled ? 0 : 1;
             $scope.productInfo.productPlayEnabled = $scope.productInfo.productPlayEnabled ? 0 : 1;
@@ -594,12 +607,14 @@ $(function() {
                         productBackAction.setType($scope.productInfo.type);
                         productBackAction.setPublishState($scope.productInfo.publishState);
                         productBackAction.setProductRecommend($scope.productInfo.productRecommend);
-                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        productBackAction.setProductCategory("全部");
                         window.location.href = "#product_list/";
                     }else{
+                        alert("更新AR产品失败！返回码："+response.status);
                         console.log("Failed to update AR product item ");
                     }
                 }, function errorCallback(response) {
+                    alert("更新AR产品失败！返回码："+response.status);
                     console.log("Failed to update AR product item ");
                 });
         };
@@ -611,18 +626,20 @@ $(function() {
         $scope.secondScreenShot = "";
         $scope.thirdScreenShot = "";
         $scope.mediaTypeElectricBook = true;
+        $scope.threeYearsOld = true;
+        $scope.fourYearsOld = true;
+        $scope.productCategory = [];
 
-        //get level two category list
-        $http.get(apiPath + "eden/cates/list/leveltwo")
+            //get product category list
+        $http.get(apiPath + "eden/cates/list/levelone")
             .then(function successCallback(response) {
-                $scope.levelTwoCategory = {};
-                $scope.levelTwoCategoryItems = response.data;
+                $scope.productCategoryItems = response.data;
                 if (response.data.length > 0){
-                    $scope.levelTwoCategory = response.data[0];
-                    console.log("Success to get all the second level category");
+                    $scope.productCategory.push(response.data[0]);
+                    console.log("Success to get all product category");
                 }
             }, function errorCallback(response) {
-                console.log("Failed to get all the second level category");
+                console.log("Failed to get all product category");
             });
 
         //update image file
@@ -753,9 +770,8 @@ $(function() {
             $scope.productInfo.type = 1;
             $scope.productInfo.publishState = 1;
             $scope.productInfo.productRecommend = 1;
-            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
-            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategory = $scope.productCategory.map(function(item){return item.id}).join(',')+",";
+
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
             mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
@@ -764,7 +780,15 @@ $(function() {
             mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
             mediaItems.push($scope.mediaTypeOther ? "其它" : "");
             $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
-            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
+
+            var matchAgeItems = [];
+            matchAgeItems.push($scope.threeYearsOld ? "3" : "");
+            matchAgeItems.push($scope.fourYearsOld ? "4" : "");
+            matchAgeItems.push($scope.fiveYearsOld ? "5" : "");
+            matchAgeItems.push($scope.sixYearsOld ? "6" : "");
+            matchAgeItems.push($scope.sevenYearsOld ? "7" : "");
+            $scope.productInfo.productMatchScope = matchAgeItems.map(function(item){if(item != ""){return item;}}).join(',');
+
             $scope.productInfo.productImages = "";
             var productScreenshotImage = [];
             if($scope.firstScreenShot !== ""){
@@ -791,17 +815,22 @@ $(function() {
                         productBackAction.setType($scope.productInfo.type);
                         productBackAction.setPublishState($scope.productInfo.publishState);
                         productBackAction.setProductRecommend($scope.productInfo.productRecommend);
-                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        productBackAction.setProductCategory("全部");
                         window.location.href = "#product_list/";
                     }else{
+                        alert("创建AR产品失败！返回码："+response.status);
                         console.log("Failed to create AR product item ");
                     }
                 }, function errorCallback(response) {
+                    alert("创建AR产品失败！返回码："+response.status);
                     console.log("Failed to create AR product item ");
                 });
         };
     });
     app.controller("updateVideoDetailCtrl", function($scope, $http, $routeParams, productBackAction){
+
+        $scope.productCategory = [];
+
         //get product item with id
         var getProductItem = function(){
             $http.get(apiPath + "eden/prods/" + $routeParams.productID)
@@ -816,12 +845,20 @@ $(function() {
                     (mediaTypeArr.indexOf("益智玩具")>=0) ? $scope.mediaTypeIntelligentToy = true : $scope.mediaTypeIntelligentToy = false;
                     (mediaTypeArr.indexOf("其它")>=0) ? $scope.mediaTypeOther = true : $scope.mediaTypeOther = false;
 
-                    $("#productMatchAgeScope").prop('selectedIndex', $scope.productInfo.productMatchScope);
-                    $scope.matchAge = $("#productMatchAgeScope").val();
-                    angular.forEach($scope.levelTwoCategoryItems, function(item){
-                        if(item.categoryName == $scope.productInfo.productCategory){
-                            $scope.levelTwoCategory = item;
-                        }
+                    var matchAgeItems = response.data.productMatchScope.split(',');
+                    (matchAgeItems.indexOf("3")>=0) ? $scope.threeYearsOld = true : $scope.threeYearsOld = false;
+                    (matchAgeItems.indexOf("4")>=0) ? $scope.fourYearsOld = true : $scope.fourYearsOld = false;
+                    (matchAgeItems.indexOf("5")>=0) ? $scope.fiveYearsOld = true : $scope.fiveYearsOld = false;
+                    (matchAgeItems.indexOf("6")>=0) ? $scope.sixYearsOld = true : $scope.sixYearsOld = false;
+                    (matchAgeItems.indexOf("7")>=0) ? $scope.sevenYearsOld = true : $scope.sevenYearsOld = false;
+
+                    var productCategoryItems = response.data.productCategory.split(',');
+                    angular.forEach($scope.productCategoryItems, function(item){
+                        angular.forEach(productCategoryItems, function(selectedItem){
+                            if(selectedItem == item.id){
+                                $scope.productCategory.push(item);
+                            }
+                        });
                     });
                 }, function errorCallback(response) {
                     console.log("Failed to get AR product item");
@@ -831,17 +868,16 @@ $(function() {
         //initialize product info fields
         var initialize = function(){
             //get all level two category list
-            $http.get(apiPath + "eden/cates/list/leveltwo")
+            $http.get(apiPath + "eden/cates/list/levelone")
                 .then(function successCallback(response) {
-                    $scope.levelTwoCategory = {};
-                    $scope.levelTwoCategoryItems = response.data;
+                    $scope.productCategoryItems = response.data;
                     if (response.data.length > 0){
-                        $scope.levelTwoCategory = response.data[0];
-                        console.log("Success to get all the second level category");
+                        $scope.productCategory.push(response.data[0]);
+                        console.log("Success to get all product category");
                     }
                     getProductItem();
                 }, function errorCallback(response) {
-                    console.log("Failed to get all the second level category");
+                    console.log("Failed to get all product category");
                 });
         };
         //call function to initialize product page
@@ -917,9 +953,8 @@ $(function() {
         //submit product info
         $scope.submitProductInfo = function(){
             $scope.productInfo.productModifyDate = new Date();
-            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
-            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategory = $scope.productCategory.map(function(item){return item.id}).join(',')+",";
+
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
             mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
@@ -928,7 +963,14 @@ $(function() {
             mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
             mediaItems.push($scope.mediaTypeOther ? "其它" : "");
             $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
-            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
+
+            var matchAgeItems = [];
+            matchAgeItems.push($scope.threeYearsOld ? "3" : "");
+            matchAgeItems.push($scope.fourYearsOld ? "4" : "");
+            matchAgeItems.push($scope.fiveYearsOld ? "5" : "");
+            matchAgeItems.push($scope.sixYearsOld ? "6" : "");
+            matchAgeItems.push($scope.sevenYearsOld ? "7" : "");
+            $scope.productInfo.productMatchScope = matchAgeItems.map(function(item){if(item != ""){return item;}}).join(',');
 
             $http.post(apiPath + "eden/prods/update", $scope.productInfo)
                 .then(function successCallback(response) {
@@ -938,12 +980,14 @@ $(function() {
                         productBackAction.setType($scope.productInfo.type);
                         productBackAction.setPublishState($scope.productInfo.publishState);
                         productBackAction.setProductRecommend($scope.productInfo.productRecommend);
-                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        productBackAction.setProductCategory("全部");
                         window.location.href = "#product_list/";
                     }else{
+                        alert("更新视频产品失败！返回码："+response.status);
                         console.log("Failed to update video product item");
                     }
                 }, function errorCallback(response) {
+                    alert("更新视频产品失败！返回码："+response.status);
                     console.log("Failed to update video product item ");
                 });
         };
@@ -953,18 +997,20 @@ $(function() {
         $scope.productInfo = {};
         $scope.productInfo.videoDOs = [];
         $scope.mediaTypeElectricBook = true;
+        $scope.threeYearsOld = true;
+        $scope.fourYearsOld = true;
+        $scope.productCategory = [];
 
-        //get level two category list
-        $http.get(apiPath + "eden/cates/list/leveltwo")
+        //get product category list
+        $http.get(apiPath + "eden/cates/list/levelone")
             .then(function successCallback(response) {
-                $scope.levelTwoCategory = {};
-                $scope.levelTwoCategoryItems = response.data;
+                $scope.productCategoryItems = response.data;
                 if (response.data.length > 0){
-                    $scope.levelTwoCategory = response.data[0];
-                    console.log("Success to get all the second level category");
+                    $scope.productCategory.push(response.data[0]);
+                    console.log("Success to get all product category");
                 }
             }, function errorCallback(response) {
-                console.log("Failed to get all the second level category");
+                console.log("Failed to get all product category");
             });
 
         //update image file
@@ -1039,9 +1085,8 @@ $(function() {
             $scope.productInfo.type = 0;
             $scope.productInfo.publishState = 1;
             $scope.productInfo.productRecommend = 1;
-            $scope.productInfo.productCategory = $scope.levelTwoCategory.categoryName;
-            $scope.productInfo.productCategoryId = $scope.levelTwoCategory.id;
-            $scope.productInfo.productLevelTwo = $scope.levelTwoCategory.categoryName;
+            $scope.productInfo.productCategory = $scope.productCategory.map(function(item){return item.id}).join(',')+",";
+
             var mediaItems = [];
             mediaItems.push($scope.mediaTypeElectricBook ? "电子书" : "");
             mediaItems.push($scope.mediaTypeBook ? "书籍" : "");
@@ -1050,7 +1095,15 @@ $(function() {
             mediaItems.push($scope.mediaTypeIntelligentToy ? "益智玩具" : "");
             mediaItems.push($scope.mediaTypeOther ? "其它" : "");
             $scope.productInfo.media = mediaItems.map(function(item){if(item != ""){return item;}}).join(',');
-            $scope.productInfo.productMatchScope = $("#productMatchAgeScope").prop('selectedIndex');
+
+            var matchAgeItems = [];
+            matchAgeItems.push($scope.threeYearsOld ? "3" : "");
+            matchAgeItems.push($scope.fourYearsOld ? "4" : "");
+            matchAgeItems.push($scope.fiveYearsOld ? "5" : "");
+            matchAgeItems.push($scope.sixYearsOld ? "6" : "");
+            matchAgeItems.push($scope.sevenYearsOld ? "7" : "");
+            $scope.productInfo.productMatchScope = matchAgeItems.map(function(item){if(item != ""){return item;}}).join(',');
+
             $scope.productInfo.productUploadDate = new Date();
             $scope.productInfo.productModifyDate = new Date();
             $http.post(apiPath + "eden/prods/add", $scope.productInfo)
@@ -1061,12 +1114,14 @@ $(function() {
                         productBackAction.setType($scope.productInfo.type);
                         productBackAction.setPublishState($scope.productInfo.publishState);
                         productBackAction.setProductRecommend($scope.productInfo.productRecommend);
-                        productBackAction.setProductCategory($scope.productInfo.productCategory);
+                        productBackAction.setProductCategory("全部");
                         window.location.href = "#product_list/";
                     }else{
+                        alert("创建视频产品失败！返回码："+response.status);
                         console.log("Failed to create video product item ");
                     }
                 }, function errorCallback(response) {
+                    alert("创建视频产品失败！返回码："+response.status);
                     console.log("Failed to create video product item ");
                 });
         };
@@ -1127,6 +1182,35 @@ $(function() {
                         });
                 }, function errorCallback(response) {
                     console.log("Failed to update first category item ");
+                });
+        };
+
+        //get selected category item for deleting
+        $scope.deleteItem = function(selectedItem) {
+            $scope.selectedFirstLevelCategoryID = selectedItem.id;
+            $scope.selectedFirstLevelCategoryItem = selectedItem;
+        };
+        //delete level one category item
+        $scope.deleteFirstCategory = function(){
+            $http.get(apiPath + "eden/cates/delete/" + $scope.selectedFirstLevelCategoryID)
+                .then(function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Success to delete the first level category ID: " + $scope.selectedFirstLevelCategoryID);
+                        $http.get(apiPath + "eden/cates/list/levelone")
+                            .then(function successCallback(response) {
+                                $(deleteFirstCategoryModal).modal('hide');
+                                $scope.firstLevelCategoryItems = response.data;
+                            }, function errorCallback(response) {
+                                console.log("Failed to get the first level category");
+                            });
+                    }else{
+                        alert("删除产品分类失败！返回码："+response.status);
+                        console.log("Failed to delete product category item ");
+                    }
+
+                }, function errorCallback(response) {
+                    alert("删除产品分类失败！返回码："+response.status);
+                    console.log("Failed to delete product category item");
                 });
         };
 

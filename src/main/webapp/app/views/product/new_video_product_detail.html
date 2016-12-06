@@ -52,31 +52,30 @@
                                             <label><input type="checkbox" id="mediaTypeIntelligentToy" ng-model="mediaTypeIntelligentToy">益智玩具&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                                             <label><input type="checkbox" id="mediaType" ng-model="mediaTypeOther">其它</label>
                                         </div>
-                                        <br>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
-                                    <div class="form-group-validate has-feedback">
+                                    <div class="form-group">
                                         <label>适合年龄:</label>
-                                        <select class="form-control" name="matchAge" id="productMatchAgeScope" ng-model="matchAge" required>
-                                            <option>3-4岁</option>
-                                            <option>4-5岁</option>
-                                            <option>5-6岁</option>
-                                            <option>6-7岁</option>
-                                        </select>
-                                        <span class="validation-error-text" ng-show="VideoFormValidation.matchAge.$invalid && (VideoFormValidation.matchAge.$touched || VideoFormValidation.matchAge.$dirty)">请输入适合年龄</span>
-                                        <br>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" id="threeYearsOld" ng-model="mediaTypeElectricBook">3岁&nbsp;&nbsp;</label>
+                                            <label><input type="checkbox" id="fourYearsOld" ng-model="mediaTypeBook">4岁&nbsp;&nbsp;</label>
+                                            <label><input type="checkbox" id="fiveYearsOld" ng-model="mediaTypeCard">5岁&nbsp;&nbsp;</label>
+                                            <label><input type="checkbox" id="sixYearsOld" ng-model="mediaTypeTeachTool">6岁&nbsp;&nbsp;</label>
+                                            <label><input type="checkbox" id="sevenYearsOld" ng-model="mediaTypeIntelligentToy">7岁&nbsp;&nbsp;</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="form-group-validate has-feedback">
-                                        <label for="levelTwoCategory">产品分类:</label>
-                                        <select class="form-control" id="levelTwoCategory" name="productCategory" ng-model="levelTwoCategory" ng-options="option as option.categoryName for option in levelTwoCategoryItems track by option.id" required>
+                                        <label for="productCategory">产品分类（多选）:</label>
+                                        <select class="form-control" id="productCategory" name="productCategory" ng-model="productCategory" ng-options="option as option.categoryName for option in productCategoryItems track by option.id" multiple required>
                                             <option></option>
                                         </select>
                                         <span class="validation-error-text" ng-show="VideoFormValidation.productCategory.$invalid && (VideoFormValidation.productCategory.$touched || VideoFormValidation.productCategory.$dirty)">请选择产品分类</span>
+                                        <!--<p>选择的产品分类：<span ng-bind="productCategory.map(function(item){return item.categoryName}).join(',')"></span></p>-->
                                         <br>
                                     </div>
                                 </div>
