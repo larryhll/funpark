@@ -23,11 +23,14 @@ public class BaseService {
         String reStr="";
         if (!StringUtils.isEmpty(strs) && !StringUtils.isEmpty(ids)) {
             int num2 = strs.indexOf(ids);
-            String bb1 = strs.substring(0, num2).trim();
-            String bb2=strs.substring(num2+2, strs.length()).trim();
-            System.out.println("strs= " + bb1+bb2);
-            reStr=bb1+bb2;
-            return reStr;
+            if (num2 != -1) {
+                String bb1 = strs.substring(0, num2).trim();
+                String bb2=strs.substring(num2+2, strs.length()).trim();
+                System.out.println("strs= " + bb1+bb2);
+                reStr=bb1+bb2;
+                return reStr;
+            }
+            return strs;
         }else {
             return strs;
         }
