@@ -99,7 +99,7 @@
                                                                     <td ng-bind="item.productModifyDate | date:'yyyy-MM-dd'"></td>
                                                                     <td ng-bind="item.productRecommend ? '否' : '是'"></td>
                                                                     <td ng-bind="item.type ? 'AR产品' : '视频产品'"></td>
-                                                                    <td ng-bind="item.productCategory"></td>
+                                                                    <td ng-bind="item.productCategoryName"></td>
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
@@ -148,7 +148,7 @@
                                             <td ng-bind="item.publishState ? '下架' : '上架'"></td>
                                             <td ng-bind="item.productRecommend ? '否' : '是'"></td>
                                             <td ng-bind="item.type ? 'AR产品' : '视频产品'"></td>
-                                            <td ng-bind="item.productCategory"></td>
+                                            <td ng-bind="item.productCategoryName"></td>
                                             <td ng-bind="item.productUploadDate | date:'yyyy-MM-dd'"></td>
                                         </tr>
                                     </tbody>
