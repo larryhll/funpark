@@ -29,8 +29,19 @@ public class SystemService extends BaseService {
     @Path("/save")
     public Response addNew(String request) {
         try {
+            SystemDO versionDo = systemDao.findSystemByType("version");
             SystemDO systemDO = OBJECT_MAPPER.readValue(request, SystemDO.class);
-            systemDao.save(systemDO);
+            if (null == versionDo) {
+                systemDO.setSystemTypeName("version");
+                systemDao.save(systemDO);
+            }else{
+
+                versionDo.setSystemCurrentVersion(versionDo.getSystemLatestVersion());
+                versionDo.setSystemLatestVersion(systemDO.getSystemLatestVersion());
+                versionDo.setSystemApkDownUrl(systemDO.getSystemApkDownUrl());
+                systemDao.update(versionDo);
+            }
+
             return Response.ok().header("code", "0").build();
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,19 +71,34 @@ public class SystemService extends BaseService {
     public Response getMyinfos(@PathParam("mobile") String mobile) {
 
         try {
+            if ("0".equalsIgnoreCase(mobile)) {
 
-            MemberDO memberDO = memberDao.findMemberByMobile(mobile);
 
-            SystemDO versionDo = systemDao.findSystemByType("version");
+                SystemDO versionDo = systemDao.findSystemByType("version");
 
-            if (null == versionDo) {
-                return Response.ok().header("code", "802").header("msg", "no data!").build();
+                if (null == versionDo) {
+                    return Response.ok().header("code", "802").header("msg", "no data!").build();
+                }
+
+                MyInfoEntity infoEntity=new MyInfoEntity();
+                //infoEntity.setMemberDO(memberDO);
+                infoEntity.setSystemDO(versionDo);
+                return Response.ok(infoEntity).header("code", "0").header("msg", "successful").build();
+            }else{
+                MemberDO memberDO = memberDao.findMemberByMobile(mobile);
+
+                SystemDO versionDo = systemDao.findSystemByType("version");
+
+                if (null == versionDo) {
+                    return Response.ok().header("code", "802").header("msg", "no data!").build();
+                }
+
+                MyInfoEntity infoEntity=new MyInfoEntity();
+                infoEntity.setMemberDO(memberDO);
+                infoEntity.setSystemDO(versionDo);
+                return Response.ok(infoEntity).header("code", "0").header("msg", "successful").build();
             }
 
-            MyInfoEntity infoEntity=new MyInfoEntity();
-            infoEntity.setMemberDO(memberDO);
-            infoEntity.setSystemDO(versionDo);
-            return Response.ok(infoEntity).header("code", "0").header("msg", "successful").build();
 
         } catch (Exception e) {
             e.printStackTrace();
