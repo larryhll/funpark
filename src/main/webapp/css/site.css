@@ -26,13 +26,3 @@ form .validation-error-text {
 .eden-style {
   margin-bottom: 10px;
 }
-.td-20 {
-  width: 20%;
-  float: left;
-  word-wrap: break-word;
-}
-.td-60 {
-  width: 60%;
-  float: left;
-  word-wrap: break-word;
-}
