@@ -144,9 +144,9 @@
                                                             </thead>
                                                             <tbody>
                                                                 <tr ng-repeat="item in productInfo.videoDOs" multiple-select-item="productInfo.videoDOs">
-                                                                    <td ng-bind="item.videoName"></td>
-                                                                    <td ng-bind="item.videoUrl"></td>
-                                                                    <td><button class="btn" data-toggle="modal" data-backdrop="static" data-target="#deleteVideoItemModal" ng-click="selectVideoItem(item)">删除</button></td>
+                                                                    <td class="td-20" ng-bind="item.videoName"></td>
+                                                                    <td class="td-60" ng-bind="item.videoUrl"></td>
+                                                                    <td class="td-20"><button class="btn" data-toggle="modal" data-backdrop="static" data-target="#deleteVideoItemModal" ng-click="selectVideoItem(item)">删除</button></td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>

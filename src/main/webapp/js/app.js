@@ -113,6 +113,10 @@ $(function() {
                 templateUrl : "app/views/log/log_download.html",
                 controller : "logDownloadCtrl"
             })
+            .when("/system_info", {
+                templateUrl : "app/views/log/system_info.html",
+                controller : "systemInfoCtrl"
+            })
             .otherwise("/primary_product",{
                 templateUrl : "app/views/product/primary_product.html",
                 controller : "otherUrlCtrl"
@@ -1394,6 +1398,23 @@ $(function() {
             $scope.currentPage++;
             pageControlUpdate();
         }
+    });
+    app.controller("systemInfoCtrl", function ($scope, $http){
+        $scope.systemInfo = {};
+        $scope.systemInfo.systemLatestVersion = "";
+        $scope.systemInfo.systemApkDownUrl = "";
+
+        $scope.systemInfoSubmit = function(){
+            $http.post(apiPath + "eden/sys/save", $scope.systemInfo)
+                .then(function successCallback(response) {
+                    if(response.status == 200){
+                        alert("更新系统信息成功！");
+                        console.log("Update/create system info successfully.");
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to update/create system info ");
+                });
+        };
     });
     app.controller("otherUrlCtrl", function () {
         console.log("Otherwise URL contoller...");
