@@ -246,22 +246,40 @@ $(function() {
         loading();
 
         //initialize product item selection
+        $scope.productCategoryItems = [];
         $scope.productCategoryList = ["全部"];
         $scope.productCategory = $scope.productCategoryList[0];
-        $http.get(apiPath + "eden/cates/list/leveltwo")
+        $http.get(apiPath + "eden/cates/list/levelone")
             .then(function successCallback(response) {
-                console.log("Get all level two category list successfully");
+                console.log("Get all product category list successfully");
+                $scope.productCategoryItems = response.data;
                 for(var item in response.data){
                     $scope.productCategoryList.push(response.data[item].categoryName);
                 }
+
+                //initialize product list with product detail page back or not
+                $scope.searchProductListByFilters();
             }, function errorCallback(response) {
-                console.log("Failed to get level two category list");
+                console.log("Failed to get product category list");
             });
         $scope.publishState = "上架";
         $scope.productType = "视频产品";
         $scope.recommendation = "是";
 
-
+        //parse product category id to name
+        var parseProductCategoryItem = function(){
+            angular.forEach($scope.productItems, function(product){
+                var productCategoryIDItems = product.productCategory.split(',');
+                productCategoryIDItems.map(function(item){
+                    angular.forEach($scope.productCategoryItems, function(categoryItem){
+                        if(item == categoryItem.id){
+                            return categoryItem.categoryName;
+                        }
+                    });
+                }).join(',');
+                product.productCategoryName = productCategoryIDItems;
+            });
+        };
         //Get product list data by filters
         $scope.searchProductListByFilters = function (){
             console.log("Starting to search product items by filters...");
@@ -293,20 +311,21 @@ $(function() {
                 .then(function successCallback(response) {
                     console.log("Get product list by filter successfully.");
                     $scope.productItems = response.data;
-                    $scope.productItems_copy = response.data;
+                    parseProductCategoryItem();
+                    $scope.productItems_copy = $scope.productItems;
                     $scope.productItems_selected = [];
                 }, function errorCallback(response) {
                     console.log("Failed to get product list by filter");
                 });
         };
-        //initialize product list with product detail page back or not
-        $scope.searchProductListByFilters();
+        //reset search to get all products
         $scope.cleanSearchProductListByFilters = function(){
             $http.get(apiPath + "eden/prods/allprods")
                 .then(function successCallback(response) {
                     console.log("Get all product list successfully.");
                     $scope.productItems = response.data;
-                    $scope.productItems_copy = response.data;
+                    parseProductCategoryItem();
+                    $scope.productItems_copy = $scope.productItems;
                     $scope.productItems_selected = [];
                 }, function errorCallback(response) {
                     console.log("Failed to get all product list");
@@ -409,10 +428,10 @@ $(function() {
                     (matchAgeItems.indexOf("6")>=0) ? $scope.sixYearsOld = true : $scope.sixYearsOld = false;
                     (matchAgeItems.indexOf("7")>=0) ? $scope.sevenYearsOld = true : $scope.sevenYearsOld = false;
 
-                    var productCategoryItems = response.data.productCategory.split(',');
+                    var productCategoryNameItems = response.data.productCategory.split(',');
                     $scope.productCategorySelected = [];
                     angular.forEach($scope.productCategoryItems, function(item){
-                        angular.forEach(productCategoryItems, function(selectedItem){
+                        angular.forEach(productCategoryNameItems, function(selectedItem){
                             if(selectedItem == item.id){
                                 $scope.productCategorySelected.push(item);
                             }
@@ -854,10 +873,10 @@ $(function() {
                     (matchAgeItems.indexOf("6")>=0) ? $scope.sixYearsOld = true : $scope.sixYearsOld = false;
                     (matchAgeItems.indexOf("7")>=0) ? $scope.sevenYearsOld = true : $scope.sevenYearsOld = false;
 
-                    var productCategoryItems = response.data.productCategory.split(',');
+                    var productCategoryNameItems = response.data.productCategory.split(',');
                     $scope.productCategorySelected = [];
                     angular.forEach($scope.productCategoryItems, function(item){
-                        angular.forEach(productCategoryItems, function(selectedItem){
+                        angular.forEach(productCategoryNameItems, function(selectedItem){
                             if(selectedItem == item.id){
                                 $scope.productCategorySelected.push(item);
                             }
@@ -1243,120 +1262,6 @@ $(function() {
                 });
 
             $scope.newFirstCategoryName = "";
-        };
-    });
-    app.controller("secondLevelCategoryCtrl", function ($scope, $http){
-        $scope.levelTwoCategoryItems = null;
-        $scope.levelOneCategoryItems = null;
-        loading();
-
-        //Get first level category list data
-        $http.get(apiPath + "eden/cates/list/levelone")
-            .then(function successCallback(response) {
-                $scope.levelOneCategoryItems = response.data;
-
-                if (response.data.length > 0){
-                    $scope.levelOneCategorySelected = response.data[0];
-                    $scope.levelOneCategoryForLevelTwoCreation = response.data[0];
-
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
-                            console.log("Success to get the second level category");
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
-                }
-            }, function errorCallback(response) {
-                console.log("Failed to get the first level category");
-            });
-
-        //temp second level category items array for search feature
-        levelTwoCategoryItems_temp = [];
-
-        //select level one category
-        $scope.changeLevelOneCategory = function(){
-            //get level two category
-            $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
-                .then(function successCallback(response) {
-                    $scope.levelTwoCategoryItems = response.data;
-                    levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
-                    console.log("Success to get the second level category");
-                }, function errorCallback(response) {
-                    console.log("Failed to get the second level category");
-                });
-        };
-
-        //filter level two category list by category name
-        $scope.searchByCategory = function (){
-            $scope.levelTwoCategoryItems = [];
-
-            if (typeof $scope.levelTwoCategoryFilter == "undefined")
-                $scope.levelTwoCategoryFilter = "";
-            var patternLevelTwo = new RegExp($scope.levelTwoCategoryFilter, "i");
-            for(var item in levelTwoCategoryItems_temp){
-                if(patternLevelTwo.test(levelTwoCategoryItems_temp[item].categoryName)) {
-                    $scope.levelTwoCategoryItems.push(levelTwoCategoryItems_temp[item]);
-                }
-            }
-        };
-
-        //update level two category
-        $scope.updateItem = function(selectedItem){
-            $scope.updatedLevelTwoItem = selectedItem;
-            $scope.levelTwoCategoryUpdated = selectedItem.categoryName;
-        };
-        $scope.updateLevelTwoCategory = function(){
-            console.log("Update the second level category: "+$scope.levelTwoCategoryUpdated);
-
-            $scope.updatedLevelTwoItem.categoryName = $scope.levelTwoCategoryUpdated;
-            $http.post(apiPath + "eden/cates/update", $scope.updatedLevelTwoItem)
-                .then(function successCallback(response) {
-                    console.log("Update level two category item successfully.");
-                    $(updateSecondCategoryModal).modal('hide');
-
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
-                            console.log("Success to get the second level category");
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
-                }, function errorCallback(response) {
-                    console.log("Failed to update level two category item ");
-                });
-        };
-
-        //create level two category
-        $scope.createLevelTwoCategory = function(){
-            var levelTwoCategoryItem = {};
-            levelTwoCategoryItem.categoryName = $scope.levelTwoCategoryForLevelTwoCreation;
-            levelTwoCategoryItem.categoryLevel = 2;
-            levelTwoCategoryItem.categoryUpdateDate = new Date();
-            levelTwoCategoryItem.categoryPrevious = $scope.levelOneCategoryForLevelTwoCreation.id;
-            levelTwoCategoryItem.categoryDeleted = 0;
-
-            $http.post(apiPath + "eden/cates/add", levelTwoCategoryItem)
-                .then(function successCallback(response) {
-                    console.log("Create level two category item successfully.");
-                    $(newLevelTwoCategoryModal).modal('hide');
-
-                    //get level two category
-                    $http.get(apiPath + "eden/cates/list/leveltwo/" + $scope.levelOneCategorySelected.id)
-                        .then(function successCallback(response) {
-                            $scope.levelTwoCategoryItems = response.data;
-                            levelTwoCategoryItems_temp = $scope.levelTwoCategoryItems;
-                            console.log("Success to get the second level category");
-                        }, function errorCallback(response) {
-                            console.log("Failed to get the second level category");
-                        });
-                }, function errorCallback(response) {
-                    console.log("Failed to create level two category item ");
-                });
         };
     });
     app.controller("userAdminCtrl", function ($scope, $http){
