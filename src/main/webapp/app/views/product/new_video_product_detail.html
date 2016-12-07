@@ -72,7 +72,7 @@
                                     <div class="form-group-validate has-feedback">
                                         <label for="productCategory">产品分类（多选）:</label>
                                         <select class="form-control" id="productCategory" name="productCategory" ng-model="productCategory" ng-options="option as option.categoryName for option in productCategoryItems track by option.id" multiple required>
-                                            <option></option>
+                                            <option style="display:none" value="">选择分类</option>
                                         </select>
                                         <span class="validation-error-text" ng-show="VideoFormValidation.productCategory.$invalid && (VideoFormValidation.productCategory.$touched || VideoFormValidation.productCategory.$dirty)">请选择产品分类</span>
                                         <!--<p>选择的产品分类：<span ng-bind="productCategory.map(function(item){return item.categoryName}).join(',')"></span></p>-->
