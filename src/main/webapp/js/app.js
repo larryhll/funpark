@@ -270,13 +270,16 @@ $(function() {
         var parseProductCategoryItem = function(){
             angular.forEach($scope.productItems, function(product){
                 var productCategoryIDItems = product.productCategory.split(',');
-                product.productCategoryName = productCategoryIDItems.map(function(item){
+
+                var productCategoryNameItem = [];
+                angular.forEach(productCategoryIDItems, function(item){
                     angular.forEach($scope.productCategoryItems, function(categoryItem){
                         if(item == categoryItem.id){
-                            return categoryItem.categoryName;
+                            productCategoryNameItem.push(categoryItem.categoryName);
                         }
                     });
-                }).join(',');
+                });
+                product.productCategoryName = productCategoryNameItem.join(',');
             });
         };
         //Get product list data by filters
