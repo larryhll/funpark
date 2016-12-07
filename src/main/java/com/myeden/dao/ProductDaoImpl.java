@@ -2,10 +2,12 @@ package com.myeden.dao;
 
 import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.ProductDO;
+import org.apache.cxf.common.util.StringUtils;
 import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,7 +78,7 @@ public class ProductDaoImpl extends CommonDao implements ProductDao {
     @Override
     public List<ProductDO> getAllProducts(String proCategory, int proType, int proPublish, int proRecommd) {
 
-        String all="全部";
+        String all="0";
         if(all.equalsIgnoreCase(proCategory.trim())){
 
             List<ProductDO> productDOs=null;
@@ -90,18 +92,41 @@ public class ProductDaoImpl extends CommonDao implements ProductDao {
         }else{
 
             List<ProductDO> productDOs=null;
-            SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_PRODUCTS_BY_CONDITIONS).addEntity(ProductDO.class);
-            sqlQuery.setString("arg1", proCategory);
-            sqlQuery.setInteger("arg2", proType);
-            sqlQuery.setInteger("arg3", proPublish);
-            sqlQuery.setInteger("arg4", proRecommd);
+            List<ProductDO> productDOs2=new ArrayList<ProductDO>();
+            SQLQuery sqlQuery = template.getSessionFactory().getCurrentSession().createSQLQuery(FIND_PRODUCTS_BY_CONDITIONS_ALL).addEntity(ProductDO.class);
+            sqlQuery.setInteger("arg1", proType);
+            sqlQuery.setInteger("arg2", proPublish);
+            sqlQuery.setInteger("arg3", proRecommd);
+
             productDOs = sqlQuery.list();
-            return productDOs;
+            if (null != productDOs && productDOs.size() > 0) {
+                for (ProductDO productDO : productDOs) {
+                    if (containsCategory(productDO.getProductCategory(), Integer.parseInt(proCategory))) {
+                        productDOs2.add(productDO);
+                    }
+                }
+            }
+
+
+            return productDOs2;
 
         }
 
 
 
+    }
+
+    public boolean containsCategory(String strs, int id) {
+        String ids = String.valueOf(id).trim();
+        String reStr="";
+        if (!StringUtils.isEmpty(strs) && !StringUtils.isEmpty(ids)) {
+            int num2 = strs.indexOf(ids);
+            if (num2 != -1) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     //select * from log where DATE_FORMAT(LOG_DOWNLOAD_DATE,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m') and log_deleted=1;
