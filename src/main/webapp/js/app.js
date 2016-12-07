@@ -270,14 +270,13 @@ $(function() {
         var parseProductCategoryItem = function(){
             angular.forEach($scope.productItems, function(product){
                 var productCategoryIDItems = product.productCategory.split(',');
-                productCategoryIDItems.map(function(item){
+                product.productCategoryName = productCategoryIDItems.map(function(item){
                     angular.forEach($scope.productCategoryItems, function(categoryItem){
                         if(item == categoryItem.id){
                             return categoryItem.categoryName;
                         }
                     });
                 }).join(',');
-                product.productCategoryName = productCategoryIDItems;
             });
         };
         //Get product list data by filters
