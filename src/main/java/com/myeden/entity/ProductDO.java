@@ -117,7 +117,7 @@ public class ProductDO{
     private String productCategory;
 
     @Column(name = "PRODCUT_SCORE")
-    private int productScore;
+    private double productScore;
 
     @Column(name = "PRODUCT_CATEGORY_ID")
     private int productCategoryId;
@@ -130,11 +130,11 @@ public class ProductDO{
         this.productCategoryId = productCategoryId;
     }
 
-    public int getProductScore() {
+    public double getProductScore() {
         return productScore;
     }
 
-    public void setProductScore(int productScore) {
+    public void setProductScore(double productScore) {
         this.productScore = productScore;
     }
 

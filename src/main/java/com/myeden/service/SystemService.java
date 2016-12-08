@@ -25,6 +25,25 @@ public class SystemService extends BaseService {
     private MemberDao memberDao;
 
 
+    @GET
+    @Path("/version")
+    public Response getCurVersion() {
+        SystemDO versionDo = systemDao.findSystemByType("version");
+        if (null == versionDo) {
+            versionDo = new SystemDO();
+            versionDo.setSystemTypeName("version");
+            versionDo.setSystemApkDownUrl("");
+            versionDo.setSystemLatestVersion("1.0");
+            versionDo.setSystemCurrentVersion("1.0");
+            systemDao.save(versionDo);
+            return Response.ok(versionDo).header("code", "0").build();
+        }else{
+            return Response.ok(versionDo).header("code", "0").build();
+        }
+
+
+    }
+
     @POST
     @Path("/save")
     public Response addNew(String request) {
