@@ -1403,8 +1403,56 @@ $(function() {
         $scope.systemInfo = {};
         $scope.systemInfo.systemLatestVersion = "";
         $scope.systemInfo.systemApkDownUrl = "";
+        $scope.apkURLInvalid = false;
+
+        //get system info
+        $http.get(apiPath + "eden/sys/version")
+            .then(function successCallback(response) {
+                console.log("Success to get system info");
+                $scope.systemInfo.systemLatestVersion = response.data.systemLatestVersion;
+                $scope.systemInfo.systemApkDownUrl = response.data.systemApkDownUrl;
+            }, function errorCallback(response) {
+                console.log("Failed to get system info");
+            });
+
+        //update APK file
+        var updateAPKFile = function(files){
+            console.log("Selected file number: " + files.length);
+            var fd = new FormData();
+            fd.append("root", files[0]);
+            $http.post(apiPath + "eden/prods/upload",fd,
+                {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'multipart/form-data'}
+                }).then(
+                function successCallback(response) {
+                    if(response.status === 200){
+                        console.log("Upload APK file successfully");
+                        $scope.systemInfo.systemApkDownUrl = response.data.urls;
+                    }else{
+                        console.log("Failed to upload APK file");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Failed to upload APK file");
+                });
+        };
+        $scope.updateAPKFile = function(){
+            updateAPKFile($scope.apkFile);
+        };
+        $scope.updateAPKFileStart = function(){
+            $("#apkFileSelect").click();
+            console.log("Click APK file selection dialog");
+        };
 
         $scope.systemInfoSubmit = function(){
+            if($scope.systemInfo.systemApkDownUrl.length == 0){
+                $scope.apkURLInvalid = true;
+                return;
+            }else{
+                $scope.apkURLInvalid = false;
+            }
+
             $http.post(apiPath + "eden/sys/save", $scope.systemInfo)
                 .then(function successCallback(response) {
                     if(response.status == 200){
