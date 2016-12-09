@@ -18,7 +18,7 @@
                             <div class="col-lg-8">
                                 <div class="form-group">
                                     <label>APK URL：</label>
-                                    <span ng-bind="systemInfo.systemApkDownUrl"></span>
+                                    <span ng-bind="systemInfo.systemApkDownUrl" style="display: block"></span>
                                     <input id="apkFileSelect" type="file" file-input="apkFile" accept=".apk" style="display:none">
                                     <button style="display:none" ng-click="updateAPKFile()"></button>
                                     <button class="btn btn-default" ng-click="updateAPKFileStart()" style="display: block; margin-top: 5px">上传/更新APK文件</button>
