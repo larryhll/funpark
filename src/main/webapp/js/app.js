@@ -928,7 +928,7 @@ $(function() {
         //submit product info
         $scope.submitProductInfo = function(){
             //check if all image selected
-            if(null == $scope.productInfo.productDes
+            if(null == $scope.productInfo.productDesc
                 || null == $scope.productInfo.productTrialAddr
                 || null == $scope.productInfo.productApkDownUrl
                 || null == $scope.productInfo.productMicroStoreByecodeAddr
@@ -1286,7 +1286,7 @@ $(function() {
         //submit product info
         $scope.submitProductInfo = function(){
             //check if all image selected
-            if(null == $scope.productInfo.productDes
+            if(null == $scope.productInfo.productDesc
                 || $scope.productInfo.productCover.length == 0
                 || $scope.productInfo.productCoverVerti.length == 0){
                 $scope.imageInvalid = true;
@@ -1439,7 +1439,6 @@ $(function() {
             newFirstCategory.categoryName = $scope.newFirstCategoryName;
             newFirstCategory.categoryUpdateDate = new Date();
             newFirstCategory.categoryLevel = 1;
-            newFirstCategory.categoryPrevious = 0;
             newFirstCategory.categoryDeleted = 0;
 
             $http.post(apiPath + "eden/cates/add", newFirstCategory)
