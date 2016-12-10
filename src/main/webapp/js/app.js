@@ -81,6 +81,18 @@ $(function() {
             }
         };
     });
+    app.service('loginForwardURL', function(){
+
+        var forwardURL = null;
+        return {
+            getForwardURL:function(){
+                return forwardURL;
+            },
+            setForwardURL:function(value){
+                forwardURL = value;
+            }
+        };
+    });
     app.directive('fileInput',['$parse',function($parse){
         return {
             restrict: 'A',
@@ -152,11 +164,14 @@ $(function() {
                 controller : "otherUrlCtrl"
             });
     });
-    app.controller("primaryProductCtrl", function ($scope, $http) {
+    app.controller("primaryProductCtrl", function ($scope, $http, loginForwardURL) {
+        console.log("Primary product controller..................");
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#primary_product");
             return;
         }
+        loginForwardURL.setForwardURL(null);
 
         //get product list data
         $scope.productItems = [];
@@ -275,9 +290,10 @@ $(function() {
                 });
         };
     });
-    app.controller("productListCtrl", function ($scope, $http, productBackAction){
+    app.controller("productListCtrl", function ($scope, $http, productBackAction, loginForwardURL){
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#product_list");
             return;
         }
 
@@ -456,9 +472,10 @@ $(function() {
                 console.log("Failed to get product category list");
             });
     });
-    app.controller("updateARProductDetail", function ($scope, $http, $routeParams, productBackAction) {
+    app.controller("updateARProductDetail", function ($scope, $http, $routeParams, productBackAction, loginForwardURL) {
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#new_ar_product_detail/"+$routeParams.productID);
             return;
         }
 
@@ -711,9 +728,10 @@ $(function() {
                 });
         };
     });
-    app.controller("newARDetailCtrl", function ($scope, $http, productBackAction) {
+    app.controller("newARDetailCtrl", function ($scope, $http, productBackAction, loginForwardURL) {
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#new_ar_product_detail");
             return;
         }
 
@@ -784,6 +802,7 @@ $(function() {
             $(productDescFileSelect).click();
             console.log("Click product description file selection dialog");
         };
+
         //update product cover image
         $scope.updateProductCoverImage = function(){
             updateImage($scope.productCoverImageFile, "productCoverImage","cover");
@@ -792,6 +811,23 @@ $(function() {
             $(productCoverFileSelect).click();
             console.log("Click product cover file selection dialog");
         };
+        //update horizontal product cover image
+        $scope.updateProductCoverImageHori = function(){
+            updateImage($scope.productCoverImageHoriFile, "productCoverImageHori","coverHori");
+        };
+        $scope.updateProductCoverImageHoriStart = function(){
+            $(productCoverFileSelectHori).click();
+            console.log("Click product horizontal cover file selection dialog");
+        };
+        //update vertical product cover image
+        $scope.updateProductCoverImageVerti = function(){
+            updateImage($scope.productCoverImageVertiFile, "productCoverImageVerti","coverVerti");
+        };
+        $scope.updateProductCoverImageVertiStart = function(){
+            $(productCoverFileSelectVerti).click();
+            console.log("Click product vertical cover file selection dialog");
+        };
+
         //update product screen shot images
         $scope.updateFirstScreenShotImage = function(){
             updateImage($scope.firstScreenShotFile, "productScreenShotFirstImage","firstScreen");
@@ -924,9 +960,10 @@ $(function() {
                 });
         };
     });
-    app.controller("updateVideoDetailCtrl", function($scope, $http, $routeParams, productBackAction){
+    app.controller("updateVideoDetailCtrl", function($scope, $http, $routeParams, productBackAction, loginForwardURL){
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#new_video_product_detail/"+$routeParams.productID);
             return;
         }
 
@@ -1095,9 +1132,10 @@ $(function() {
                 });
         };
     });
-    app.controller("newVideoDetailCtrl", function ($scope, $http, productBackAction) {
+    app.controller("newVideoDetailCtrl", function ($scope, $http, productBackAction, loginForwardURL) {
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#new_video_product_detail");
             return;
         }
 
@@ -1234,9 +1272,10 @@ $(function() {
                 });
         };
     });
-    app.controller("firstLevelCategoryCtrl", function ($scope,$http){
+    app.controller("firstLevelCategoryCtrl", function ($scope,$http, loginForwardURL){
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#first_level_category");
             return;
         }
 
@@ -1353,9 +1392,10 @@ $(function() {
             $scope.newFirstCategoryName = "";
         };
     });
-    app.controller("userAdminCtrl", function ($scope, $http){
+    app.controller("userAdminCtrl", function ($scope, $http, loginForwardURL){
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#user_admin");
             return;
         }
 
@@ -1404,9 +1444,10 @@ $(function() {
                 });
         };
     });
-    app.controller("logDownloadCtrl", function ($scope, $http){
+    app.controller("logDownloadCtrl", function ($scope, $http, loginForwardURL){
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#log_download");
             return;
         }
 
@@ -1472,12 +1513,13 @@ $(function() {
             pageControlUpdate();
         }
     });
-    app.controller("systemInfoCtrl", function ($scope, $http){
-
+    app.controller("systemInfoCtrl", function ($scope, $http, loginForwardURL){
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#system_info");
             return;
         }
+        loginForwardURL.setForwardURL(null);
 
         $scope.systemInfo = {};
         $scope.systemInfo.systemLatestVersion = "";
@@ -1543,14 +1585,25 @@ $(function() {
                 });
         };
     });
-    app.controller("loginCtrl", function ($scope, $http) {
+    app.controller("loginCtrl", function ($scope, $http, loginForwardURL) {
+        $scope.loginInvalid = false;
         $scope.userLogin = function(){
-            console.log("$scope.userName");
-            console.log("$scope.userPassword");
-
             //credential verification and set both userName and timeStamp
-            sessionStorage.setItem("userName","admin");
-            sessionStorage.setItem("timeStamp",new Date());
+            $http.get(apiPath + "eden/membs/pc/login/" + $scope.userName + "/" + $scope.userPassword)
+                .then(function successCallback(response) {
+                    if(response.status == 200 && response.data.msg == "successful"){
+                        console.log("Login successful");
+                        sessionStorage.setItem("userName",$scope.userName);
+                        sessionStorage.setItem("timeStamp",new Date());
+                        window.location.href = (null == loginForwardURL.getForwardURL()) ? "#primary_product" : loginForwardURL.getForwardURL();
+                    }else{
+                        console.log("Failed to login");
+                        $scope.loginInvalid = true;
+                    }
+                }, function errorCallback(response) {
+                    console.log("Failed to login");
+                    $scope.loginInvalid = true;
+                });
         };
     });
     app.controller("logoutCtrl", function ($scope, $http) {
@@ -1558,10 +1611,11 @@ $(function() {
         sessionStorage.removeItem("timeStamp");
         window.location.href = "#login/";
     });
-    app.controller("otherUrlCtrl", function () {
+    app.controller("otherUrlCtrl", function (loginForwardURL) {
         console.log("Otherwise URL contoller...");
         if(usrInvalid()){
             window.location.href = "#login/";
+            loginForwardURL.setForwardURL("#primary_product");
             return;
         }
     });
