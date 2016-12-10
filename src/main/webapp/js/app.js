@@ -1594,7 +1594,6 @@ $(function() {
         $scope.systemInfo = {};
         $scope.systemInfo.systemLatestVersion = "";
         $scope.systemInfo.systemApkDownUrl = "";
-        $scope.apkURLInvalid = false;
 
         //get system info
         $http.get(apiPath + "eden/sys/version")
@@ -1637,13 +1636,6 @@ $(function() {
         };
 
         $scope.systemInfoSubmit = function(){
-            if($scope.systemInfo.systemApkDownUrl.length == 0){
-                $scope.apkURLInvalid = true;
-                return;
-            }else{
-                $scope.apkURLInvalid = false;
-            }
-
             $http.post(apiPath + "eden/sys/save", $scope.systemInfo)
                 .then(function successCallback(response) {
                     if(response.status == 200){
