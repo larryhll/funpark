@@ -1453,12 +1453,12 @@ $(function() {
                             $scope.firstLevelCategoryItems = response.data;
                         }, function errorCallback(response) {
                             console.log("Failed to get the first level category");
+                            alert("创建产品分类失败！");
                         });
                 }, function errorCallback(response) {
                     console.log("Failed to create first category item ");
+                    alert("创建产品分类失败！");
                 });
-
-            $scope.newFirstCategoryName = "";
         };
     });
     app.controller("userAdminCtrl", function ($scope, $http, loginForwardURL){
