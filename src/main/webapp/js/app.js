@@ -1225,6 +1225,8 @@ $(function() {
                             $scope.productInfo.productDesc = response.data.urls;
                         }else if(imageType == "cover"){
                             $scope.productInfo.productCover = response.data.urls;
+                        }else if(imageType == "coverVerti"){
+                            $scope.productInfo.productCoverVerti = response.data.urls;
                         }
                     }else{
                         console.log("Failed to upload image file");
