@@ -395,7 +395,49 @@ public class MemberServiceImpl extends BaseService{
 
     }
 
+    class ResponseEntityLogin{
+        private int code;
+        private String msg;
 
+        public ResponseEntityLogin() {
+        }
+
+        public ResponseEntityLogin(int code, String msg) {
+            this.code = code;
+            this.msg = msg;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public void setCode(int code) {
+            this.code = code;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+    }
+
+    @GET
+    @Path("/pc/login/{name}/{pwd}")
+    public Response pcLoginPWd(@PathParam("name") String name, @PathParam("pwd") String pwd) {
+        String names = "admin";
+        String pwds = "zhimoadmin123";
+        if (names.equalsIgnoreCase(name) && pwds.equalsIgnoreCase(pwd)) {
+
+            return Response.ok(new ResponseEntityLogin(0, "successful")).header("code", "0").build();
+        }else {
+            return Response.ok(new ResponseEntityLogin(1, "failed")).header("code", "1").build();
+        }
+
+
+    }
 
 
 }

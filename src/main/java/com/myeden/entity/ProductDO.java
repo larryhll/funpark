@@ -55,6 +55,12 @@ public class ProductDO{
     @Column(name = "PRODUCT_COVER")
     private String productCover;
 
+    @Column(name = "PRODUCT_COVER_VERTI")
+    private String productCoverVerti;
+
+    @Column(name = "PRODUCT_COVER_HORI")
+    private String productCoverHori;
+
     @Column(name = "PRODUCT_IMAGES")
     private String productImages;
 
@@ -121,6 +127,22 @@ public class ProductDO{
 
     @Column(name = "PRODUCT_CATEGORY_ID")
     private int productCategoryId;
+
+    public String getProductCoverVerti() {
+        return productCoverVerti;
+    }
+
+    public void setProductCoverVerti(String productCoverVerti) {
+        this.productCoverVerti = productCoverVerti;
+    }
+
+    public String getProductCoverHori() {
+        return productCoverHori;
+    }
+
+    public void setProductCoverHori(String productCoverHori) {
+        this.productCoverHori = productCoverHori;
+    }
 
     public int getProductCategoryId() {
         return productCategoryId;
