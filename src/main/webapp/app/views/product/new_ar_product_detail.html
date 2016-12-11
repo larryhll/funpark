@@ -174,6 +174,19 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
+                                    <label>手机端产品微店二维码(建议360*360)：</label>
+                                    <div>
+                                        <img id="productAppQRCodeImage" src="{{productInfo.productAppQRCode}}" style="max-height: 120px; min-height: 120px; max-width: 120px; min-width: 120px">
+                                        <input id="productAppQRCodeFileSelect" type="file" file-input="productAppQRCodeImageFile" accept=".png,.jpg" style="display:none">
+                                        <button style="display:none" ng-click="updateProductAppQRCodeImage()"></button>
+                                        <button class="btn btn-default" ng-click="updateProductAppQRCodeImageStart()" style="display: block; margin-top: 5px">上传手机端二维码</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
                                     <div class="checkbox">
                                         <label><input type="checkbox" ng-model="productInfo.productPlayEnabled">启用演示视频：</label>
                                     </div>
