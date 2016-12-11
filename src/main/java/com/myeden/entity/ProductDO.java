@@ -128,6 +128,17 @@ public class ProductDO{
     @Column(name = "PRODUCT_CATEGORY_ID")
     private int productCategoryId;
 
+    @Column(name = "PRODUCT_APP_QR_CODE")
+    private String productAppQRCode;
+
+    public String getProductAppQRCode() {
+        return productAppQRCode;
+    }
+
+    public void setProductAppQRCode(String productAppQRCode) {
+        this.productAppQRCode = productAppQRCode;
+    }
+
     public String getProductCoverVerti() {
         return productCoverVerti;
     }
