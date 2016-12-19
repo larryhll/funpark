@@ -226,7 +226,10 @@ public class ProductService extends BaseService {
         List<ProductDO> productDOs2 = new ArrayList<ProductDO>();
         if (null != productDOs && productDOs.size() > 0) {
             for (ProductDO productDO : productDOs) {
-                if (containsCategory(productDO.getProductCategory(), categoryDO.getId()) && containsCategory(productDO.getProdcutMatchAge(), aScope) && productDO.getPublishState()==0) {
+              /*  boolean flag1=containsCategory(productDO.getProductCategory(), categoryDO.getId());
+                boolean flag2=containsCategory(productDO.getProductMatchScope(), aScope);
+                boolean flag3=productDO.getPublishState()==0;*/
+                if (containsCategory(productDO.getProductCategory(), categoryDO.getId()) && containsCategory(productDO.getProductMatchScope(), aScope) && productDO.getPublishState()==0) {
                     productDOs2.add(productDO);
                 }
             }
