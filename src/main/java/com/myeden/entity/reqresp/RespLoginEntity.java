@@ -13,7 +13,7 @@ public class RespLoginEntity {
 
     private MemberDO memberDO;
 
-    private List<LayoutDO> layoutDOs;
+    private List<LayoutDOApp> layoutDOs;
 
     private List<CategoryDO> categoryDOs;
 
@@ -33,11 +33,11 @@ public class RespLoginEntity {
         this.memberDO = memberDO;
     }
 
-    public List<LayoutDO> getLayoutDOs() {
+    public List<LayoutDOApp> getLayoutDOs() {
         return layoutDOs;
     }
 
-    public void setLayoutDOs(List<LayoutDO> layoutDOs) {
+    public void setLayoutDOs(List<LayoutDOApp> layoutDOs) {
         this.layoutDOs = layoutDOs;
     }
 }

@@ -209,8 +209,8 @@ public class ProductService extends BaseService {
      * desc:
      */
     @GET
-    @Path("/category/list/{id}")
-    public Response findProListByCategoryID(@PathParam("id") int id) {
+    @Path("/category/list/{id}/{aScope}")
+    public Response findProListByCategoryID(@PathParam("id") int id, @PathParam("aScope") int aScope) {
 
         CategoryDO categoryDO = categoryDao.findCategoryByID(id);
         if (null == categoryDO) {
@@ -218,18 +218,20 @@ public class ProductService extends BaseService {
         }
 
         List<ProductDO> productDOs = productDao.getAllDefaultProds();
+
+        if (null == productDOs) {
+            return Response.ok().header("code", "802").build();
+        }
+
         List<ProductDO> productDOs2 = new ArrayList<ProductDO>();
         if (null != productDOs && productDOs.size() > 0) {
             for (ProductDO productDO : productDOs) {
-                if (containsCategory(productDO.getProductCategory(), categoryDO.getId())) {
+                if (containsCategory(productDO.getProductCategory(), categoryDO.getId()) && containsCategory(productDO.getProdcutMatchAge(), aScope) && productDO.getPublishState()==0) {
                     productDOs2.add(productDO);
                 }
             }
         }
 
-        if (null == productDOs) {
-            return Response.ok().header("code", "802").build();
-        }
 
         return Response.ok(productDOs2).header("code", "0").build();
 
@@ -268,11 +270,11 @@ public class ProductService extends BaseService {
         long t=new Date().getTime();
         Attachment attachment = body.getAttachment("root");
             DataHandler handler = attachment.getDataHandler();
-
         String papa=request.getRealPath("/pro_img");
         String paths="pro_img";
         ContentDisposition cd = attachment.getContentDisposition();
         String fileName = cd.getParameter("filename");
+
         //String timees = String.valueOf(new Date().getTime());
         String[]aa=fileName.split("\\.");
         String ss = aa[0];

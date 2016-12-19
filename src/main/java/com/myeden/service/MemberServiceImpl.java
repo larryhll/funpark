@@ -9,6 +9,7 @@ import com.myeden.dao.intf.ProductDao;
 import com.myeden.entity.CategoryDO;
 import com.myeden.entity.LayoutDO;
 import com.myeden.entity.MemberDO;
+import com.myeden.entity.reqresp.LayoutDOApp;
 import com.myeden.entity.reqresp.RespLoginEntity;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -28,6 +29,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -318,15 +320,23 @@ public class MemberServiceImpl extends BaseService{
             }
 
             List<LayoutDO> layoutDOs=layoutDao.findAllLayout();
-
+            List<LayoutDOApp> layoutDOApps = new ArrayList<LayoutDOApp>();
             if (null != layoutDOs && layoutDOs.size() > 0) {
+                LayoutDOApp layoutDOApp=null;
                 for (LayoutDO layoutDO : layoutDOs) {
-                    layoutDO.setLayoutProdUrl(productDao.findProductById(layoutDO.getLayoutValue()).getProductCover());
+                    layoutDOApp=new LayoutDOApp();
+                    layoutDOApp.setLayoutProdUrl(productDao.findProductById(layoutDO.getLayoutValue()).getProductCover());
+                    layoutDOApp.setProductRecommend(productDao.findProductById(layoutDO.getLayoutValue()).getProductRecommend());
+                    layoutDOApp.setLayoutPosition(layoutDO.getLayoutPosition());
+                    layoutDOApp.setLayoutName(layoutDO.getLayoutName());
+                    layoutDOApp.setLayoutValue(layoutDO.getLayoutValue());
+                    layoutDOApp.setId(layoutDO.getId());
+                    layoutDOApps.add(layoutDOApp);
                 }
             }
 
            List<CategoryDO> categoryDOs = categoryDao.findLevelOne();
-            entity.setLayoutDOs(layoutDOs);
+            entity.setLayoutDOs(layoutDOApps);
             entity.setMemberDO(memberDO);
            entity.setCategoryDOs(categoryDOs);
 
@@ -353,12 +363,25 @@ public class MemberServiceImpl extends BaseService{
             if (layoutDOs == null) {
                 return Response.ok(entity).header("code", "802").build();
             }
+
+            List<LayoutDOApp> layoutDOApps = new ArrayList<LayoutDOApp>();
             if (null != layoutDOs && layoutDOs.size() > 0) {
+                LayoutDOApp layoutDOApp=null;
                 for (LayoutDO layoutDO : layoutDOs) {
-                    layoutDO.setLayoutProdUrl(productDao.findProductById(layoutDO.getLayoutValue()).getProductCover());
+                    layoutDOApp=new LayoutDOApp();
+                    layoutDOApp.setLayoutProdUrl(productDao.findProductById(layoutDO.getLayoutValue()).getProductCover());
+                    layoutDOApp.setProductRecommend(productDao.findProductById(layoutDO.getLayoutValue()).getProductRecommend());
+                    layoutDOApp.setLayoutPosition(layoutDO.getLayoutPosition());
+                    layoutDOApp.setLayoutName(layoutDO.getLayoutName());
+                    layoutDOApp.setLayoutValue(layoutDO.getLayoutValue());
+                    layoutDOApp.setId(layoutDO.getId());
+                    layoutDOApp.setId(layoutDO.getId());
+                    layoutDOApps.add(layoutDOApp);
+
                 }
             }
-            entity.setLayoutDOs(layoutDOs);
+
+            entity.setLayoutDOs(layoutDOApps);
             entity.setCategoryDOs(categoryDOs);
             return Response.ok(entity).header("code", "0").header("msg",  PropertiesDAO.readValue("", "0")).build();
 
