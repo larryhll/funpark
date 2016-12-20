@@ -229,9 +229,16 @@ public class ProductService extends BaseService {
               /*  boolean flag1=containsCategory(productDO.getProductCategory(), categoryDO.getId());
                 boolean flag2=containsCategory(productDO.getProductMatchScope(), aScope);
                 boolean flag3=productDO.getPublishState()==0;*/
-                if (containsCategory(productDO.getProductCategory(), categoryDO.getId()) && containsCategory(productDO.getProductMatchScope(), aScope) && productDO.getPublishState()==0) {
-                    productDOs2.add(productDO);
+                if (0 == aScope) {
+                    if (containsCategory(productDO.getProductCategory(), categoryDO.getId()) && productDO.getPublishState()==0) {
+                        productDOs2.add(productDO);
+                    }
+                }else{
+                    if (containsCategory(productDO.getProductCategory(), categoryDO.getId()) && containsCategory(productDO.getProductMatchScope(), aScope) && productDO.getPublishState()==0) {
+                        productDOs2.add(productDO);
+                    }
                 }
+
             }
         }
 
