@@ -131,7 +131,16 @@ public class ProductDO{
     @Column(name = "PRODUCT_APP_QR_CODE")
     private String productAppQRCode;
 
+    @Column(name = "PRODUCT_SIZE")
+    private String productSize;
 
+    public String getProductSize() {
+        return productSize;
+    }
+
+    public void setProductSize(String productSize) {
+        this.productSize = productSize;
+    }
 
     public String getProductAppQRCode() {
         return productAppQRCode;
