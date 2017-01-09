@@ -1,6 +1,7 @@
 package com.myeden.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by felhan on 11/12/2016.
@@ -8,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="STUDENT")
-public class Student {
+public class Student implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="ID")
@@ -34,4 +35,8 @@ public class Student {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Student: id= "+id+" name = "+name;
+    }
 }

@@ -131,6 +131,8 @@ public class ProductDO{
     @Column(name = "PRODUCT_APP_QR_CODE")
     private String productAppQRCode;
 
+
+
     public String getProductAppQRCode() {
         return productAppQRCode;
     }

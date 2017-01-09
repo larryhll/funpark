@@ -290,7 +290,8 @@ public class ProductService extends BaseService {
         String ss = aa[0];
         fileName = String.valueOf(t) + getRamdom4Number() + "." + aa[1];
         //fileName=fileName+getRamdom4Number();
-        writeToFile(handler.getInputStream(),papa+"/"+fileName);
+
+        long productSize=writeToFile(handler.getInputStream(),papa+"/"+fileName);
 
 
       /*      ContentDisposition cd = attachment.getContentDisposition();
@@ -311,6 +312,7 @@ public class ProductService extends BaseService {
             String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
         UrlEntity entity=new UrlEntity();
         entity.setUrls(urls);
+        entity.setProductSize(String.valueOf(productSize));
 
         return Response.ok(entity).header("code","0").build();
      /*   Attachment att = body.getAttachment("root");
@@ -319,22 +321,34 @@ public class ProductService extends BaseService {
         return null;*/
     }
 
-    private void writeToFile(InputStream ins, String path) {
+    private long writeToFile(InputStream ins, String path) {
+        long sizess=0l;
         try {
             OutputStream out = new FileOutputStream(new File(path));
+
             int read = 0;
             byte[] bytes = new byte[1024];
+            long countss=0l;
 
             while ((read = ins.read(bytes)) != -1) {
+                countss++;
                 out.write(bytes, 0, read);
             }
+
+            sizess=countss*1024;
+
             out.flush();
             out.close();
+
+            return sizess;
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return sizess;
     }
 
     private String getRamdom4Number() {
@@ -375,6 +389,15 @@ public class ProductService extends BaseService {
 
 class UrlEntity{
     private String urls;
+    private String productSize;
+
+    public String getProductSize() {
+        return productSize;
+    }
+
+    public void setProductSize(String productSize) {
+        this.productSize = productSize;
+    }
 
     public String getUrls() {
         return urls;
