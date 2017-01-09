@@ -710,6 +710,7 @@ $(function() {
                 if (this.readyState == 4 && this.status == 200) {
                     console.log("Upload apk file successfully");
                     $scope.productInfo.productApkDownUrl = JSON.parse(this.response).urls;
+                    $scope.productInfo.productSize = JSON.parse(this.response).productSize;
                     $scope.$apply();
                 }
             };
@@ -979,6 +980,7 @@ $(function() {
                 if (this.readyState == 4 && this.status == 200) {
                     console.log("Upload apk file successfully");
                     $scope.productInfo.productApkDownUrl = JSON.parse(this.response).urls;
+                    $scope.productInfo.productSize = JSON.parse(this.response).productSize;
                     $scope.$apply();
                 }
             };
