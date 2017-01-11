@@ -291,7 +291,8 @@ public class ProductService extends BaseService {
         fileName = String.valueOf(t) + getRamdom4Number() + "." + aa[1];
         //fileName=fileName+getRamdom4Number();
 
-        long productSize=writeToFile(handler.getInputStream(),papa+"/"+fileName);
+        double productSize=writeToFile(handler.getInputStream(),papa+"/"+fileName);
+        java.text.DecimalFormat   df=new   java.text.DecimalFormat("#.#");
 
 
       /*      ContentDisposition cd = attachment.getContentDisposition();
@@ -312,7 +313,7 @@ public class ProductService extends BaseService {
             String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
         UrlEntity entity=new UrlEntity();
         entity.setUrls(urls);
-        entity.setProductSize(String.valueOf(productSize));
+        entity.setProductSize(String.valueOf(df.format(productSize)));
 
         return Response.ok(entity).header("code","0").build();
      /*   Attachment att = body.getAttachment("root");
@@ -321,21 +322,23 @@ public class ProductService extends BaseService {
         return null;*/
     }
 
-    private long writeToFile(InputStream ins, String path) {
-        long sizess=0l;
+    private double writeToFile(InputStream ins, String path) {
+        double sizess=0l;
         try {
             OutputStream out = new FileOutputStream(new File(path));
 
             int read = 0;
             byte[] bytes = new byte[1024];
-            long countss=0l;
+            double countss=0l;
 
             while ((read = ins.read(bytes)) != -1) {
-                countss++;
+
+                countss=countss+read;
                 out.write(bytes, 0, read);
             }
 
-            sizess=countss*1024;
+            sizess=countss/1024/1024;
+
 
             out.flush();
             out.close();
