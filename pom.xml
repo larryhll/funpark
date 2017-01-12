@@ -206,6 +206,11 @@
       <artifactId>ehcache-core</artifactId>
       <version>2.6.5</version>
     </dependency>
+      <dependency>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+          <version>1.0</version>
+      </dependency>
 
   </dependencies>
 

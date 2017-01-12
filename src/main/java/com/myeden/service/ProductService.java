@@ -1,5 +1,7 @@
 package com.myeden.service;
 
+import com.myeden.common.ApkInfo;
+import com.myeden.common.ApkUtil;
 import com.myeden.common.PropertiesDAO;
 import com.myeden.dao.intf.CategoryDao;
 import com.myeden.dao.intf.ProductDao;
@@ -285,6 +287,8 @@ public class ProductService extends BaseService {
         ContentDisposition cd = attachment.getContentDisposition();
         String fileName = cd.getParameter("filename");
 
+
+
         //String timees = String.valueOf(new Date().getTime());
         String[]aa=fileName.split("\\.");
         String ss = aa[0];
@@ -311,9 +315,17 @@ public class ProductService extends BaseService {
 //118.178.124.197
 
             String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
+
+
+        ApkInfo infosss = new ApkUtil().getApkInfo(urls);
+
+
         UrlEntity entity=new UrlEntity();
         entity.setUrls(urls);
         entity.setProductSize(String.valueOf(df.format(productSize)));
+        entity.setProductPackName(infosss.getApkPackage());
+        entity.setProductApkVersion(infosss.getVersionName());
+
 
         return Response.ok(entity).header("code","0").build();
      /*   Attachment att = body.getAttachment("root");
@@ -393,6 +405,24 @@ public class ProductService extends BaseService {
 class UrlEntity{
     private String urls;
     private String productSize;
+    private String productPackName;
+    private String productApkVersion;
+
+    public String getProductApkVersion() {
+        return productApkVersion;
+    }
+
+    public void setProductApkVersion(String productApkVersion) {
+        this.productApkVersion = productApkVersion;
+    }
+
+    public String getProductPackName() {
+        return productPackName;
+    }
+
+    public void setProductPackName(String productPackName) {
+        this.productPackName = productPackName;
+    }
 
     public String getProductSize() {
         return productSize;
