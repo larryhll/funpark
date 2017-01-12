@@ -315,16 +315,19 @@ public class ProductService extends BaseService {
 //118.178.124.197
 
             String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
-
-
-        ApkInfo infosss = new ApkUtil().getApkInfo(urls);
-
-
         UrlEntity entity=new UrlEntity();
+        if (aa[1].equalsIgnoreCase("apk")) {
+            ApkInfo infosss = new ApkUtil().getApkInfo(urls);
+            entity.setProductPackName(infosss.getApkPackage());
+            entity.setProductApkVersion(infosss.getVersionName());
+        }
+
+
+
+
         entity.setUrls(urls);
         entity.setProductSize(String.valueOf(df.format(productSize)));
-        entity.setProductPackName(infosss.getApkPackage());
-        entity.setProductApkVersion(infosss.getVersionName());
+
 
 
         return Response.ok(entity).header("code","0").build();
