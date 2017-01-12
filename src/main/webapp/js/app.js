@@ -7,7 +7,7 @@
  */
 
 $(function() {
-    var apiPath = "http://auv.shzhimo.com:8080/";
+    var apiPath = "http://auv.shzhimo.com/";
     var  usrInvalid = function(){
 
         //check if both key userName and timeStamp exist
