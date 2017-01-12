@@ -212,6 +212,12 @@
           <version>1.0</version>
       </dependency>
 
+    <dependency>
+      <groupId>android.content.res</groupId>
+      <artifactId>AXMLPrinter2</artifactId>
+      <version>1.0</version>
+    </dependency>
+
   </dependencies>
 
 
