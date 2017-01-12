@@ -217,8 +217,8 @@
       <groupId>android.content.res</groupId>
       <artifactId>AXMLPrinter2</artifactId>
       <version>1.0</version>
-        <scope>system</scope>
-        <systemPath>${project.root.lib}/AXMLPrinter2.jar</systemPath>
+        <!--<scope>system</scope>
+        <systemPath>${project.root.lib}/AXMLPrinter2.jar</systemPath>-->
     </dependency>
 
   </dependencies>
