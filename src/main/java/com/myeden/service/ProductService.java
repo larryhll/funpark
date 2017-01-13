@@ -317,7 +317,7 @@ public class ProductService extends BaseService {
             String urls= PropertiesDAO.readValue("", "local.ip")+paths+"/"+fileName;
         UrlEntity entity=new UrlEntity();
         if (aa[1].equalsIgnoreCase("apk")) {
-            ApkInfo infosss = new ApkUtil().getApkInfo(urls);
+            ApkInfo infosss = new ApkUtil().getApkInfo(papa+"/"+fileName);
             entity.setProductPackName(infosss.getApkPackage());
             entity.setProductApkVersion(infosss.getVersionName());
         }
